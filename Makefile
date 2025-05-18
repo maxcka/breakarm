@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g
-LDFLAGS = -lelf
+LDFLAGS = -lelf -lcapstone
 SRC = main.c
 OBJ = $(SRC:.c=.o)
 PROG = armv7_disasm

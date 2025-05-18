@@ -1,0 +1,103 @@
+.text section found:
+    Address: 0x400
+    Size:    0x190
+0x400:	mov		fp, #0
+0x404:	mov		lr, #0
+0x408:	pop		{r1}
+0x40c:	mov		r2, sp
+0x410:	str		r2, [sp, #-4]!
+0x414:	str		r0, [sp, #-4]!
+0x418:	ldr		sl, [pc, #0x1c]
+0x41c:	add		r3, pc, #0x18
+0x420:	add		sl, sl, r3
+0x424:	mov		r3, #0
+0x428:	str		r3, [sp, #-4]!
+0x42c:	ldr		r0, [pc, #0xc]
+0x430:	ldr		r0, [sl, r0]
+0x434:	bl		#0x3c4
+0x438:	bl		#0x3f4
+0x43c:	andeq		r1, r0, r4, asr #23
+0x440:	andeq		r0, r0, ip, lsr #32
+0x444:	ldr		r3, [pc, #0x14]
+0x448:	ldr		r2, [pc, #0x14]
+0x44c:	add		r3, pc, r3
+0x450:	ldr		r2, [r3, r2]
+0x454:	cmp		r2, #0
+0x458:	bxeq		lr
+0x45c:	b		#0x3e8
+0x460:	andeq		r1, r0, ip, lsr #23
+0x464:	andeq		r0, r0, r8, lsr #32
+0x468:	ldr		r0, [pc, #0x2c]
+0x46c:	ldr		r3, [pc, #0x2c]
+0x470:	add		r0, pc, r0
+0x474:	add		r3, pc, r3
+0x478:	cmp		r3, r0
+0x47c:	ldr		r3, [pc, #0x20]
+0x480:	add		r3, pc, r3
+0x484:	bxeq		lr
+0x488:	ldr		r2, [pc, #0x18]
+0x48c:	ldr		r3, [r3, r2]
+0x490:	cmp		r3, #0
+0x494:	bxeq		lr
+0x498:	bx		r3
+0x49c:	andeq		r1, r0, r4, asr #23
+0x4a0:	andeq		r1, r0, r0, asr #23
+0x4a4:	andeq		r1, r0, r8, ror fp
+0x4a8:	andeq		r0, r0, r4, lsr #32
+0x4ac:	ldr		r0, [pc, #0x38]
+0x4b0:	ldr		r3, [pc, #0x38]
+0x4b4:	add		r0, pc, r0
+0x4b8:	add		r3, pc, r3
+0x4bc:	sub		r3, r3, r0
+0x4c0:	lsr		r1, r3, #0x1f
+0x4c4:	add		r1, r1, r3, asr #2
+0x4c8:	ldr		r3, [pc, #0x24]
+0x4cc:	asrs		r1, r1, #1
+0x4d0:	add		r3, pc, r3
+0x4d4:	bxeq		lr
+0x4d8:	ldr		r2, [pc, #0x18]
+0x4dc:	ldr		r3, [r3, r2]
+0x4e0:	cmp		r3, #0
+0x4e4:	bxeq		lr
+0x4e8:	bx		r3
+0x4ec:	andeq		r1, r0, r0, lsl #23
+0x4f0:	andeq		r1, r0, ip, ror fp
+0x4f4:	andeq		r1, r0, r8, lsr #22
+0x4f8:	andeq		r0, r0, r0, lsr r0
+0x4fc:	ldr		r3, [pc, #0x4c]
+0x500:	ldr		r2, [pc, #0x4c]
+0x504:	add		r3, pc, r3
+0x508:	ldrb		r3, [r3]
+0x50c:	add		r2, pc, r2
+0x510:	cmp		r3, #0
+0x514:	bxne		lr
+0x518:	ldr		r3, [pc, #0x38]
+0x51c:	push		{r4, lr}
+0x520:	ldr		r3, [r2, r3]
+0x524:	cmp		r3, #0
+0x528:	beq		#0x538
+0x52c:	ldr		r3, [pc, #0x28]
+0x530:	ldr		r0, [pc, r3]
+0x534:	bl		#0x3d0
+0x538:	bl		#0x468
+0x53c:	ldr		r3, [pc, #0x1c]
+0x540:	mov		r2, #1
+0x544:	add		r3, pc, r3
+0x548:	strb		r2, [r3]
+0x54c:	pop		{r4, pc}
+0x550:	andeq		r1, r0, r0, lsr fp
+0x554:	andeq		r1, r0, ip, ror #21
+0x558:	andeq		r0, r0, r0, lsr #32
+0x55c:	andeq		r1, r0, r0, lsl #22
+0x560:	strdeq		r1, r2, [r0], -r0
+0x564:	b		#0x4ac
+0x568:	push		{fp, lr}
+0x56c:	add		fp, sp, #4
+0x570:	ldr		r3, [pc, #0x14]
+0x574:	add		r3, pc, r3
+0x578:	mov		r0, r3
+0x57c:	bl		#0x3dc
+0x580:	mov		r3, #0
+0x584:	mov		r0, r3
+0x588:	pop		{fp, pc}
+0x58c:	strheq		r0, [r0], -r0

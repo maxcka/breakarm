@@ -6,6 +6,7 @@
 
 #include <gelf.h>
 #include <libelf.h>
+#include <capstone/capstone.h>
 
 
 
@@ -14,19 +15,8 @@ void fatal(const char *msg) {
     exit(1);
 }
 
-// Find .text section
-void findTextSection() {
-
-}
-
-int main(int argc, char **argv) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <ELF binary>\n", argv[0]);
-        return 1;
-    }
-
-    char *elf_fname = argv[1];
-
+// Find .text section with libelf
+uint8_t *getTextSection(const char *elf_fname, size_t *ptext_size, uint64_t *ptext_addr) {
     // check libelf version
     if (elf_version(EV_CURRENT) == EV_NONE) {
         fatal("elf_version");
@@ -61,6 +51,8 @@ int main(int argc, char **argv) {
 
         name = elf_strptr(elf, sh_str_idx, shdr.sh_name);
         if (name && strcmp(name, ".text") == 0) {   // found .text section
+            *ptext_addr = (uint64_t)shdr.sh_addr;
+            *ptext_size = (size_t)shdr.sh_size;
             break;
         }
     }
@@ -69,7 +61,7 @@ int main(int argc, char **argv) {
         fprintf(stderr, ".text section not found\n");
         elf_end(elf);
         close(fd);
-        return 1;
+        exit(1);
     }
 
     // get section data
@@ -78,14 +70,62 @@ int main(int argc, char **argv) {
         fatal("elf_getdata");
     }
 
+    // copy into separate buffer so we can close the file
+    uint8_t *text_buf = malloc(data->d_size);
+    if (!text_buf) {
+        fatal("malloc");
+    }
+    memcpy(text_buf, data->d_buf, data->d_size);
+
+
+
     printf(".text section found:\n");
-    printf("    Address: 0x%lx\n", (unsigned long)shdr.sh_addr);
-    printf("    Size:    0x%lx\n", (unsigned long)shdr.sh_size);
+    printf("    Address: 0x%lx\n", *ptext_addr);
+    printf("    Size:    0x%lx\n", *ptext_size);
 
     elf_end(elf);
     close(fd);
-    return 0;
 
+    return text_buf;
+}
+
+int main(int argc, char **argv) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <ELF binary>\n", argv[0]);
+        return 1;
+    }
+
+    char *elf_fname = argv[1];
+    size_t text_size;
+    uint64_t text_addr;
+
+    // note text_buf was malloced
+    uint8_t *text_buf = getTextSection(elf_fname, &text_size, &text_addr);
+
+
+    // capstone part
+
+    csh cs_handle;
+    cs_err err = cs_open(CS_ARCH_ARM, CS_MODE_ARM, &cs_handle);
+    if (err) {
+        fatal("capstone init");
+    }
+
+    cs_option(cs_handle, CS_OPT_DETAIL, CS_OPT_OFF);
+    cs_insn *insn;
+    size_t count = cs_disasm(cs_handle, text_buf, text_size, text_addr, 0, &insn);
+    if (count > 0) {
+        for (size_t i = 0; i < count; i++) {
+            printf("0x%"PRIx64":\t%s\t\t%s\n", insn[i].address, insn[i].mnemonic, insn[i].op_str);
+        }
+        cs_free(insn, count);
+    }
+    else {
+        fprintf(stderr, "Failed to disassemble given code!\n");
+    }
+
+    cs_close(&cs_handle);
+    free(text_buf);
 
     return 0;
 }
