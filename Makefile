@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -g
 LDFLAGS = -lelf -lcapstone
 SRC = main.c
 OBJ = $(SRC:.c=.o)
-PROG = armv7_disasm
+PROG = arm32_disasm
 
 all: $(PROG)
 

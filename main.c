@@ -44,8 +44,8 @@ uint8_t *getTextSection(const char *elf_fname, size_t *ptext_size, uint64_t *pte
     char *name;
 
     // Iterate sections to find ".text"
-    while ((section = elf_nextscn(elf, section)) != NULL) {
-        if (gelf_getshdr(section, &shdr) != &shdr) {
+    while ((section = elf_nextscn(elf, section)) != NULL) { // gte section
+        if (gelf_getshdr(section, &shdr) != &shdr) {    // get section header for section
             fatal("gelf_getshdr");
         }
 
@@ -77,8 +77,6 @@ uint8_t *getTextSection(const char *elf_fname, size_t *ptext_size, uint64_t *pte
     }
     memcpy(text_buf, data->d_buf, data->d_size);
 
-
-
     printf(".text section found:\n");
     printf("    Address: 0x%lx\n", *ptext_addr);
     printf("    Size:    0x%lx\n", *ptext_size);
@@ -89,22 +87,7 @@ uint8_t *getTextSection(const char *elf_fname, size_t *ptext_size, uint64_t *pte
     return text_buf;
 }
 
-int main(int argc, char **argv) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <ELF binary>\n", argv[0]);
-        return 1;
-    }
-
-    char *elf_fname = argv[1];
-    size_t text_size;
-    uint64_t text_addr;
-
-    // note text_buf was malloced
-    uint8_t *text_buf = getTextSection(elf_fname, &text_size, &text_addr);
-
-
-    // capstone part
-
+void capstoneDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr) {
     csh cs_handle;
     cs_err err = cs_open(CS_ARCH_ARM, CS_MODE_ARM, &cs_handle);
     if (err) {
@@ -125,6 +108,28 @@ int main(int argc, char **argv) {
     }
 
     cs_close(&cs_handle);
+}
+
+int main(int argc, char **argv) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <ELF binary>\n", argv[0]);
+        return 1;
+    }
+
+    char *elf_fname = argv[1];
+    size_t text_size;
+    uint64_t text_addr;
+
+    // note text_buf was malloced
+    uint8_t *text_buf = getTextSection(elf_fname, &text_size, &text_addr);
+
+
+    // capstone
+    //capstoneDisas(text_buf, text_size, text_addr);
+
+    // disassembler
+
+    
     free(text_buf);
 
     return 0;
