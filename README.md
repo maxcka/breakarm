@@ -26,3 +26,9 @@ About ARM ISAs
 when compiling using arm32-linux-gnueabi:
 - -marm option generates ARM32 instructions
 - -mthumb option generates Thumb (Thumb or Thumb-2 depending on -arch option) instructions
+
+======================
+ARM32 ISA Encoding
+
+|31 30 29 28|27 26 25|24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5| 4 |3 2 1 0|
+|  cond     |  op1   |                                                      |op |       |

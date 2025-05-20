@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Wextra -g -I.
 LDFLAGS = -lelf -lcapstone
 SRC = main.c
 OBJ = $(SRC:.c=.o)

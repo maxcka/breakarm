@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <string.h>
 
+#include <a32_info.h>
 #include <gelf.h>
 #include <libelf.h>
 #include <capstone/capstone.h>
@@ -110,6 +111,22 @@ void capstoneDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr) {
     cs_close(&cs_handle);
 }
 
+// my custom A32 disassembler implementation
+void customDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr) {
+    uint64_t start_addr = text_addr;
+    uint64_t end_addr = text_addr + text_size;
+    uint32_t num_instr = text_size / A32_INSTR_SIZE;
+
+    uint64_t curr_addr = start_addr;
+    printf("\n%s\t%s\t\t%s\n", "ADDR", "INSTR", "ASSEMBLY");
+    for (uint32_t i = 0; i < num_instr; i++) {
+        // address, instruction, assembly code
+        printf("0x%lx:\t0x%08x\n", curr_addr, *((uint32_t *)text_buf + i));
+
+        curr_addr += A32_INSTR_SIZE;
+    }
+}
+
 int main(int argc, char **argv) {
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <ELF binary>\n", argv[0]);
@@ -128,6 +145,7 @@ int main(int argc, char **argv) {
     //capstoneDisas(text_buf, text_size, text_addr);
 
     // disassembler
+    customDisas(text_buf, text_size, text_addr);
 
     
     free(text_buf);

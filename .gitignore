@@ -1,0 +1,9 @@
+# ignore object files
+*.o
+
+# ignore binaries
+arm32_disasm
+examples/test_arm32
+examples/test_arm64
+examples/test_thumb2
+examples/test_x86_64
