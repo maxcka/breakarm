@@ -34,9 +34,9 @@
 #define IS_LD_STR_WRD_MEDIA(instr)  ( ( ((instr) >> 25) & 0x7) == 0x3 ) // 0b011
 //--> mask bits 27-26
 // branch, branch with link, and block data transfer
-#define IS_BR_BLK(instr)            ( ( ((instr) >> 26) & 0x7) == 0x2 ) // 0b10
+#define IS_BR_BLK(instr)            ( ( ((instr) >> 26) & 0x3) == 0x2 ) // 0b10
 // Coprocessor instr, and supervisor call
-#define IS_CPROC_SPR(instr)         ( ( ((instr) >> 26) & 0x7) == 0x3 ) // 0b11
+#define IS_CPROC_SPR(instr)         ( ( ((instr) >> 26) & 0x3) == 0x3 ) // 0b11
 
 //=== 
 
