@@ -12,9 +12,6 @@
 //
 //  I will decode like I'm reading it. I can optimize later once it is working
 
-//**** this is getting really messy. start thinking of this as
-// depth first search. need to reorganize the macros
-
 // * there are many layers and it is uneven. there is almost no pattern
 
 #ifndef A32_INFO_H
