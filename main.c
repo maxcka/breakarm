@@ -4,10 +4,11 @@
 #include <fcntl.h>
 #include <string.h>
 
-#include <a32_info.h>
 #include <gelf.h>
 #include <libelf.h>
 #include <capstone/capstone.h>
+
+#include "decode.h"
 
 
 
@@ -114,16 +115,20 @@ void capstoneDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr) {
 // my custom A32 disassembler implementation
 void customDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr) {
     uint64_t start_addr = text_addr;
-    uint64_t end_addr = text_addr + text_size;
-    uint32_t num_instr = text_size / A32_INSTR_SIZE;
+    uint8_t a32_instr_size = 4;
+    //uint64_t end_addr = text_addr + text_size;
+    uint32_t num_instr = text_size / a32_instr_size;
 
     uint64_t curr_addr = start_addr;
     printf("\n%s\t%s\t\t%s\n", "ADDR", "INSTR", "ASSEMBLY");
     for (uint32_t i = 0; i < num_instr; i++) {
-        // address, instruction, assembly code
-        printf("0x%lx:\t0x%08x\n", curr_addr, *((uint32_t *)text_buf + i));
+        // address, instruction
+        uint32_t instr = *((uint32_t *)text_buf + i);
+        printf("0x%lx:\t0x%08x\t", curr_addr, instr);
+        // assembly code
+        decode_instr(instr); // also prints
 
-        curr_addr += A32_INSTR_SIZE;
+        curr_addr += a32_instr_size;
     }
 }
 

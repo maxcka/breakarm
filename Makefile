@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g -I.
 LDFLAGS = -lelf -lcapstone
-SRC = main.c
+SRC = main.c decode.c
 OBJ = $(SRC:.c=.o)
 PROG = arm32_disasm
 

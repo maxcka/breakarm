@@ -28,7 +28,9 @@ when compiling using arm32-linux-gnueabi:
 - -mthumb option generates Thumb (Thumb or Thumb-2 depending on -arch option) instructions
 
 ======================
-ARM32 ISA Encoding
+ARM Core Registers
 
-|31 30 29 28|27 26 25|24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5| 4 |3 2 1 0|
-|  cond     |  op1   |                                                      |op |       |
+R0-R12 - 13 general-purpose 32-bit registers
+SP - stack pointer (R13)
+LR - link register (R14)
+PC - program ocunter (R15)
