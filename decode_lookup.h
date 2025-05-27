@@ -7,7 +7,7 @@
 static const char *core_reg[16] = {
     "R0", "R1", "R2", "R3",
     "R4", "R5", "R6", "R7",
-    "R8", "R9", "R10", "R11",
+    "R8", "R9", "SL", "R11",
     "IP", "SP", "LR", "PC"  // R12 can be called IP or R12
 };
 

@@ -11,6 +11,25 @@
 // A32 instructions are 4 bytes wide
 #define A32_INSTR_SIZE 4
 
+typedef enum {
+    R0,
+    R1,
+    R2,
+    R3,
+    R4,
+    R5,
+    R6,
+    R7,
+    R8,
+    R9,
+    SL,
+    R11,
+    IP,
+    SP,
+    LR,
+    PC
+} Register;
+
 // type enum
 typedef enum {
     LSL, // logical shift left
@@ -49,9 +68,12 @@ typedef enum {
 
 
 // decoding
-// 1. check cond
-// 2. check op1
-// 3. check op
+
+// design:
+// - check bits until we know what instruction it is
+// - process the instruction in a function
+// development:
+// - decode as if we are doing DFS
 
 //===================
 
@@ -81,7 +103,10 @@ typedef enum {
 //>> layer 4
 // instr is AND (register) instruction
 #define IS_AND_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x0) // 0b0000x
-
+//#define IS_EOR_REG(instr)
+//#define IS_SUB_REG(instr)
+//#define IS_RSB_REG(instr)
+#define IS_ADD_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x8) // 0b0100x
 //=======================
 
 
@@ -92,15 +117,19 @@ typedef enum {
 
 // need comments for fn declarations
 
+// auxiliary functions
 Shift decode_imm_shift(ShiftType type, uint8_t imm5);
-
 void get_shift_str(Shift shift, char *shift_str, int buf_sz);
 
+// instruction processing functions
 void AND_reg_instr(uint32_t instr);
+
+// main functions
+void decode_dp_reg(uint32_t instr);
 
 void decode_instr(uint32_t instr);
 
-void decode_dp_reg(uint32_t instr);
+
 
 
 #endif

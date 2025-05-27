@@ -1,3 +1,7 @@
+// Notes:
+// - noticing a pattern between AND and ADD processing.
+//   will maybe make helper functions/structs depending on how repetitive
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -52,7 +56,12 @@ void get_shift_str(Shift shift, char *shift_str, int buf_sz) {
 // === INSTRUCTIONS ===
 // ====================
 
-// AND{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
+// ----------------------------------
+// --- Data-processing (register) ---
+// ----------------------------------
+
+// process AND (register) instruction
+// syntax: AND{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
 // for A32, <q> has no effect
 void AND_reg_instr(uint32_t instr) {
     uint8_t special = 0;    // if special is 1, omit Rn
@@ -63,13 +72,13 @@ void AND_reg_instr(uint32_t instr) {
     // read A8.4.3 for pseudocode of DecodeImmShift()
 
     Cond c =  (instr >> 28) & 0xF; // c is condition
-    uint8_t Rd = (instr >> 12) & 0xF; // 0b1111
-    uint8_t Rn = (instr >> 16) & 0xF;
-    uint8_t Rm = (instr >> 0) & 0xF;
+    Register Rd = (instr >> 12) & 0xF; // 0b1111
+    Register Rn = (instr >> 16) & 0xF;
+    Register Rm = (instr >> 0) & 0xF;
     uint8_t S =  (instr >> 20) & 0x1;
 
     // special case Encoding A2: <opc2>S{<c>}{<q>} <Rd>, <Rm> {, <shift>}
-    if (S == 0x1 && Rd == 0xF) {
+    if (S == 0x1 && Rd == PC) {
         mnemonic = "MVN";
         special = 1;
     }
@@ -83,6 +92,51 @@ void AND_reg_instr(uint32_t instr) {
     
 }
 
+// process EOR (register) instruction
+
+// process SUB (register) instruction
+
+// process RSB (register) instruction
+
+// process ADD (register, ARM) instruction
+// syntax: ADD{S}{<c>}{<q>} {<Rd,} <Rn>, <Rm> {, <shift>}
+void ADD_reg_instr(uint32_t instr) {
+    uint8_t special = 0;
+    const char *mnemonic = "ADD";
+    uint8_t type = (instr >> 5) & 0x3;
+    uint8_t imm5 = (instr >> 7) & 0x1F;
+    Shift shift = decode_imm_shift(type, imm5);
+
+    Cond c =  (instr >> 28) & 0xF; // c is condition
+    Register Rd = (instr >> 12) & 0xF; // 0b1111
+    Register Rn = (instr >> 16) & 0xF;
+    Register Rm = (instr >> 0) & 0xF;
+    uint8_t S =  (instr >> 20) & 0x1;
+
+    if (S == 0x1 && Rd == PC) {
+        mnemonic = "MVN";
+        special = 1;
+    }
+
+    char shift_str[BUF_20];
+    get_shift_str(shift, shift_str, BUF_20);
+
+    printf("%s%s%s %s, %s%s %s%s\n", mnemonic, (S) ? "S" : "", 
+        cond_codes[c], core_reg[Rd], (special) ? "" : core_reg[Rn], 
+        (special) ? "" : ",", core_reg[Rm], shift_str);
+
+
+}
+
+// process ADC (register) instruction
+
+// process SBC (register) instruction
+
+// process RSC (register) instruction
+
+
+
+
 
 // ===============
 // === Decoder ===
@@ -90,6 +144,9 @@ void AND_reg_instr(uint32_t instr) {
 void decode_dp_reg(uint32_t instr) {
     if (IS_AND_REG(instr)) {
         AND_reg_instr(instr); // process AND (register) instr
+    }
+    else if (IS_ADD_REG(instr)) {
+        ADD_reg_instr(instr);
     }
     else {
         printf("%s\n", default_str);
