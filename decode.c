@@ -60,9 +60,42 @@ void get_shift_str(Shift shift, char *shift_str, int buf_sz) {
 // --- Data-processing (register) ---
 // ----------------------------------
 
+void process_data_proc_instr(uint32_t instr, Instr *instr_s) {
+
+    // maybe add these vars into decode_imm_shift() depending on how repetitive
+    uint8_t type = (instr >> 5) & 0x3;
+    uint8_t imm5 = (instr >> 7) & 0x1F;
+    instr_s->shift = decode_imm_shift(type, imm5);
+    instr_s->c =  (instr >> 28) & 0xF; // c is condition
+    instr_s->Rd = (instr >> 12) & 0xF; // 0b1111
+    instr_s->Rn = (instr >> 16) & 0xF;
+    instr_s->Rm = (instr >> 0) & 0xF;
+    instr_s->S =  (instr >> 20) & 0x1;
+
+
+    // special case Encoding A2: <opc2>S{<c>}{<q>} <Rd>, <Rm> {, <shift>}
+    if (instr_s->S == 0x1 && instr_s->Rd == PC) {
+        instr_s->special = 1;
+        instr_s->mnemonic = "MVN";
+    }
+
+    get_shift_str(instr_s->shift, instr_s->shift_str, BUF_20);
+
+    printf("%s%s%s %s, %s%s %s%s\n", instr_s->mnemonic, (instr_s->S) ? "S" : "", 
+        cond_codes[instr_s->c], core_reg[instr_s->Rd], (instr_s->special) ? "" : core_reg[instr_s->Rn], 
+        (instr_s->special) ? "" : ",", core_reg[instr_s->Rm], instr_s->shift_str);
+
+}
+
 // process AND (register) instruction
 // syntax: AND{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
 // for A32, <q> has no effect
+void AND_reg_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "AND";
+    process_data_proc_instr(instr, &instr_s);
+}
+/*
 void AND_reg_instr(uint32_t instr) {
     uint8_t special = 0;    // if special is 1, omit Rn
     const char *mnemonic = "AND";
@@ -91,15 +124,27 @@ void AND_reg_instr(uint32_t instr) {
         (special) ? "" : ",", core_reg[Rm], shift_str);
     
 }
-
+*/
 // process EOR (register) instruction
 
 // process SUB (register) instruction
+// syntax: SUB{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
+void SUB_reg_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "SUB";
+    process_data_proc_instr(instr, &instr_s);
+}
 
 // process RSB (register) instruction
 
 // process ADD (register, ARM) instruction
 // syntax: ADD{S}{<c>}{<q>} {<Rd,} <Rn>, <Rm> {, <shift>}
+void ADD_reg_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "ADD";
+    process_data_proc_instr(instr, &instr_s);
+}
+/*
 void ADD_reg_instr(uint32_t instr) {
     uint8_t special = 0;
     const char *mnemonic = "ADD";
@@ -127,7 +172,7 @@ void ADD_reg_instr(uint32_t instr) {
 
 
 }
-
+*/
 // process ADC (register) instruction
 
 // process SBC (register) instruction
@@ -144,6 +189,9 @@ void ADD_reg_instr(uint32_t instr) {
 void decode_dp_reg(uint32_t instr) {
     if (IS_AND_REG(instr)) {
         AND_reg_instr(instr); // process AND (register) instr
+    }
+    else if (IS_SUB_REG(instr)) {
+        SUB_reg_instr(instr);
     }
     else if (IS_ADD_REG(instr)) {
         ADD_reg_instr(instr);

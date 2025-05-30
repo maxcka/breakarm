@@ -63,6 +63,18 @@ typedef enum {
     AL
 } Cond;
 
+typedef struct {
+    uint8_t special;
+    const char *mnemonic;
+    Shift shift;
+    char shift_str[BUF_20];
+    Cond c;
+    Register Rd;
+    Register Rn;
+    Register Rm;
+    uint8_t S;
+} Instr;
+
 //==========================================
 //==========================================
 
@@ -104,7 +116,7 @@ typedef enum {
 // instr is AND (register) instruction
 #define IS_AND_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x0) // 0b0000x
 //#define IS_EOR_REG(instr)
-//#define IS_SUB_REG(instr)
+#define IS_SUB_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x4) // 0b0010x
 //#define IS_RSB_REG(instr)
 #define IS_ADD_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x8) // 0b0100x
 //=======================
