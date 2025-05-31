@@ -243,9 +243,32 @@ void TST_reg_instr(uint32_t instr) {
     process_data_proc_instr(instr, &instr_s);
 }
 // process TEQ (register) instruction
+void TEQ_reg_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "TEQ";
+    instr_s.i_type = TYPE_1;
+    process_data_proc_instr(instr, &instr_s);
+}
 // process CMP (register) instruction
+void CMP_reg_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "CMP";
+    instr_s.i_type = TYPE_1;
+    process_data_proc_instr(instr, &instr_s);
+}
 // process CMN (register) instruction
+void CMN_reg_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "CMN";
+    instr_s.i_type = TYPE_1;
+    process_data_proc_instr(instr, &instr_s);
+}
 // process ORR (register) instruction
+void ORR_reg_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "ORR";
+    process_data_proc_instr(instr, &instr_s);
+}
 // process MOV (register) instruction
 // process LSL (immediate) instruction
 // process LSR (immediate) instruction
@@ -290,12 +313,12 @@ void decode_dp_reg(uint32_t instr) {
     else if (IS_TST_REG(instr)) {
         TST_reg_instr(instr);
     }
-    //else if (IS_TEQ_REG(instr)) {
-    //    TEQ_reg_instr(instr);
-    //}
-    //else if (IS_CMP_REG(instr)) {
-    //    CMN_reg_instr(instr);
-    //}
+    else if (IS_TEQ_REG(instr)) {
+        TEQ_reg_instr(instr);
+    }
+    else if (IS_CMP_REG(instr)) {
+        CMN_reg_instr(instr);
+    }
     else {
         printf("%s\n", default_str);
     }
