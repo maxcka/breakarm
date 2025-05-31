@@ -112,44 +112,8 @@ typedef struct {
 
 //--> mask bits 27-25
 
-//>> layer 1
-// Data-processing (register) & miscellaneous instructions
-#define IS_DP_OP_0(instr)       ( ( ((instr) >> 25) & 0x7) == 0x0 ) // 0b000
-//>> layer 2
-// instruction is data-processing (register) or data-processing(register-shifted register)
-#define IS_DP_REG_OR_RSR(instr) ( ( ((instr) >> 20) & 0x19) != 0xF ) // not 0b10xx0
-//>> layer 3
-//=== instr is data-processing (register) ===
-#define IS_DP_REG(instr)        ( ( ((instr) >> 4) & 0x1) == 0x0) // 0bxxx0
-//>> layer 4
-// instr is AND (register) instruction
-#define IS_AND_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x0) // 0b0000x
-#define IS_EOR_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x2) // 0b0001x
-#define IS_SUB_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x4) // 0b0010x
-#define IS_RSB_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x6) // 0b0011x
-#define IS_ADD_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x8) // 0b0100x
-#define IS_ADC_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0xA) // 0b0101x
-#define IS_SBC_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0xC) // 0b0110x
-#define IS_RSC_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0xE) // 0b0111x
-// 0b10xx0
-#define IS_TST_REG(instr)       ( ( ((instr) >> 20) & 0x1F) == 0x11) // 0b10001
-#define IS_TEQ_REG(instr)       ( ( ((instr) >> 20) & 0x1F) == 0x13) // 0b10011
-#define IS_CMP_REG(instr)       ( ( ((instr) >> 20) & 0x1F) == 0x15) // 0b10101
-#define IS_CMN_REG(instr)       ( ( ((instr) >> 20) & 0x1F) == 0x17) // 0b10111
-#define IS_ORR_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x18) // 0b1100x
-//--- move (reg), shift (imm), and rotate (imm) instructions ---
-#define IS_MV_OR_SHFT(instr)    ( ( ((instr) >> 20) & 0x1E) == 0x1A) // 0b1101x
-#define IS_MOV_REG(instr)       ( ( ( ((instr) >> 5) & 0x3) == 0x0) && ( ( ((instr) >> 7) & 0x1F) == 0x0) ) // 0b00 & 0b00000
-#define IS_LSL_IMM(instr)       ( ( ( ((instr) >> 5) & 0x3) == 0x0) && ( ( ((instr) >> 7) & 0x1F) != 0x0) ) // 0b00 & not 0b00000
-#define IS_LSR_IMM(instr)       ( ( ((instr) >> 5) & 0x3) == 0x1) // 0b01
-#define IS_ASR_IMM(instr)       ( ( ((instr) >> 5) & 0x3) == 0x2) // 0b10
-#define IS_RRX(instr)           ( ( ( ((instr) >> 5) & 0x3) == 0x3) && ( ( ((instr) >> 7) & 0x1F) == 0x0) ) // 0b11 & 0b00000
-#define IS_ROR_IMM(instr)       ( ( ( ((instr) >> 5) & 0x3) == 0x3) && ( ( ((instr) >> 7) & 0x1F) != 0x0) ) // 0b11 & not 0b00000
-//---------------------------------------------------------------
-#define IS_BIC_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x1C) // 0b1110x
-#define IS_MVN_REG(instr)       ( ( ((instr) >> 20) & 0x1E) == 0x1E) // 0b1111x
 //============================================
-
+// MAYBE BETTER IDEA IS TO USE INLINE FUNCTIONS INSTEAD OF MACROS. THEN HAVE A LOOKUP TABLE MATCHING EACH FUNCTION TO THE PROCESSING FUNCTION
 //=======================
 
 
@@ -163,9 +127,24 @@ typedef struct {
 // auxiliary functions
 Shift decode_imm_shift(ShiftType type, uint8_t imm5);
 void get_shift_str(Shift shift, char *shift_str, int buf_sz);
+void print_asm_instr(Instr *instr_s);
 
 // instruction processing functions
-void AND_reg_instr(uint32_t instr);
+//> data-processing (register)
+int process_data_proc_instr(uint32_t instr, Instr *instr_s);
+int AND_reg_instr(uint32_t instr);
+int EOR_reg_instr(uint32_t instr);
+int SUB_reg_instr(uint32_t instr);
+int RSB_reg_instr(uint32_t instr);
+int ADD_reg_instr(uint32_t instr);
+int ADC_reg_instr(uint32_t instr);
+int SBC_reg_instr(uint32_t instr);
+int RSC_reg_instr(uint32_t instr);
+int TST_reg_instr(uint32_t instr);
+int TEQ_reg_instr(uint32_t instr);
+int CMP_reg_instr(uint32_t instr);
+int CMN_reg_instr(uint32_t instr);
+int ORR_reg_instr(uint32_t instr);
 
 // main functions
 void decode_dp_reg(uint32_t instr);
