@@ -8,7 +8,7 @@
 static const char *core_reg[16] = {
     "R0", "R1", "R2", "R3",
     "R4", "R5", "R6", "R7",
-    "R8", "R9", "SL", "R11",
+    "R8", "R9", "SL", "FP",
     "IP", "SP", "LR", "PC"  // R12 can be called IP or R12
 };
 
@@ -71,7 +71,6 @@ static const char *cond_codes[16] = {
 //=== instr is data-processing (register) ===
 #define IS_DP_REG(instr)        ( ( ((instr) >> 4) & 0x1) == 0x0) // 0bxxx0
 //>> layer 4
-// instr is AND (register) instruction
 static inline int is_AND_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x0); } // 0b0000x
 static inline int is_EOR_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x2); } // 0b0001x
 static inline int is_SUB_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x4); } // 0b0010x
@@ -97,8 +96,17 @@ static inline int is_ROR_imm(uint32_t instr)      { return ( ( ( ((instr) >> 5) 
 //---------------------------------------------------------------
 static inline int is_BIC_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x1C); } // 0b1110x
 static inline int is_MVN_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x1E); } // 0b1111x
+//================================
+//=== instr is data-processing (register-shifted register) ===
+#define IS_DP_RSR(instr)        ( ( ((instr) >> 4) & 0x9) == 0x1) // 0b0xx1
+//>> layer 4
+static inline int is_AND_rsr(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x0); } // 0b0000x
 
 //================================
+
+// start indices in the proc_instr_table 
+#define DP_REG_START 0
+#define DP_RSR_START 21
 
 // lookup table for processing instructions
 static int (*proc_instr_table[][2])(uint32_t) = {
@@ -123,6 +131,16 @@ static int (*proc_instr_table[][2])(uint32_t) = {
     { is_ROR_imm, ROR_imm_instr },
     { is_BIC_reg, BIC_reg_instr },
     { is_MVN_reg, MVN_reg_instr },
+
+    { is_AND_reg, AND_reg_instr },
+    { is_EOR_reg, EOR_reg_instr },
+    { is_SUB_reg, SUB_reg_instr },
+    { is_RSB_reg, RSB_reg_instr },
+    { is_ADD_reg, ADD_reg_instr },
+    { is_ADC_reg, ADC_reg_instr },
+    { is_SBC_reg, SBC_reg_instr },
+    { is_RSC_reg, RSC_reg_instr }
+
 };
 
 

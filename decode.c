@@ -65,6 +65,19 @@ void print_asm_instr(Instr *instr_s) {
 
             break;
         
+        case TYPE_0_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
+            printf("%s%s%s %s, %s, %s, %s %s\n", 
+            instr_s->mnemonic, 
+            (instr_s->S) ? "S" : "", 
+            cond_codes[instr_s->c], 
+            core_reg[instr_s->Rd], 
+            core_reg[instr_s->Rn], 
+            core_reg[instr_s->Rm], 
+            shift_codes[instr_s->shift.shift_t],
+            core_reg[instr_s->Rs]);
+
+            break;
+        
         case TYPE_1: // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
             printf("%s%s %s, %s%s\n", 
             instr_s->mnemonic, 
@@ -129,10 +142,13 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
     instr_s->Rn = (instr >> 16) & 0xF;
     instr_s->Rm = (instr >> 0) & 0xF;
     instr_s->S =  (instr >> 20) & 0x1;
+    // Rs used for register-shifted register instructions
+    instr_s->Rs = (instr >> 8) & 0xF;
 
 
     // special case Encoding A2: <opc2>S{<c>}{<q>} <Rd>, <Rm> {, <shift>}
-    if (instr_s->i_type != TYPE_1 && instr_s->S == 0x1 && instr_s->Rd == PC) {
+    if ((instr_s->i_type == TYPE_0 || instr_s->i_type == TYPE_2 || instr_s->i_type == TYPE_3) 
+        && instr_s->S == 0x1 && instr_s->Rd == PC) {
         //instr_s->special = 1;
         instr_s->i_type = TYPE_S;
         instr_s->mnemonic = "MVN";
@@ -152,43 +168,31 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
 int AND_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "AND";
-    return process_data_proc_instr(instr, &instr_s); // return dummy value because functions need to have same return type to be stored in the same fn ptr array
-}
-/*
-void AND_reg_instr(uint32_t instr) {
-    uint8_t special = 0;    // if special is 1, omit Rn
-    const char *mnemonic = "AND";
-    uint8_t type = (instr >> 5) & 0x3;
-    uint8_t imm5 = (instr >> 7) & 0x1F;
-    Shift shift = decode_imm_shift(type, imm5);
-    // read A8.4.3 for pseudocode of DecodeImmShift()
-
-    Cond c =  (instr >> 28) & 0xF; // c is condition
-    Register Rd = (instr >> 12) & 0xF; // 0b1111
-    Register Rn = (instr >> 16) & 0xF;
-    Register Rm = (instr >> 0) & 0xF;
-    uint8_t S =  (instr >> 20) & 0x1;
-
-    // special case Encoding A2: <opc2>S{<c>}{<q>} <Rd>, <Rm> {, <shift>}
-    if (S == 0x1 && Rd == PC) {
-        mnemonic = "MVN";
-        special = 1;
+    // this is kind of redundant but I think it's better than creating multiple functions for AND
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_0;
+    }
+    else if (IS_DP_RSR(instr)) {
+        instr_s.i_type = TYPE_0_RSR; // syntax: AND{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
     }
 
-    char shift_str[BUF_20];
-    get_shift_str(shift, shift_str, BUF_20);
 
-    printf("%s%s%s %s, %s%s %s%s\n", mnemonic, (S) ? "S" : "", 
-        cond_codes[c], core_reg[Rd], (special) ? "" : core_reg[Rn], 
-        (special) ? "" : ",", core_reg[Rm], shift_str);
-    
+    return process_data_proc_instr(instr, &instr_s); // return dummy value because functions need to have same return type to be stored in the same fn ptr array
 }
-*/
+
 // process EOR (register) instruction
 // syntax: EOR{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
 int EOR_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "EOR";
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_0;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_0_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 
@@ -197,6 +201,14 @@ int EOR_reg_instr(uint32_t instr) {
 int SUB_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "SUB";
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_0;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_0_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 
@@ -205,6 +217,14 @@ int SUB_reg_instr(uint32_t instr) {
 int RSB_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "RSB";
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_0;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_0_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 
@@ -213,6 +233,14 @@ int RSB_reg_instr(uint32_t instr) {
 int ADD_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "ADD";
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_0;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_0_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 
@@ -221,6 +249,14 @@ int ADD_reg_instr(uint32_t instr) {
 int ADC_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "ADC";
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_0;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_0_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 
@@ -229,6 +265,14 @@ int ADC_reg_instr(uint32_t instr) {
 int SBC_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "SBC";
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_0;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_0_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 
@@ -237,6 +281,14 @@ int SBC_reg_instr(uint32_t instr) {
 int RSC_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "RSC";
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_0;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_0_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 
@@ -343,9 +395,9 @@ int MVN_reg_instr(uint32_t instr) {
 // ===============
 // === Decoder ===
 // ===============
-void decode_dp_reg(uint32_t instr) {
+void decode_dp_reg(uint32_t instr, int start_idx) {
     int num_rows = sizeof(proc_instr_table) / sizeof(proc_instr_table[0]);
-    for (int i = 0; i < num_rows; i++) {
+    for (int i = start_idx; i < num_rows; i++) {
         if (proc_instr_table[i][0](instr)) { // if this instruction matches the current A32 instruction
             proc_instr_table[i][1](instr); // process the instruction
             return;
@@ -357,10 +409,16 @@ void decode_dp_reg(uint32_t instr) {
 void decode_instr(uint32_t instr) {
     
     if (IS_DP_OP_0(instr)) {
-        if (IS_DP_REG_OR_RSR(instr)) {
-            if (IS_DP_REG(instr)) {
-                decode_dp_reg(instr);
+        if (IS_DP_REG_OR_RSR(instr)) { // trying to handle same instruction but different type (reg vs rsr vs imm)
+            if (IS_DP_REG(instr)) { // going to change the structure of this. I'd like to reuse the code
+                decode_dp_reg(instr, DP_REG_START);
             }
+            else if (IS_DP_RSR(instr)) {
+                decode_dp_reg(instr, DP_RSR_START);
+            }
+            //if (IS_DP_REG(instr) || IS_DP_RSR(instr)) {
+            //    decode_dp_reg(instr, DP_REG_START);
+            //}
             else {
                 printf("%s\n", default_str);
             }

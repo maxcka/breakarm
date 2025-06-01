@@ -65,6 +65,7 @@ typedef enum {
 
 typedef enum {
     TYPE_0, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
+    TYPE_0_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
     TYPE_1, // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
     TYPE_2, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
     TYPE_3, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
@@ -81,6 +82,7 @@ typedef struct {
     Register Rd;
     Register Rn;
     Register Rm;
+    Register Rs; //^ this overlaps with imm5 (make union??) (used in RSR instructions)
     uint8_t S;
 } Instr;
 
@@ -158,7 +160,7 @@ int BIC_reg_instr(uint32_t instr);
 int MVN_reg_instr(uint32_t instr);
 
 // main functions
-void decode_dp_reg(uint32_t instr);
+void decode_dp_reg(uint32_t instr, int start_idx);
 
 void decode_instr(uint32_t instr);
 
