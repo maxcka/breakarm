@@ -114,7 +114,15 @@ static int (*proc_instr_table[][2])(uint32_t) = {
     { is_TEQ_reg, TEQ_reg_instr },
     { is_CMP_reg, CMP_reg_instr },
     { is_CMN_reg, CMN_reg_instr },
-    { is_ORR_reg, ORR_reg_instr }
+    { is_ORR_reg, ORR_reg_instr },
+    { is_MOV_reg, MOV_reg_instr },
+    { is_LSL_imm, LSL_imm_instr },
+    { is_LSR_imm, LSR_imm_instr },
+    { is_ASR_imm, ASR_imm_instr },
+    { is_RRX    , RRX_instr     },
+    { is_ROR_imm, ROR_imm_instr },
+    { is_BIC_reg, BIC_reg_instr },
+    { is_MVN_reg, MVN_reg_instr },
 };
 
 

@@ -53,25 +53,56 @@ void get_shift_str(Shift shift, char *shift_str, int buf_sz) {
 
 void print_asm_instr(Instr *instr_s) {
     switch (instr_s->i_type) {
-        case TYPE_0: // syntax: MNEMONIC{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
-            printf("%s%s%s %s, %s%s %s%s\n", 
+        case TYPE_0: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
+            printf("%s%s%s %s, %s, %s%s\n", 
             instr_s->mnemonic, 
             (instr_s->S) ? "S" : "", 
             cond_codes[instr_s->c], 
             core_reg[instr_s->Rd], 
-            (instr_s->special) ? "" : core_reg[instr_s->Rn], 
-            (instr_s->special) ? "" : ",", 
+            core_reg[instr_s->Rn], 
             core_reg[instr_s->Rm], 
             instr_s->shift_str);
 
             break;
         
-        case TYPE_1: // syntax: MNEMONIC<c> <Rn>, <Rm>{, <shift>}
+        case TYPE_1: // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
             printf("%s%s %s, %s%s\n", 
             instr_s->mnemonic, 
             cond_codes[instr_s->c], 
             core_reg[instr_s->Rn], 
             core_reg[instr_s->Rm], 
+            instr_s->shift_str);
+
+            break;
+
+        case TYPE_2: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
+            printf("%s%s%s %s, %s\n", 
+            instr_s->mnemonic,
+            (instr_s->S) ? "S" : "",
+            cond_codes[instr_s->c], 
+            core_reg[instr_s->Rd], 
+            core_reg[instr_s->Rm]);
+
+            break;
+
+        case TYPE_3: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
+            printf("%s%s%s %s, %s, #%d\n", 
+            instr_s->mnemonic,
+            (instr_s->S) ? "S" : "",
+            cond_codes[instr_s->c], 
+            core_reg[instr_s->Rd], 
+            core_reg[instr_s->Rm],
+            instr_s->shift.shift_n);
+
+            break;
+
+        case TYPE_S: // syntax: <MNEMONIC>S{<c>} <Rd>, <Rm>{, <shift>}
+            printf("%s%s%s %s, %s%s\n", 
+            instr_s->mnemonic,
+            (instr_s->S) ? "S" : "",
+            cond_codes[instr_s->c], 
+            core_reg[instr_s->Rd], 
+            core_reg[instr_s->Rm],
             instr_s->shift_str);
 
             break;
@@ -101,8 +132,9 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
 
 
     // special case Encoding A2: <opc2>S{<c>}{<q>} <Rd>, <Rm> {, <shift>}
-    if (instr_s->i_type == TYPE_0 && instr_s->S == 0x1 && instr_s->Rd == PC) {
-        instr_s->special = 1;
+    if (instr_s->i_type != TYPE_1 && instr_s->S == 0x1 && instr_s->Rd == PC) {
+        //instr_s->special = 1;
+        instr_s->i_type = TYPE_S;
         instr_s->mnemonic = "MVN";
     }
 
@@ -209,6 +241,7 @@ int RSC_reg_instr(uint32_t instr) {
 }
 
 // process TST (register) instruction
+// syntax: TST<c> <Rn>, <Rm>{, <shift>}
 int TST_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "TST";
@@ -243,13 +276,66 @@ int ORR_reg_instr(uint32_t instr) {
     return process_data_proc_instr(instr, &instr_s);
 }
 // process MOV (register) instruction
+// syntax: MOV{S}<c> <Rd>, <Rm>
+int MOV_reg_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "MOV";
+    instr_s.i_type = TYPE_2;
+    return process_data_proc_instr(instr, &instr_s);
+}
 // process LSL (immediate) instruction
+// syntax: LSL{S}<c> <Rd>, <Rm>, #<imm5>
+int LSL_imm_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "LSL";
+    instr_s.i_type = TYPE_3;
+    return process_data_proc_instr(instr, &instr_s);
+}
 // process LSR (immediate) instruction
+int LSR_imm_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "LSR";
+    instr_s.i_type = TYPE_3;
+    return process_data_proc_instr(instr, &instr_s);
+}
 // process ASR (immediate) instruction
+int ASR_imm_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "ASR";
+    instr_s.i_type = TYPE_3;
+    return process_data_proc_instr(instr, &instr_s);
+}
 // process RRX instruction
+// syntax: RRX{S}<c> <Rd>, <Rm>
+int RRX_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "RRX";
+    instr_s.i_type = TYPE_2;
+    return process_data_proc_instr(instr, &instr_s);
+}
 // process ROR (immediate) instruction
+// syntax: ROR{S}<c> <Rd>, <Rm>, #<imm>
+int ROR_imm_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "ROR";
+    instr_s.i_type = TYPE_3;
+    return process_data_proc_instr(instr, &instr_s);
+}
 // process BIC (register) instruction
+// syntax: BIC{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
+int BIC_reg_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "BIC";
+    return process_data_proc_instr(instr, &instr_s);
+}
 // process MVN (register) instruction
+// syntax: MVN{S}<c> <Rd>, <Rm>{, <shift>}
+int MVN_reg_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "MVN";
+    instr_s.i_type = TYPE_S;
+    return process_data_proc_instr(instr, &instr_s);
+}
 
 
 // if arr[0][0](instr) then arr[0][1](instr)

@@ -64,8 +64,11 @@ typedef enum {
 } Cond;
 
 typedef enum {
-    TYPE_0, // syntax: MNEMONIC{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
-    TYPE_1, // syntax: MNEMONIC<c> <Rn>, <Rm>{, <shift>}
+    TYPE_0, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
+    TYPE_1, // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
+    TYPE_2, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
+    TYPE_3, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
+    TYPE_S  // syntax: <MNEMONIC>{S}{<c>} <Rd>, <Rm> {, <shift>}
 } Instr_type;
 
 typedef struct {
@@ -145,6 +148,14 @@ int TEQ_reg_instr(uint32_t instr);
 int CMP_reg_instr(uint32_t instr);
 int CMN_reg_instr(uint32_t instr);
 int ORR_reg_instr(uint32_t instr);
+int MOV_reg_instr(uint32_t instr);
+int LSL_imm_instr(uint32_t instr);
+int LSR_imm_instr(uint32_t instr);
+int ASR_imm_instr(uint32_t instr);
+int RRX_instr(uint32_t instr);
+int ROR_imm_instr(uint32_t instr);
+int BIC_reg_instr(uint32_t instr);
+int MVN_reg_instr(uint32_t instr);
 
 // main functions
 void decode_dp_reg(uint32_t instr);
