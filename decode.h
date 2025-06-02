@@ -144,30 +144,30 @@ void print_asm_instr(Instr *instr_s);
 // instruction processing functions
 //> data-processing (register)
 int process_data_proc_instr(uint32_t instr, Instr *instr_s);
-int AND_reg_instr(uint32_t instr);
-int EOR_reg_instr(uint32_t instr);
-int SUB_reg_instr(uint32_t instr);
-int RSB_reg_instr(uint32_t instr);
-int ADD_reg_instr(uint32_t instr);
-int ADC_reg_instr(uint32_t instr);
-int SBC_reg_instr(uint32_t instr);
-int RSC_reg_instr(uint32_t instr);
-int TST_reg_instr(uint32_t instr);
-int TEQ_reg_instr(uint32_t instr);
-int CMP_reg_instr(uint32_t instr);
-int CMN_reg_instr(uint32_t instr);
-int ORR_reg_instr(uint32_t instr);
+int AND_instr(uint32_t instr);
+int EOR_instr(uint32_t instr);
+int SUB_instr(uint32_t instr);
+int RSB_instr(uint32_t instr);
+int ADD_instr(uint32_t instr);
+int ADC_instr(uint32_t instr);
+int SBC_instr(uint32_t instr);
+int RSC_instr(uint32_t instr);
+int TST_instr(uint32_t instr);
+int TEQ_instr(uint32_t instr);
+int CMP_instr(uint32_t instr);
+int CMN_instr(uint32_t instr);
+int ORR_instr(uint32_t instr);
 int MOV_reg_instr(uint32_t instr);
-int LSL_imm_instr(uint32_t instr);
-int LSR_imm_instr(uint32_t instr);
-int ASR_imm_instr(uint32_t instr);
+int LSL_instr(uint32_t instr);
+int LSR_instr(uint32_t instr);
+int ASR_instr(uint32_t instr);
 int RRX_instr(uint32_t instr);
-int ROR_imm_instr(uint32_t instr);
-int BIC_reg_instr(uint32_t instr);
-int MVN_reg_instr(uint32_t instr);
+int ROR_instr(uint32_t instr);
+int BIC_instr(uint32_t instr);
+int MVN_instr(uint32_t instr);
 
 // main functions
-void decode_dp_reg(uint32_t instr, int start_idx, int end_idx);
+void find_and_decode(uint32_t instr, int start_idx, int end_idx);
 
 void decode_instr(uint32_t instr);
 

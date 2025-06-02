@@ -71,20 +71,20 @@ static const char *cond_codes[16] = {
 //=== instr is data-processing (register) ===
 #define IS_DP_REG(instr)        ( ( ((instr) >> 4) & 0x1) == 0x0) // 0bxxx0
 //>> layer 4
-static inline int is_AND_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x0); } // 0b0000x
-static inline int is_EOR_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x2); } // 0b0001x
-static inline int is_SUB_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x4); } // 0b0010x
-static inline int is_RSB_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x6); } // 0b0011x
-static inline int is_ADD_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x8); } // 0b0100x
-static inline int is_ADC_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0xA); } // 0b0101x
-static inline int is_SBC_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0xC); } // 0b0110x
-static inline int is_RSC_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0xE); } // 0b0111x
+static inline int is_AND(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x0); } // 0b0000x
+static inline int is_EOR(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x2); } // 0b0001x
+static inline int is_SUB(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x4); } // 0b0010x
+static inline int is_RSB(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x6); } // 0b0011x
+static inline int is_ADD(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x8); } // 0b0100x
+static inline int is_ADC(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0xA); } // 0b0101x
+static inline int is_SBC(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0xC); } // 0b0110x
+static inline int is_RSC(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0xE); } // 0b0111x
 // 0b10xx0
-static inline int is_TST_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1F) == 0x11); } // 0b10001
-static inline int is_TEQ_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1F) == 0x13); } // 0b10011
-static inline int is_CMP_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1F) == 0x15); } // 0b10101
-static inline int is_CMN_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1F) == 0x17); } // 0b10111
-static inline int is_ORR_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x18); } // 0b1100x
+static inline int is_TST(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1F) == 0x11); } // 0b10001
+static inline int is_TEQ(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1F) == 0x13); } // 0b10011
+static inline int is_CMP(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1F) == 0x15); } // 0b10101
+static inline int is_CMN(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1F) == 0x17); } // 0b10111
+static inline int is_ORR(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x18); } // 0b1100x
 //--- move (reg), shift (imm), and rotate (imm) instructions ---
 #define IS_MV_OR_SHFT(instr)    ( ( ((instr) >> 20) & 0x1E) == 0x1A) // 0b1101x
 static inline int is_MOV_reg(uint32_t instr)      { return ( ( ( ((instr) >> 5) & 0x3) == 0x0) && ( ( ((instr) >> 7) & 0x1F) == 0x0) ); } // 0b00 & 0b00000
@@ -94,8 +94,8 @@ static inline int is_ASR_imm(uint32_t instr)      { return ( ( ((instr) >> 5) & 
 static inline int is_RRX(uint32_t instr)          { return ( ( ( ((instr) >> 5) & 0x3) == 0x3) && ( ( ((instr) >> 7) & 0x1F) == 0x0) ); } // 0b11 & 0b00000
 static inline int is_ROR_imm(uint32_t instr)      { return ( ( ( ((instr) >> 5) & 0x3) == 0x3) && ( ( ((instr) >> 7) & 0x1F) != 0x0) ); } // 0b11 & not 0b00000
 //---------------------------------------------------------------
-static inline int is_BIC_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x1C); } // 0b1110x
-static inline int is_MVN_reg(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x1E); } // 0b1111x
+static inline int is_BIC(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x1C); } // 0b1110x
+static inline int is_MVN(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x1E); } // 0b1111x
 //================================
 //=== instr is data-processing (register-shifted register) ===
 #define IS_DP_RSR(instr)        ( ( ((instr) >> 4) & 0x9) == 0x1) // 0b0xx1
@@ -114,47 +114,47 @@ static inline int is_ROR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 
 // lookup table for processing instructions
 static int (*proc_instr_table[][2])(uint32_t) = {
     // data-processing reg
-    { is_AND_reg, AND_reg_instr },
-    { is_EOR_reg, EOR_reg_instr },
-    { is_SUB_reg, SUB_reg_instr },
-    { is_RSB_reg, RSB_reg_instr },
-    { is_ADD_reg, ADD_reg_instr },
-    { is_ADC_reg, ADC_reg_instr },
-    { is_SBC_reg, SBC_reg_instr },
-    { is_RSC_reg, RSC_reg_instr },
-    { is_TST_reg, TST_reg_instr },
-    { is_TEQ_reg, TEQ_reg_instr },
-    { is_CMP_reg, CMP_reg_instr },
-    { is_CMN_reg, CMN_reg_instr },
-    { is_ORR_reg, ORR_reg_instr },
+    { is_AND    , AND_instr },
+    { is_EOR    , EOR_instr },
+    { is_SUB    , SUB_instr },
+    { is_RSB    , RSB_instr },
+    { is_ADD    , ADD_instr },
+    { is_ADC    , ADC_instr },
+    { is_SBC    , SBC_instr },
+    { is_RSC    , RSC_instr },
+    { is_TST    , TST_instr },
+    { is_TEQ    , TEQ_instr },
+    { is_CMP    , CMP_instr },
+    { is_CMN    , CMN_instr },
+    { is_ORR    , ORR_instr },
     { is_MOV_reg, MOV_reg_instr },
-    { is_LSL_imm, LSL_imm_instr },
-    { is_LSR_imm, LSR_imm_instr },
-    { is_ASR_imm, ASR_imm_instr },
+    { is_LSL_imm, LSL_instr },
+    { is_LSR_imm, LSR_instr },
+    { is_ASR_imm, ASR_instr },
     { is_RRX    , RRX_instr     },
-    { is_ROR_imm, ROR_imm_instr },
-    { is_BIC_reg, BIC_reg_instr },
-    { is_MVN_reg, MVN_reg_instr },
+    { is_ROR_imm, ROR_instr },
+    { is_BIC    , BIC_instr },
+    { is_MVN    , MVN_instr },
     // data-processing rsr
-    { is_AND_reg, AND_reg_instr },
-    { is_EOR_reg, EOR_reg_instr },
-    { is_SUB_reg, SUB_reg_instr },
-    { is_RSB_reg, RSB_reg_instr },
-    { is_ADD_reg, ADD_reg_instr },
-    { is_ADC_reg, ADC_reg_instr },
-    { is_SBC_reg, SBC_reg_instr },
-    { is_RSC_reg, RSC_reg_instr },
-    { is_TST_reg, TST_reg_instr },
-    { is_TEQ_reg, TEQ_reg_instr },
-    { is_CMP_reg, CMP_reg_instr },
-    { is_CMN_reg, CMN_reg_instr },
-    { is_ORR_reg, ORR_reg_instr },
-    { is_LSL_reg, LSL_imm_instr },
-    { is_LSR_reg, LSR_imm_instr },
-    { is_ASR_reg, ASR_imm_instr },
-    { is_ROR_reg, ROR_imm_instr },
-    { is_BIC_reg, BIC_reg_instr },
-    { is_MVN_reg, MVN_reg_instr },
+    { is_AND    , AND_instr },
+    { is_EOR    , EOR_instr },
+    { is_SUB    , SUB_instr },
+    { is_RSB    , RSB_instr },
+    { is_ADD    , ADD_instr },
+    { is_ADC    , ADC_instr },
+    { is_SBC    , SBC_instr },
+    { is_RSC    , RSC_instr },
+    { is_TST    , TST_instr },
+    { is_TEQ    , TEQ_instr },
+    { is_CMP    , CMP_instr },
+    { is_CMN    , CMN_instr },
+    { is_ORR    , ORR_instr },
+    { is_LSL_reg, LSL_instr },
+    { is_LSR_reg, LSR_instr },
+    { is_ASR_reg, ASR_instr },
+    { is_ROR_reg, ROR_instr },
+    { is_BIC    , BIC_instr },
+    { is_MVN    , MVN_instr },
 
 };
 

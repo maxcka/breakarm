@@ -190,7 +190,7 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
 // process AND (register) instruction
 // syntax: AND{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
 // for A32, <q> has no effect
-int AND_reg_instr(uint32_t instr) {
+int AND_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "AND";
     // this is kind of redundant but I think it's better than creating multiple functions for AND
@@ -207,7 +207,7 @@ int AND_reg_instr(uint32_t instr) {
 
 // process EOR (register) instruction
 // syntax: EOR{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
-int EOR_reg_instr(uint32_t instr) {
+int EOR_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "EOR";
 
@@ -223,7 +223,7 @@ int EOR_reg_instr(uint32_t instr) {
 
 // process SUB (register) instruction
 // syntax: SUB{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
-int SUB_reg_instr(uint32_t instr) {
+int SUB_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "SUB";
 
@@ -239,7 +239,7 @@ int SUB_reg_instr(uint32_t instr) {
 
 // process RSB (register) instruction
 // syntax: RSB{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
-int RSB_reg_instr(uint32_t instr) {
+int RSB_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "RSB";
 
@@ -255,7 +255,7 @@ int RSB_reg_instr(uint32_t instr) {
 
 // process ADD (register, ARM) instruction
 // syntax: ADD{S}{<c>}{<q>} {<Rd,} <Rn>, <Rm> {, <shift>}
-int ADD_reg_instr(uint32_t instr) {
+int ADD_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "ADD";
 
@@ -271,7 +271,7 @@ int ADD_reg_instr(uint32_t instr) {
 
 // process ADC (register) instruction
 // syntax: ADC{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
-int ADC_reg_instr(uint32_t instr) {
+int ADC_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "ADC";
 
@@ -287,7 +287,7 @@ int ADC_reg_instr(uint32_t instr) {
 
 // process SBC (register) instruction
 // syntax: SBC{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
-int SBC_reg_instr(uint32_t instr) {
+int SBC_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "SBC";
 
@@ -303,7 +303,7 @@ int SBC_reg_instr(uint32_t instr) {
 
 // process RSC (register) instruction
 // syntax: RSC{S}{<c>}{<q>} {<Rd>,} <Rn>, <Rm> {, <shift>}
-int RSC_reg_instr(uint32_t instr) {
+int RSC_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "RSC";
 
@@ -319,7 +319,7 @@ int RSC_reg_instr(uint32_t instr) {
 
 // process TST (register) instruction
 // syntax: TST<c> <Rn>, <Rm>{, <shift>}
-int TST_reg_instr(uint32_t instr) {
+int TST_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "TST";
     
@@ -333,7 +333,7 @@ int TST_reg_instr(uint32_t instr) {
     return process_data_proc_instr(instr, &instr_s);
 }
 // process TEQ (register) instruction
-int TEQ_reg_instr(uint32_t instr) {
+int TEQ_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "TEQ";
 
@@ -347,7 +347,7 @@ int TEQ_reg_instr(uint32_t instr) {
     return process_data_proc_instr(instr, &instr_s);
 }
 // process CMP (register) instruction
-int CMP_reg_instr(uint32_t instr) {
+int CMP_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "CMP";
     
@@ -361,7 +361,7 @@ int CMP_reg_instr(uint32_t instr) {
     return process_data_proc_instr(instr, &instr_s);
 }
 // process CMN (register) instruction
-int CMN_reg_instr(uint32_t instr) {
+int CMN_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "CMN";
     
@@ -375,7 +375,7 @@ int CMN_reg_instr(uint32_t instr) {
     return process_data_proc_instr(instr, &instr_s);
 }
 // process ORR (register) instruction
-int ORR_reg_instr(uint32_t instr) {
+int ORR_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "ORR";
 
@@ -398,14 +398,21 @@ int MOV_reg_instr(uint32_t instr) {
 }
 // process LSL (immediate) instruction
 // syntax: LSL{S}<c> <Rd>, <Rm>, #<imm5>
-int LSL_imm_instr(uint32_t instr) {
+int LSL_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "LSL";
-    instr_s.i_type = TYPE_3;
+    
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_3;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_3_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 // process LSR (immediate) instruction
-int LSR_imm_instr(uint32_t instr) {
+int LSR_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "LSR";
 
@@ -419,7 +426,7 @@ int LSR_imm_instr(uint32_t instr) {
     return process_data_proc_instr(instr, &instr_s);
 }
 // process ASR (immediate) instruction
-int ASR_imm_instr(uint32_t instr) {
+int ASR_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "ASR";
     
@@ -442,7 +449,7 @@ int RRX_instr(uint32_t instr) {
 }
 // process ROR (immediate) instruction
 // syntax: ROR{S}<c> <Rd>, <Rm>, #<imm>
-int ROR_imm_instr(uint32_t instr) {
+int ROR_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "ROR";
     
@@ -457,7 +464,7 @@ int ROR_imm_instr(uint32_t instr) {
 }
 // process BIC (register) instruction
 // syntax: BIC{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
-int BIC_reg_instr(uint32_t instr) {
+int BIC_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "BIC";
 
@@ -472,7 +479,7 @@ int BIC_reg_instr(uint32_t instr) {
 }
 // process MVN (register) instruction
 // syntax: MVN{S}<c> <Rd>, <Rm>{, <shift>}
-int MVN_reg_instr(uint32_t instr) {
+int MVN_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "MVN";
 
@@ -492,7 +499,7 @@ int MVN_reg_instr(uint32_t instr) {
 // ===============
 // === Decoder ===
 // ===============
-void decode_dp_reg(uint32_t instr, int start_idx, int end_idx) {
+void find_and_decode(uint32_t instr, int start_idx, int end_idx) {
     //int num_rows = sizeof(proc_instr_table) / sizeof(proc_instr_table[0]);
     for (int i = start_idx; i < end_idx; i++) {
         if (proc_instr_table[i][0](instr)) { // if this instruction matches the current A32 instruction
@@ -508,10 +515,10 @@ void decode_instr(uint32_t instr) {
     if (IS_DP_OP_0(instr)) {
         if (IS_DP_REG_OR_RSR(instr)) { // trying to handle same instruction but different type (reg vs rsr vs imm)
             if (IS_DP_REG(instr)) { // going to change the structure of this. I'd like to reuse the code
-                decode_dp_reg(instr, DP_REG_START, DP_RSR_START);
+                find_and_decode(instr, DP_REG_START, DP_RSR_START);
             }
             else if (IS_DP_RSR(instr)) {
-                decode_dp_reg(instr, DP_RSR_START, 40);
+                find_and_decode(instr, DP_RSR_START, 40);
             }
             else {
                 printf("%s\n", default_str);
