@@ -62,7 +62,6 @@ void print_asm_instr(Instr *instr_s) {
             core_reg[instr_s->Rn], 
             core_reg[instr_s->Rm], 
             instr_s->shift_str);
-
             break;
         
         case TYPE_0_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
@@ -75,7 +74,6 @@ void print_asm_instr(Instr *instr_s) {
             core_reg[instr_s->Rm], 
             shift_codes[instr_s->shift.shift_t],
             core_reg[instr_s->Rs]);
-
             break;
         
         case TYPE_1: // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
@@ -85,7 +83,16 @@ void print_asm_instr(Instr *instr_s) {
             core_reg[instr_s->Rn], 
             core_reg[instr_s->Rm], 
             instr_s->shift_str);
+            break;
 
+        case TYPE_1_RSR: // syntax: <MNEMONIC><c> <Rn>, <Rm>, <type> <Rs>
+            printf("%s%s %s, %s, %s %s\n", 
+            instr_s->mnemonic, 
+            cond_codes[instr_s->c], 
+            core_reg[instr_s->Rn], 
+            core_reg[instr_s->Rm], 
+            shift_codes[instr_s->shift.shift_t],
+            core_reg[instr_s->Rs]);
             break;
 
         case TYPE_2: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
@@ -95,7 +102,6 @@ void print_asm_instr(Instr *instr_s) {
             cond_codes[instr_s->c], 
             core_reg[instr_s->Rd], 
             core_reg[instr_s->Rm]);
-
             break;
 
         case TYPE_3: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
@@ -106,10 +112,19 @@ void print_asm_instr(Instr *instr_s) {
             core_reg[instr_s->Rd], 
             core_reg[instr_s->Rm],
             instr_s->shift.shift_n);
-
             break;
 
-        case TYPE_S: // syntax: <MNEMONIC>S{<c>} <Rd>, <Rm>{, <shift>}
+        case TYPE_3_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>
+            printf("%s%s%s %s, %s, %s\n", 
+            instr_s->mnemonic,
+            (instr_s->S) ? "S" : "",
+            cond_codes[instr_s->c], 
+            core_reg[instr_s->Rd],
+            core_reg[instr_s->Rn],
+            core_reg[instr_s->Rm]);
+            break;
+
+        case TYPE_4: // syntax: <MNEMONIC>S{<c>} <Rd>, <Rm>{, <shift>}
             printf("%s%s%s %s, %s%s\n", 
             instr_s->mnemonic,
             (instr_s->S) ? "S" : "",
@@ -117,7 +132,17 @@ void print_asm_instr(Instr *instr_s) {
             core_reg[instr_s->Rd], 
             core_reg[instr_s->Rm],
             instr_s->shift_str);
+            break;
 
+        case TYPE_4_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, <type> <Rs>
+            printf("%s%s%s %s, %s, %s %s\n", 
+            instr_s->mnemonic,
+            (instr_s->S) ? "S" : "",
+            cond_codes[instr_s->c], 
+            core_reg[instr_s->Rd], 
+            core_reg[instr_s->Rm],
+            shift_codes[instr_s->shift.shift_t],
+            core_reg[instr_s->Rs]);
             break;
     }
 }
@@ -150,7 +175,7 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
     if ((instr_s->i_type == TYPE_0 || instr_s->i_type == TYPE_2 || instr_s->i_type == TYPE_3) 
         && instr_s->S == 0x1 && instr_s->Rd == PC) {
         //instr_s->special = 1;
-        instr_s->i_type = TYPE_S;
+        instr_s->i_type = TYPE_4;
         instr_s->mnemonic = "MVN";
     }
 
@@ -297,34 +322,70 @@ int RSC_reg_instr(uint32_t instr) {
 int TST_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "TST";
-    instr_s.i_type = TYPE_1;
+    
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_1;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_1_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 // process TEQ (register) instruction
 int TEQ_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "TEQ";
-    instr_s.i_type = TYPE_1;
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_1;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_1_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 // process CMP (register) instruction
 int CMP_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "CMP";
-    instr_s.i_type = TYPE_1;
+    
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_1;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_1_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 // process CMN (register) instruction
 int CMN_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "CMN";
-    instr_s.i_type = TYPE_1;
+    
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_1;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_1_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 // process ORR (register) instruction
 int ORR_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "ORR";
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_0;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_0_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 // process MOV (register) instruction
@@ -347,14 +408,28 @@ int LSL_imm_instr(uint32_t instr) {
 int LSR_imm_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "LSR";
-    instr_s.i_type = TYPE_3;
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_3;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_3_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 // process ASR (immediate) instruction
 int ASR_imm_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "ASR";
-    instr_s.i_type = TYPE_3;
+    
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_3;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_3_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 // process RRX instruction
@@ -370,7 +445,14 @@ int RRX_instr(uint32_t instr) {
 int ROR_imm_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "ROR";
-    instr_s.i_type = TYPE_3;
+    
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_3;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_3_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 // process BIC (register) instruction
@@ -378,6 +460,14 @@ int ROR_imm_instr(uint32_t instr) {
 int BIC_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "BIC";
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_0;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_0_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 // process MVN (register) instruction
@@ -385,7 +475,14 @@ int BIC_reg_instr(uint32_t instr) {
 int MVN_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "MVN";
-    instr_s.i_type = TYPE_S;
+
+    if (IS_DP_REG(instr)) {
+        instr_s.i_type = TYPE_4;
+    }
+    else if (IS_DP_RSR(instr)) {   
+        instr_s.i_type = TYPE_4_RSR;
+    }
+
     return process_data_proc_instr(instr, &instr_s);
 }
 
@@ -395,9 +492,9 @@ int MVN_reg_instr(uint32_t instr) {
 // ===============
 // === Decoder ===
 // ===============
-void decode_dp_reg(uint32_t instr, int start_idx) {
-    int num_rows = sizeof(proc_instr_table) / sizeof(proc_instr_table[0]);
-    for (int i = start_idx; i < num_rows; i++) {
+void decode_dp_reg(uint32_t instr, int start_idx, int end_idx) {
+    //int num_rows = sizeof(proc_instr_table) / sizeof(proc_instr_table[0]);
+    for (int i = start_idx; i < end_idx; i++) {
         if (proc_instr_table[i][0](instr)) { // if this instruction matches the current A32 instruction
             proc_instr_table[i][1](instr); // process the instruction
             return;
@@ -411,14 +508,11 @@ void decode_instr(uint32_t instr) {
     if (IS_DP_OP_0(instr)) {
         if (IS_DP_REG_OR_RSR(instr)) { // trying to handle same instruction but different type (reg vs rsr vs imm)
             if (IS_DP_REG(instr)) { // going to change the structure of this. I'd like to reuse the code
-                decode_dp_reg(instr, DP_REG_START);
+                decode_dp_reg(instr, DP_REG_START, DP_RSR_START);
             }
             else if (IS_DP_RSR(instr)) {
-                decode_dp_reg(instr, DP_RSR_START);
+                decode_dp_reg(instr, DP_RSR_START, 40);
             }
-            //if (IS_DP_REG(instr) || IS_DP_RSR(instr)) {
-            //    decode_dp_reg(instr, DP_REG_START);
-            //}
             else {
                 printf("%s\n", default_str);
             }

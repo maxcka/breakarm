@@ -7,7 +7,7 @@ TODO:
 - - get machine code instructions
 - - convert instructions to A32 ISA
 
-
+*note: when decoding, specific instructions must be checked before more general ones
 
 ======================
 About ARM ISAs

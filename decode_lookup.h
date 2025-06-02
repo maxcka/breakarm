@@ -66,7 +66,7 @@ static const char *cond_codes[16] = {
 #define IS_DP_OP_0(instr)       ( ( ((instr) >> 25) & 0x7) == 0x0 ) // 0b000
 //>> layer 2
 // instruction is data-processing (register) or data-processing(register-shifted register)
-#define IS_DP_REG_OR_RSR(instr) ( ( ((instr) >> 20) & 0x19) != 0xF ) // not 0b10xx0
+#define IS_DP_REG_OR_RSR(instr) ( ( ((instr) >> 20) & 0x19) != 0x10 ) // not 0b10xx0
 //>> layer 3
 //=== instr is data-processing (register) ===
 #define IS_DP_REG(instr)        ( ( ((instr) >> 4) & 0x1) == 0x0) // 0bxxx0
@@ -100,7 +100,10 @@ static inline int is_MVN_reg(uint32_t instr)      { return ( ( ((instr) >> 20) &
 //=== instr is data-processing (register-shifted register) ===
 #define IS_DP_RSR(instr)        ( ( ((instr) >> 4) & 0x9) == 0x1) // 0b0xx1
 //>> layer 4
-static inline int is_AND_rsr(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x0); } // 0b0000x
+static inline int is_LSL_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x0); } // 0b00
+static inline int is_LSR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x1); } // 0b01
+static inline int is_ASR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2); } // 0b10
+static inline int is_ROR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x3); } // 0b11
 
 //================================
 
@@ -110,6 +113,7 @@ static inline int is_AND_rsr(uint32_t instr)      { return ( ( ((instr) >> 20) &
 
 // lookup table for processing instructions
 static int (*proc_instr_table[][2])(uint32_t) = {
+    // data-processing reg
     { is_AND_reg, AND_reg_instr },
     { is_EOR_reg, EOR_reg_instr },
     { is_SUB_reg, SUB_reg_instr },
@@ -131,7 +135,7 @@ static int (*proc_instr_table[][2])(uint32_t) = {
     { is_ROR_imm, ROR_imm_instr },
     { is_BIC_reg, BIC_reg_instr },
     { is_MVN_reg, MVN_reg_instr },
-
+    // data-processing rsr
     { is_AND_reg, AND_reg_instr },
     { is_EOR_reg, EOR_reg_instr },
     { is_SUB_reg, SUB_reg_instr },
@@ -139,7 +143,18 @@ static int (*proc_instr_table[][2])(uint32_t) = {
     { is_ADD_reg, ADD_reg_instr },
     { is_ADC_reg, ADC_reg_instr },
     { is_SBC_reg, SBC_reg_instr },
-    { is_RSC_reg, RSC_reg_instr }
+    { is_RSC_reg, RSC_reg_instr },
+    { is_TST_reg, TST_reg_instr },
+    { is_TEQ_reg, TEQ_reg_instr },
+    { is_CMP_reg, CMP_reg_instr },
+    { is_CMN_reg, CMN_reg_instr },
+    { is_ORR_reg, ORR_reg_instr },
+    { is_LSL_reg, LSL_imm_instr },
+    { is_LSR_reg, LSR_imm_instr },
+    { is_ASR_reg, ASR_imm_instr },
+    { is_ROR_reg, ROR_imm_instr },
+    { is_BIC_reg, BIC_reg_instr },
+    { is_MVN_reg, MVN_reg_instr },
 
 };
 
