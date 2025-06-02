@@ -524,6 +524,11 @@ void decode_instr(uint32_t instr) {
                 printf("%s\n", default_str);
             }
         }
+        else if (IS_MISC_OR_HALF_MULT(instr)) {
+            if (IS_MISC(instr)) {
+                
+            }
+        }
         else {
             printf("%s\n", default_str);
         }

@@ -107,6 +107,17 @@ static inline int is_ROR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 
 
 //================================
 
+//>> layer 2
+// instruction is miscellaneous or halfword multiply and multiply accumulate instructions
+#define IS_MISC_OR_HALF_MULT(instr) ( ( ((instr) >> 20) & 0x19) == 0x10 ) // 0b10xx0
+//>> layer 3
+//=== instr is miscellaneous ===
+#define IS_MISC(instr)              ( ( ((instr) >> 4) & 0x8) == 0x0 ) // 0b0xxx
+//>> layer 4
+static inline int is_MRS_BANKED(uint32_t instr)      { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x1) && ( ( ((instr) >> 21) & 0x1) == 0x0); } // 0b000 & 0b1 & 0bx0
+static inline int is_MSR_BANKED(uint32_t instr)      { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x1) && ( ( ((instr) >> 21) & 0x1) == 0x1); } // 0b000 & 0b1 & 0bx1
+//==============================
+
 // start indices in the proc_instr_table 
 #define DP_REG_START 0
 #define DP_RSR_START 21
@@ -155,6 +166,7 @@ static int (*proc_instr_table[][2])(uint32_t) = {
     { is_ROR_reg, ROR_instr },
     { is_BIC    , BIC_instr },
     { is_MVN    , MVN_instr },
+    // miscellaneous
 
 };
 
