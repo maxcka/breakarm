@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include "decode_lookup.h"
+#include "decode.h"
+#include "bit_matching.h"
 
 
 static const char *default_str = "UNKNOWN";

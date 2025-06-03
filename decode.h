@@ -11,6 +11,11 @@
 // A32 instructions are 4 bytes wide
 #define A32_INSTR_SIZE 4
 
+
+extern const char *core_reg[16];
+extern const char *shift_codes[5];
+extern const char *cond_codes[16];
+
 typedef enum {
     R0,
     R1,
@@ -92,46 +97,6 @@ typedef struct {
     Register Rs; //^ this overlaps with imm5 (make union??) (used in RSR instructions)
     uint8_t S;
 } Instr;
-
-
-
-//==========================================
-//==========================================
-
-
-// decoding
-
-// design:
-// - check bits until we know what instruction it is
-// - process the instruction in a function
-// development:
-// - decode as if we are doing DFS
-
-//===================
-
-//=== cond field (bits 31 - 28)
-
-// |31 30 29 28|27 26 25|24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5| 4 |3 2 1 0|
-// |  cond     |  op1   |                                                      |op |       |
-
-#define UNCOND  // 0b111
-
-//===
-
-//=== op1 field (bits 27 - 25)
-// Note: because Branch and Coprocessor / Supervisor instructions only use bits 27 and 26,
-// only check those first
-
-//--> mask bits 27-25
-
-//============================================
-// MAYBE BETTER IDEA IS TO USE INLINE FUNCTIONS INSTEAD OF MACROS. THEN HAVE A LOOKUP TABLE MATCHING EACH FUNCTION TO THE PROCESSING FUNCTION
-//=======================
-
-
-//===================================================
-//===================================================
-
 
 
 // need comments for fn declarations
