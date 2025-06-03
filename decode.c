@@ -11,144 +11,6 @@
 
 static const char *default_str = "UNKNOWN";
 
-Shift decode_imm_shift(ShiftType type, uint8_t imm5) {
-    Shift shift;
-    switch(type) {
-        case LSL:
-            shift.shift_t = LSL;
-            shift.shift_n = imm5;
-            break;
-        case LSR:
-            shift.shift_t = LSR;
-            shift.shift_n = (imm5 == 0) ? 32 : imm5;
-            break;
-        case ASR:
-            shift.shift_t = ASR;
-            shift.shift_n = (imm5 == 0) ? 32 : imm5;
-            break;
-        case ROR:
-        case RRX: // doesn't need to be here but compiler complains
-            if (imm5 == 0) {
-                shift.shift_t = RRX;
-                shift.shift_n = 1;
-            }
-            else {
-                shift.shift_t = ROR;
-                shift.shift_n = imm5;
-            }
-            break;
-    }
-
-    return shift;
-}
-
-void get_shift_str(Shift shift, char *shift_str, int buf_sz) {
-    if (shift.shift_n == 0) {
-        shift_str[0] = '\0';
-    }
-    else {
-        snprintf(shift_str, buf_sz, ", %s #%d", shift_codes[shift.shift_t], shift.shift_n);
-    }
-}
-
-
-void print_asm_instr(Instr *instr_s) {
-    switch (instr_s->i_type) {
-        case TYPE_0: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
-            printf("%s%s%s %s, %s, %s%s\n", 
-            instr_s->mnemonic, 
-            (instr_s->S) ? "S" : "", 
-            cond_codes[instr_s->c], 
-            core_reg[instr_s->Rd], 
-            core_reg[instr_s->Rn], 
-            core_reg[instr_s->Rm], 
-            instr_s->shift_str);
-            break;
-        
-        case TYPE_0_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
-            printf("%s%s%s %s, %s, %s, %s %s\n", 
-            instr_s->mnemonic, 
-            (instr_s->S) ? "S" : "", 
-            cond_codes[instr_s->c], 
-            core_reg[instr_s->Rd], 
-            core_reg[instr_s->Rn], 
-            core_reg[instr_s->Rm], 
-            shift_codes[instr_s->shift.shift_t],
-            core_reg[instr_s->Rs]);
-            break;
-        
-        case TYPE_1: // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
-            printf("%s%s %s, %s%s\n", 
-            instr_s->mnemonic, 
-            cond_codes[instr_s->c], 
-            core_reg[instr_s->Rn], 
-            core_reg[instr_s->Rm], 
-            instr_s->shift_str);
-            break;
-
-        case TYPE_1_RSR: // syntax: <MNEMONIC><c> <Rn>, <Rm>, <type> <Rs>
-            printf("%s%s %s, %s, %s %s\n", 
-            instr_s->mnemonic, 
-            cond_codes[instr_s->c], 
-            core_reg[instr_s->Rn], 
-            core_reg[instr_s->Rm], 
-            shift_codes[instr_s->shift.shift_t],
-            core_reg[instr_s->Rs]);
-            break;
-
-        case TYPE_2: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
-            printf("%s%s%s %s, %s\n", 
-            instr_s->mnemonic,
-            (instr_s->S) ? "S" : "",
-            cond_codes[instr_s->c], 
-            core_reg[instr_s->Rd], 
-            core_reg[instr_s->Rm]);
-            break;
-
-        case TYPE_3: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
-            printf("%s%s%s %s, %s, #%d\n", 
-            instr_s->mnemonic,
-            (instr_s->S) ? "S" : "",
-            cond_codes[instr_s->c], 
-            core_reg[instr_s->Rd], 
-            core_reg[instr_s->Rm],
-            instr_s->shift.shift_n);
-            break;
-
-        case TYPE_3_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>
-            printf("%s%s%s %s, %s, %s\n", 
-            instr_s->mnemonic,
-            (instr_s->S) ? "S" : "",
-            cond_codes[instr_s->c], 
-            core_reg[instr_s->Rd],
-            core_reg[instr_s->Rn],
-            core_reg[instr_s->Rm]);
-            break;
-
-        case TYPE_4: // syntax: <MNEMONIC>S{<c>} <Rd>, <Rm>{, <shift>}
-            printf("%s%s%s %s, %s%s\n", 
-            instr_s->mnemonic,
-            (instr_s->S) ? "S" : "",
-            cond_codes[instr_s->c], 
-            core_reg[instr_s->Rd], 
-            core_reg[instr_s->Rm],
-            instr_s->shift_str);
-            break;
-
-        case TYPE_4_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, <type> <Rs>
-            printf("%s%s%s %s, %s, %s %s\n", 
-            instr_s->mnemonic,
-            (instr_s->S) ? "S" : "",
-            cond_codes[instr_s->c], 
-            core_reg[instr_s->Rd], 
-            core_reg[instr_s->Rm],
-            shift_codes[instr_s->shift.shift_t],
-            core_reg[instr_s->Rs]);
-            break;
-    }
-}
-
-
 // ====================
 // === INSTRUCTIONS ===
 // ====================
@@ -513,32 +375,98 @@ void find_and_decode(uint32_t instr, int start_idx, int end_idx) {
     printf("%s\n", default_str); // we don't have the corresponding A32 instruction
 }
 
+void decode_dp_op_0(uint32_t instr) {
+    if (IS_DP_REG_OR_RSR(instr)) {           // layer 2
+        if (IS_DP_REG(instr)) {               // layer 3
+            find_and_decode(instr, DP_REG_START, DP_REG_END);
+        }
+        else if (IS_DP_RSR(instr)) {          // layer 3
+            find_and_decode(instr, DP_RSR_START, DP_RSR_END);
+        }
+        else {
+            printf("%s\n", default_str);
+        }
+    }
+    else if (IS_MISC_OR_HALF_MULT(instr)) {  // layer 2
+        if (IS_MISC(instr)) {                 // layer 3
+            find_and_decode(instr, MISC_START, 42);
+        }
+        else if (IS_HALF_MULT(instr)) {     // layer 3
+            
+        }
+        else {
+            printf("%s\n", default_str);
+        }
+    }
+    else if (IS_MULT_MULT(instr)) {          // layer 2
+
+    }
+    else if (IS_SYNC(instr)) {               // layer 2
+
+    }
+    else if (IS_EX_LD_STR(instr)) {          // layer 2
+
+    }
+    else if (IS_EX_LD_STR_UNP(instr)) {      // layer 2
+
+    }
+    else {
+        printf("%s\n", default_str);
+    }
+}
+
+void decode_dp_op_1(uint32_t instr) {
+    if (IS_DP_IMM(instr)) {                  // layer 2
+
+    }
+    else if (IS_16_IMM_LD(instr)) {          // layer 2
+
+    }
+    else if (IS_MSR_HINTS(instr)) {          // layer 2
+
+    }
+    else {
+        printf("%s\n", default_str);
+    }
+}
+
+void decode_ld_str_med(uint32_t instr) {
+    if (IS_LD_STR(instr)) {
+
+    }
+    else if (IS_MED(instr)) {
+
+    }
+    else {
+        printf("%s\n", default_str);
+    }
+}
+
+void decode_br_blk(uint32_t instr) {
+    instr += 1;
+}
+
+void decode_co_spr(uint32_t instr) {
+    instr += 1;
+}
+
 void decode_instr(uint32_t instr) {
     
-    if (IS_COND(instr)) {                           // layer 0
+    if (IS_COND(instr)) {                          // layer 0
         if (IS_DP_OP_0(instr)) {                    // layer 1
-            if (IS_DP_REG_OR_RSR(instr)) {          // layer 2
-                if (IS_DP_REG(instr)) {             // layer 3
-                    find_and_decode(instr, DP_REG_START, DP_RSR_START);
-                }
-                else if (IS_DP_RSR(instr)) {        // layer 3
-                    find_and_decode(instr, DP_RSR_START, MISC_START);
-                }
-                else {
-                    printf("%s\n", default_str);
-                }
-            }
-            else if (IS_MISC_OR_HALF_MULT(instr)) { // layer 2
-                if (IS_MISC(instr)) {               // layer 3
-                    find_and_decode(instr, MISC_START, 42);
-                }
-                else {
-                    printf("%s\n", default_str);
-                }
-            }
-            else {
-                printf("%s\n", default_str);
-            }
+            decode_dp_op_0(instr);
+        }
+        else if (IS_DP_OP_1(instr)) {               // layer 1
+            decode_dp_op_1(instr);
+        }
+        else if (IS_LD_STR_MED(instr)) {            // layer 1
+            decode_ld_str_med(instr);
+        }
+        else if (IS_BR_BLK(instr)) {
+            decode_br_blk(instr);
+        }
+        else if (IS_CO_SPR(instr)) {
+            decode_co_spr(instr);
         }
         else {
             printf("%s\n", default_str);

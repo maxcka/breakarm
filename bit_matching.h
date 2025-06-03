@@ -113,6 +113,7 @@ static inline int is_SMC(uint32_t instr)            { return ( ( ((instr) >> 4) 
 
 //>> layer 2
 // instruction is extra load/store instructions
+#define IS_EX_LD_STR(instr)         ( ( ( ((instr) >> 20) & 0x12) != 0x2 ) && ( ( ( ((instr) >> 4) & 0xF) == 0xB ) || ( ( ((instr) >> 4) & 0xD) == 0xD ) ) ) // not 0b0xx1x and (0b1011 or 0b11x1)
 
 
 //=== instr is extra load/store instructions ===
@@ -122,6 +123,7 @@ static inline int is_SMC(uint32_t instr)            { return ( ( ((instr) >> 4) 
 
 //>> layer 2
 // instruction is extra load/store instructions, unprivileged
+#define IS_EX_LD_STR_UNP(instr)     ( ( ( ((instr) >> 20) & 0x12) == 0x2 ) && ( ( ( ((instr) >> 4) & 0xF) == 0xB ) || ( ( ((instr) >> 4) & 0xD) == 0xD ) ) ) // 0b0xx1x and (0b1011 or 0b11x1)
 
 //=== instr is extra load/store instructions, unprivileged ===
 //>> layer 3
@@ -136,6 +138,7 @@ static inline int is_SMC(uint32_t instr)            { return ( ( ((instr) >> 4) 
 
 //>> layer 2
 // instruction is data-processing (immediate)
+#define IS_DP_IMM(instr)        ( ( ((instr) >> 20) & 0x19) != 0x10 ) // not 0b10xx0
 
 //=== instr is data-processing (immediate) ===
 //>> layer 3
@@ -143,31 +146,52 @@ static inline int is_SMC(uint32_t instr)            { return ( ( ((instr) >> 4) 
 //============================================
 
 //>> layer 2
-// instruction is 16-bit immediate load
-
-
-//>> layer 2
-// instruction is high halfword 16-bit immediate load
+// instruction is 16-bit immediate load (low or high halfword)
+#define IS_16_IMM_LD(instr)     ( ( ((instr) >> 20) & 0x1B) == 0x10 ) // 0b10x00
 
 //>> layer 2
-// instruction is MSR (immediate)
+// instruction is MSR (immediate) and hints
+#define IS_MSR_HINTS(instr)        ( ( ((instr) >> 20) & 0x1B) == 0x12 ) // not 10x10
+
+//=== instr is MSR (immediate) and hints ===
+//>> layer 3
+
+//==========================================
 
 //>>>>>>>>>>>>>
 //>> layer 1 <<
 //>>>>>>>>>>>>>
 // Load/store word and unsigned byte and media instructions
+#define IS_LD_STR_MED(instr)        ( ( ((instr) >> 25) & 0x6) == 0x2 ) // 0b01x
+
+//>> layer 2
+// instruction is load/store word and unsigned byte
+#define IS_LD_STR(instr)            ( ( ((instr) >> 25) & 0x7) == 0x2 ) || ( ( ( ((instr) >> 25) & 0x7) == 0x3 ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ) ) // 0b010 or (0b011 and 0b0)
+//======================================
+//>> layer 3
+
+//======================================
+
+//>> layer 2
+// instruction is media instructions
+#define IS_MED(instr)               ( ( ( ((instr) >> 25) & 0x7) == 0x3 ) && ( ( ((instr) >> 4) & 0x1) == 0x1 ) ) // 0b011 and 0b1
+//======================================
+//>> layer 3
+
+//======================================
 
 
 //>>>>>>>>>>>>>
 //>> layer 1 <<
 //>>>>>>>>>>>>>
-// Branch, branch with link, and blcok data transfer instructions
+// Branch, branch with link, and block data transfer instructions
+#define IS_BR_BLK(instr)            ( ( ((instr) >> 25) & 0x6) == 0x4 ) // 0b10x
 
 //>>>>>>>>>>>>>
 //>> layer 1 <<
 //>>>>>>>>>>>>>
 // Coprocessor instructions and Supervisor Call and Floating-point and Advanced SIMD data transfers
-
+#define IS_CO_SPR(instr)            ( ( ((instr) >> 25) & 0x6) == 0x6 ) // 0b11x
 
 //... Layer 0 ...
 // unconditional instructions
@@ -175,7 +199,9 @@ static inline int is_SMC(uint32_t instr)            { return ( ( ((instr) >> 4) 
 
 // start indices in the proc_instr_table 
 #define DP_REG_START 0
+#define DP_REG_END 21
 #define DP_RSR_START 21
+#define DP_RSR_END 40
 #define MISC_START 40
 
 // lookup table for processing instructions

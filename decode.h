@@ -134,6 +134,12 @@ int MVN_instr(uint32_t instr);
 // main functions
 void find_and_decode(uint32_t instr, int start_idx, int end_idx);
 
+void decode_dp_op_0(uint32_t instr);
+void decode_dp_op_1(uint32_t instr);
+void decode_ld_str_med(uint32_t instr);
+void decode_br_blk(uint32_t instr);
+void decode_co_spr(uint32_t instr);
+
 void decode_instr(uint32_t instr);
 
 
