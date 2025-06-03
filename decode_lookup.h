@@ -46,30 +46,22 @@ static const char *cond_codes[16] = {
 
 //================================
 
-//=== cond field (bits 31 - 28)
 
-// |31 30 29 28|27 26 25|24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5| 4 |3 2 1 0|
-// |  cond     |  op1   |                                                      |op |       |
+//... Layer 0 ...
+// unconditional instructions
+#define IS_COND(instr)       ( ( ((instr) >> 28) & 0xF) != 0xF ) // not 0b1111
 
-#define UNCOND  // 0b111
-
-//===
-
-//=== op1 field (bits 27 - 25)
-// Note: because Branch and Coprocessor / Supervisor instructions only use bits 27 and 26,
-// only check those first
-
-//--> mask bits 27-25
-
-//>> layer 1
+//>>>>>>>>>>>>>
+//>> layer 1 <<
+//>>>>>>>>>>>>>
 // Data-processing (register) & miscellaneous instructions
 #define IS_DP_OP_0(instr)       ( ( ((instr) >> 25) & 0x7) == 0x0 ) // 0b000
 //>> layer 2
 // instruction is data-processing (register) or data-processing(register-shifted register)
 #define IS_DP_REG_OR_RSR(instr) ( ( ((instr) >> 20) & 0x19) != 0x10 ) // not 0b10xx0
 //>> layer 3
-//=== instr is data-processing (register) ===
 #define IS_DP_REG(instr)        ( ( ((instr) >> 4) & 0x1) == 0x0) // 0bxxx0
+//=== instr is data-processing (register) ===
 //>> layer 4
 static inline int is_AND(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x0); } // 0b0000x
 static inline int is_EOR(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x2); } // 0b0001x
@@ -96,9 +88,10 @@ static inline int is_ROR_imm(uint32_t instr)      { return ( ( ( ((instr) >> 5) 
 //---------------------------------------------------------------
 static inline int is_BIC(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x1C); } // 0b1110x
 static inline int is_MVN(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x1E); } // 0b1111x
-//================================
-//=== instr is data-processing (register-shifted register) ===
+//===========================================
+//>> layer 3
 #define IS_DP_RSR(instr)        ( ( ((instr) >> 4) & 0x9) == 0x1) // 0b0xx1
+//=== instr is data-processing (register-shifted register) ===
 //>> layer 4
 static inline int is_LSL_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x0); } // 0b00
 static inline int is_LSR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x1); } // 0b01
@@ -108,19 +101,122 @@ static inline int is_ROR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 
 //================================
 
 //>> layer 2
-// instruction is miscellaneous or halfword multiply and multiply accumulate instructions
+// instruction is miscellaneous or halfword multiply and multiply accumulate instruction
 #define IS_MISC_OR_HALF_MULT(instr) ( ( ((instr) >> 20) & 0x19) == 0x10 ) // 0b10xx0
 //>> layer 3
-//=== instr is miscellaneous ===
 #define IS_MISC(instr)              ( ( ((instr) >> 4) & 0x8) == 0x0 ) // 0b0xxx
+//=== instr is miscellaneous ===
 //>> layer 4
-static inline int is_MRS_BANKED(uint32_t instr)      { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x1) && ( ( ((instr) >> 21) & 0x1) == 0x0); } // 0b000 & 0b1 & 0bx0
-static inline int is_MSR_BANKED(uint32_t instr)      { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x1) && ( ( ((instr) >> 21) & 0x1) == 0x1); } // 0b000 & 0b1 & 0bx1
+static inline int is_MRS_BANKED(uint32_t instr)     { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x1) && ( ( ((instr) >> 21) & 0x1) == 0x0); } // 0b000 & 0b1 & 0bx0
+static inline int is_MSR_BANKED(uint32_t instr)     { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x1) && ( ( ((instr) >> 21) & 0x1) == 0x1); } // 0b000 & 0b1 & 0bx1
+static inline int is_MRS(uint32_t instr)            { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x0) && ( ( ((instr) >> 21) & 0x1) == 0x0); } // 0b000 & 0b0 & 0bx0
+static inline int is_MSR_REG_APP(uint32_t instr)    { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x0) && ( ( ((instr) >> 21) & 0x3) == 0x1) && ( ( ((instr) >> 16) & 0x3) == 0x0); } // 0b000 & 0b1 & 0b01 & 0bxx00
+static inline int is_MSR_REG_SYS(uint32_t instr)    { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x0) &&     // 0b000 & 0b1
+                                                                ( ( ( ( ((instr) >> 21) & 0x3) == 0x1) && ( ( ((instr) >> 16) & 0x3) != 0x0) ) || 
+                                                                    ( ( ((instr) >> 21) & 0x3) == 0x3) ); } // (0b01 & not 0bxx00) or (0b11)
+static inline int is_BX(uint32_t instr)             { return ( ( ((instr) >> 4) & 0x7) == 0x1) && ( ( ((instr) >> 21) & 0x3) == 0x1); } // 0b001 & 0b01
+static inline int is_CLZ(uint32_t instr)            { return ( ( ((instr) >> 4) & 0x7) == 0x1) && ( ( ((instr) >> 21) & 0x3) == 0x3); } // 0b001 & 0b11
+static inline int is_BXJ(uint32_t instr)            { return ( ( ((instr) >> 4) & 0x7) == 0x2) && ( ( ((instr) >> 21) & 0x3) == 0x1); } // 0b010 & 0b01
+static inline int is_BLX_REG(uint32_t instr)        { return ( ( ((instr) >> 4) & 0x7) == 0x3) && ( ( ((instr) >> 21) & 0x3) == 0x1); } // 0b011 & 0b01
+static inline int is_QADD(uint32_t instr)           { return ( ( ((instr) >> 4) & 0x7) == 0x5) && ( ( ((instr) >> 21) & 0x3) == 0x0); } // 0b101 & 0b00
+static inline int is_QSUB(uint32_t instr)           { return ( ( ((instr) >> 4) & 0x7) == 0x5) && ( ( ((instr) >> 21) & 0x3) == 0x1); } // 0b101 & 0b01
+static inline int is_QDADD(uint32_t instr)          { return ( ( ((instr) >> 4) & 0x7) == 0x5) && ( ( ((instr) >> 21) & 0x3) == 0x2); } // 0b101 & 0b11
+static inline int is_QDSUB(uint32_t instr)          { return ( ( ((instr) >> 4) & 0x7) == 0x5) && ( ( ((instr) >> 21) & 0x3) == 0x3); } // 0b101 & 0b11
+static inline int is_ERET(uint32_t instr)           { return ( ( ((instr) >> 4) & 0x7) == 0x6) && ( ( ((instr) >> 21) & 0x3) == 0x3); } // 0b110 & 0b11
+static inline int is_BKPT(uint32_t instr)           { return ( ( ((instr) >> 4) & 0x7) == 0x7) && ( ( ((instr) >> 21) & 0x3) == 0x1); } // 0b111 & 0b01
+static inline int is_HVC(uint32_t instr)            { return ( ( ((instr) >> 4) & 0x7) == 0x7) && ( ( ((instr) >> 21) & 0x3) == 0x2); } // 0b111 & 0b10
+static inline int is_SMC(uint32_t instr)            { return ( ( ((instr) >> 4) & 0x7) == 0x7) && ( ( ((instr) >> 21) & 0x3) == 0x3); } // 0b111 & 0b11
 //==============================
+//>> layer 3
+#define IS_HALF_MULT(instr)         ( ( ((instr) >> 4) & 0x9) == 0x8 ) // 0b1xx0
+//=== instr is halfword multiply or multiply accumulate ===
+//>> layer 4
+//=========================================================
+
+//>> layer 2
+// instruction is multiply and multiply accumulate instruction
+#define IS_MULT_MULT(instr)         ( ( ( ((instr) >> 20) & 0x10) == 0x0 ) && ( ( ((instr) >> 4) & 0xF) == 0x9 ) ) // 0b0xxxx and 0b1xx0
+
+//=== instr is multiply and multiply accumulate ===
+//>> layer 3
+
+//=================================================
+
+//>> layer 2
+// instruction is synchronization primitives
+#define IS_SYNC(instr)              ( ( ( ((instr) >> 20) & 0x10) == 0x10 ) && ( ( ((instr) >> 4) & 0xF) == 0x9 ) ) // 0b1xxxx and 0b1xx0
+
+//=== instr is synchronization primitives ===
+//>> layer 3
+
+//===========================================
+
+//>> layer 2
+// instruction is extra load/store instructions
+
+
+//=== instr is extra load/store instructions ===
+//>> layer 3
+
+//==============================================
+
+//>> layer 2
+// instruction is extra load/store instructions, unprivileged
+
+//=== instr is extra load/store instructions, unprivileged ===
+//>> layer 3
+
+//============================================================
+
+//>>>>>>>>>>>>>
+//>> layer 1 <<
+//>>>>>>>>>>>>>
+// Data-processing (immediate) & miscellaneous instructions
+#define IS_DP_OP_1(instr)       ( ( ((instr) >> 25) & 0x7) == 0x1 ) // 0b001
+
+//>> layer 2
+// instruction is data-processing (immediate)
+
+//=== instr is data-processing (immediate) ===
+//>> layer 3
+
+//============================================
+
+//>> layer 2
+// instruction is 16-bit immediate load
+
+
+//>> layer 2
+// instruction is high halfword 16-bit immediate load
+
+//>> layer 2
+// instruction is MSR (immediate)
+
+//>>>>>>>>>>>>>
+//>> layer 1 <<
+//>>>>>>>>>>>>>
+// Load/store word and unsigned byte and media instructions
+
+
+//>>>>>>>>>>>>>
+//>> layer 1 <<
+//>>>>>>>>>>>>>
+// Branch, branch with link, and blcok data transfer instructions
+
+//>>>>>>>>>>>>>
+//>> layer 1 <<
+//>>>>>>>>>>>>>
+// Coprocessor instructions and Supervisor Call and Floating-point and Advanced SIMD data transfers
+
+
+//... Layer 0 ...
+// unconditional instructions
+#define IS_UNCOND(instr)       ( ( ((instr) >> 28) & 0xF) == 0xF ) // 0b1111
 
 // start indices in the proc_instr_table 
 #define DP_REG_START 0
 #define DP_RSR_START 21
+#define MISC_START 40
 
 // lookup table for processing instructions
 static int (*proc_instr_table[][2])(uint32_t) = {
@@ -142,7 +238,7 @@ static int (*proc_instr_table[][2])(uint32_t) = {
     { is_LSL_imm, LSL_instr },
     { is_LSR_imm, LSR_instr },
     { is_ASR_imm, ASR_instr },
-    { is_RRX    , RRX_instr     },
+    { is_RRX    , RRX_instr },
     { is_ROR_imm, ROR_instr },
     { is_BIC    , BIC_instr },
     { is_MVN    , MVN_instr },

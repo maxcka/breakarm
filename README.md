@@ -28,3 +28,14 @@ R0-R12 - 13 general-purpose 32-bit registers
 SP - stack pointer (R13)
 LR - link register (R14)
 PC - program ocunter (R15)
+
+=======================
+Adding new instructions steps:
+1. create macros for checking bits in higher layers
+2. for final layer, use static inline function to check bits that match the specific instruction
+3. create a function in decode.c that processes the instruction
+4. create a helper function that is able to process similar instructions (e.g. data-processing fn, misc fn, etc)
+5. if necessary, create a case for printing the assembly instruction based on the instruction syntax
+6. put the inline bit-matching function and the instruction processing function in the "proc_instr_table" lookup table
+7. add a decode path for this instruction in the decode_instr function
+

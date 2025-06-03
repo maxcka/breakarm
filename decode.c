@@ -152,9 +152,9 @@ void print_asm_instr(Instr *instr_s) {
 // === INSTRUCTIONS ===
 // ====================
 
-// ----------------------------------
-// --- Data-processing (register) ---
-// ----------------------------------
+// -----------------------
+// --- Data-processing ---
+// -----------------------
 
 int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
 
@@ -494,7 +494,9 @@ int MVN_instr(uint32_t instr) {
 }
 
 
-// if arr[0][0](instr) then arr[0][1](instr)
+// ---------------------
+// --- Miscellaneous ---
+// ---------------------
 
 // ===============
 // === Decoder ===
@@ -512,28 +514,36 @@ void find_and_decode(uint32_t instr, int start_idx, int end_idx) {
 
 void decode_instr(uint32_t instr) {
     
-    if (IS_DP_OP_0(instr)) {
-        if (IS_DP_REG_OR_RSR(instr)) { // trying to handle same instruction but different type (reg vs rsr vs imm)
-            if (IS_DP_REG(instr)) { // going to change the structure of this. I'd like to reuse the code
-                find_and_decode(instr, DP_REG_START, DP_RSR_START);
+    if (IS_COND(instr)) {                           // layer 0
+        if (IS_DP_OP_0(instr)) {                    // layer 1
+            if (IS_DP_REG_OR_RSR(instr)) {          // layer 2
+                if (IS_DP_REG(instr)) {             // layer 3
+                    find_and_decode(instr, DP_REG_START, DP_RSR_START);
+                }
+                else if (IS_DP_RSR(instr)) {        // layer 3
+                    find_and_decode(instr, DP_RSR_START, MISC_START);
+                }
+                else {
+                    printf("%s\n", default_str);
+                }
             }
-            else if (IS_DP_RSR(instr)) {
-                find_and_decode(instr, DP_RSR_START, 40);
+            else if (IS_MISC_OR_HALF_MULT(instr)) { // layer 2
+                if (IS_MISC(instr)) {               // layer 3
+                    find_and_decode(instr, MISC_START, 42);
+                }
+                else {
+                    printf("%s\n", default_str);
+                }
             }
             else {
                 printf("%s\n", default_str);
-            }
-        }
-        else if (IS_MISC_OR_HALF_MULT(instr)) {
-            if (IS_MISC(instr)) {
-                
             }
         }
         else {
             printf("%s\n", default_str);
         }
     }
-    else {
-        printf("%s\n", default_str);
+    else if (IS_UNCOND(instr)) {
+
     }
 }
