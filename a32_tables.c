@@ -44,6 +44,7 @@ const char *cond_codes[16] = {
 
 
 // lookup table for processing instructions
+// format: { bit-matching fn, processing function }
 int (*proc_instr_table[][2])(uint32_t) = {
     // data-processing reg
     { is_AND    , AND_instr },
@@ -88,5 +89,22 @@ int (*proc_instr_table[][2])(uint32_t) = {
     { is_BIC    , BIC_instr },
     { is_MVN    , MVN_instr },
     // miscellaneous
+    //{ is_MRS_BANKED, }, 
+    //{ is_MSR_BANKED, }, 
+    //{ is_MRS, }, 
+    //{ is_MSR_REG_APP, }, 
+    //{ is_MSR_REG_SYS, }, 
+    //{ is_BX, }, 
+    //{ is_CLZ, }, 
+    //{ is_BXJ, }, 
+    //{ is_BLX_REG, }, 
+    //{ is_QADD, }, 
+    //{ is_QSUB, }, 
+    //{ is_QDADD, }, 
+    //{ is_QDSUB, }, 
+    //{ is_ERET, }, 
+    //{ is_BKPT, }, 
+    //{ is_HVC, }, 
+    //{ is_SMC, }
 
 };

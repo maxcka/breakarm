@@ -46,8 +46,8 @@ static inline int is_ASR_imm(uint32_t instr)      { return ( ( ((instr) >> 5) & 
 static inline int is_RRX(uint32_t instr)          { return ( ( ( ((instr) >> 5) & 0x3) == 0x3) && ( ( ((instr) >> 7) & 0x1F) == 0x0) ); } // 0b11 & 0b00000
 static inline int is_ROR_imm(uint32_t instr)      { return ( ( ( ((instr) >> 5) & 0x3) == 0x3) && ( ( ((instr) >> 7) & 0x1F) != 0x0) ); } // 0b11 & not 0b00000
 //---------------------------------------------------------------
-static inline int is_BIC(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x1C); } // 0b1110x
-static inline int is_MVN(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1E) == 0x1E); } // 0b1111x
+static inline int is_BIC(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x1E) == 0x1C); } // 0b1110x
+static inline int is_MVN(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x1E) == 0x1E); } // 0b1111x
 //===========================================
 //>> layer 3
 #define IS_DP_RSR(instr)        ( ( ((instr) >> 4) & 0x9) == 0x1) // 0b0xx1
@@ -91,6 +91,11 @@ static inline int is_SMC(uint32_t instr)            { return ( ( ((instr) >> 4) 
 #define IS_HALF_MULT(instr)         ( ( ((instr) >> 4) & 0x9) == 0x8 ) // 0b1xx0
 //=== instr is halfword multiply or multiply accumulate ===
 //>> layer 4
+static inline int is_SMLA(uint32_t instr)           { return ( ( ((instr) >> 21) & 0x3) == 0x0); } // 0b00
+static inline int is_SMLAW(uint32_t instr)          { return ( ( ((instr) >> 21) & 0x3) == 0x1) && ( ( ((instr) >> 5) & 0x1) == 0x0); } // 0b01 and 0b0
+static inline int is_SMULW(uint32_t instr)          { return ( ( ((instr) >> 21) & 0x3) == 0x1) && ( ( ((instr) >> 5) & 0x1) == 0x1); } // 0b01 and 0b1
+static inline int is_SMLAL(uint32_t instr)          { return ( ( ((instr) >> 21) & 0x3) == 0x2); } // 0b10
+static inline int is_SMUL(uint32_t instr)           { return ( ( ((instr) >> 21) & 0x3) == 0x3); } // 0b11
 //=========================================================
 
 //>> layer 2
@@ -99,7 +104,16 @@ static inline int is_SMC(uint32_t instr)            { return ( ( ((instr) >> 4) 
 
 //=== instr is multiply and multiply accumulate ===
 //>> layer 3
-
+static inline int is_MUL(uint32_t instr)            { return ( ( ((instr) >> 20) & 0xE) == 0x0); } // 0b000x
+static inline int is_MLA(uint32_t instr)            { return ( ( ((instr) >> 20) & 0xE) == 0x2); } // 0b001x
+static inline int is_UMAAL(uint32_t instr)          { return ( ( ((instr) >> 20) & 0xF) == 0x4); } // 0b0100
+// UNDEFINED // 0b0101
+static inline int is_MLS(uint32_t instr)            { return ( ( ((instr) >> 20) & 0xF) == 0x6); } // 0b0110
+// UNDEFINED // 0b0111
+static inline int is_UMULL(uint32_t instr)          { return ( ( ((instr) >> 20) & 0xE) == 0x8); } // 0b100x
+static inline int is_UMLAL(uint32_t instr)          { return ( ( ((instr) >> 20) & 0xE) == 0xA); } // 0b101x
+static inline int is_SMULL(uint32_t instr)          { return ( ( ((instr) >> 20) & 0xE) == 0xC); } // 0b110x
+static inline int is_SMLAL(uint32_t instr)          { return ( ( ((instr) >> 20) & 0xE) == 0xE); } // 0b111x
 //=================================================
 
 //>> layer 2
@@ -108,7 +122,15 @@ static inline int is_SMC(uint32_t instr)            { return ( ( ((instr) >> 4) 
 
 //=== instr is synchronization primitives ===
 //>> layer 3
-
+static inline int is_SWP(uint32_t instr)            { return ( ( ((instr) >> 20) & 0xB) == 0x0); } // 0b0x00
+static inline int is_STREX(uint32_t instr)          { return ( ( ((instr) >> 20) & 0xF) == 0x8); } // 0b1000
+static inline int is_LDREX(uint32_t instr)          { return ( ( ((instr) >> 20) & 0xF) == 0x9); } // 0b1001
+static inline int is_STREXD(uint32_t instr)         { return ( ( ((instr) >> 20) & 0xF) == 0xA); } // 0b1010
+static inline int is_LDREXD(uint32_t instr)         { return ( ( ((instr) >> 20) & 0xF) == 0xB); } // 0b1011
+static inline int is_STREXB(uint32_t instr)         { return ( ( ((instr) >> 20) & 0xF) == 0xC); } // 0b1100
+static inline int is_LDREXB(uint32_t instr)         { return ( ( ((instr) >> 20) & 0xF) == 0xD); } // 0b1101
+static inline int is_STREXH(uint32_t instr)         { return ( ( ((instr) >> 20) & 0xF) == 0xE); } // 0b1110
+static inline int is_LDREXH(uint32_t instr)         { return ( ( ((instr) >> 20) & 0xF) == 0xF); } // 0b1111
 //===========================================
 
 //>> layer 2
