@@ -398,18 +398,18 @@ void decode_dp_op_0(uint32_t instr) {
             printf("%s\n", default_str);
         }
     }
-    else if (IS_MULT_MULT(instr)) {          // layer 2
-
-    }
-    else if (IS_SYNC(instr)) {               // layer 2
-
-    }
-    else if (IS_EX_LD_STR(instr)) {          // layer 2
-
-    }
-    else if (IS_EX_LD_STR_UNP(instr)) {      // layer 2
-
-    }
+    //else if (IS_MULT_MULT(instr)) {          // layer 2
+    //
+    //}
+    //else if (IS_SYNC(instr)) {               // layer 2
+    //
+    //}
+    //else if (IS_EX_LD_STR(instr)) {          // layer 2
+    //
+    //}
+    //else if (IS_EX_LD_STR_UNP(instr)) {      // layer 2
+    //
+    //}
     else {
         printf("%s\n", default_str);
     }
@@ -456,23 +456,26 @@ void decode_instr(uint32_t instr) {
         if (IS_DP_OP_0(instr)) {                    // layer 1
             decode_dp_op_0(instr);
         }
-        else if (IS_DP_OP_1(instr)) {               // layer 1
-            decode_dp_op_1(instr);
-        }
-        else if (IS_LD_STR_MED(instr)) {            // layer 1
-            decode_ld_str_med(instr);
-        }
-        else if (IS_BR_BLK(instr)) {
-            decode_br_blk(instr);
-        }
-        else if (IS_CO_SPR(instr)) {
-            decode_co_spr(instr);
-        }
+        //else if (IS_DP_OP_1(instr)) {               // layer 1
+        //    decode_dp_op_1(instr);
+        //}
+        //else if (IS_LD_STR_MED(instr)) {            // layer 1
+        //    decode_ld_str_med(instr);
+        //}
+        //else if (IS_BR_BLK(instr)) {
+        //    decode_br_blk(instr);
+        //}
+        //else if (IS_CO_SPR(instr)) {
+        //    decode_co_spr(instr);
+        //}
         else {
             printf("%s\n", default_str);
         }
     }
     else if (IS_UNCOND(instr)) {
 
+    }
+    else {
+            printf("%s\n", default_str);
     }
 }

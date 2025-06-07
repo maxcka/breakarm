@@ -53,6 +53,7 @@ static inline int is_MVN(uint32_t instr)            { return ( ( ((instr) >> 20)
 #define IS_DP_RSR(instr)        ( ( ((instr) >> 4) & 0x9) == 0x1) // 0b0xx1
 //=== instr is data-processing (register-shifted register) ===
 //>> layer 4
+// also uses some data-proc (register) inline functions
 static inline int is_LSL_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x0); } // 0b00
 static inline int is_LSR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x1); } // 0b01
 static inline int is_ASR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2); } // 0b10
@@ -70,14 +71,14 @@ static inline int is_ROR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 
 static inline int is_MRS_BANKED(uint32_t instr)     { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x1) && ( ( ((instr) >> 21) & 0x1) == 0x0); } // 0b000 & 0b1 & 0bx0
 static inline int is_MSR_BANKED(uint32_t instr)     { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x1) && ( ( ((instr) >> 21) & 0x1) == 0x1); } // 0b000 & 0b1 & 0bx1
 static inline int is_MRS(uint32_t instr)            { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x0) && ( ( ((instr) >> 21) & 0x1) == 0x0); } // 0b000 & 0b0 & 0bx0
-static inline int is_MSR_REG_APP(uint32_t instr)    { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x0) && ( ( ((instr) >> 21) & 0x3) == 0x1) && ( ( ((instr) >> 16) & 0x3) == 0x0); } // 0b000 & 0b1 & 0b01 & 0bxx00
-static inline int is_MSR_REG_SYS(uint32_t instr)    { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x0) &&     // 0b000 & 0b1
+static inline int is_MSR_reg_app(uint32_t instr)    { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x0) && ( ( ((instr) >> 21) & 0x3) == 0x1) && ( ( ((instr) >> 16) & 0x3) == 0x0); } // 0b000 & 0b1 & 0b01 & 0bxx00
+static inline int is_MSR_reg_sys(uint32_t instr)    { return ( ( ((instr) >> 4) & 0x7) == 0x0) && ( ( ((instr) >> 9) & 0x1) == 0x0) &&     // 0b000 & 0b1
                                                                 ( ( ( ( ((instr) >> 21) & 0x3) == 0x1) && ( ( ((instr) >> 16) & 0x3) != 0x0) ) || 
                                                                     ( ( ((instr) >> 21) & 0x3) == 0x3) ); } // (0b01 & not 0bxx00) or (0b11)
 static inline int is_BX(uint32_t instr)             { return ( ( ((instr) >> 4) & 0x7) == 0x1) && ( ( ((instr) >> 21) & 0x3) == 0x1); } // 0b001 & 0b01
 static inline int is_CLZ(uint32_t instr)            { return ( ( ((instr) >> 4) & 0x7) == 0x1) && ( ( ((instr) >> 21) & 0x3) == 0x3); } // 0b001 & 0b11
 static inline int is_BXJ(uint32_t instr)            { return ( ( ((instr) >> 4) & 0x7) == 0x2) && ( ( ((instr) >> 21) & 0x3) == 0x1); } // 0b010 & 0b01
-static inline int is_BLX_REG(uint32_t instr)        { return ( ( ((instr) >> 4) & 0x7) == 0x3) && ( ( ((instr) >> 21) & 0x3) == 0x1); } // 0b011 & 0b01
+static inline int is_BLX_reg(uint32_t instr)        { return ( ( ((instr) >> 4) & 0x7) == 0x3) && ( ( ((instr) >> 21) & 0x3) == 0x1); } // 0b011 & 0b01
 static inline int is_QADD(uint32_t instr)           { return ( ( ((instr) >> 4) & 0x7) == 0x5) && ( ( ((instr) >> 21) & 0x3) == 0x0); } // 0b101 & 0b00
 static inline int is_QSUB(uint32_t instr)           { return ( ( ((instr) >> 4) & 0x7) == 0x5) && ( ( ((instr) >> 21) & 0x3) == 0x1); } // 0b101 & 0b01
 static inline int is_QDADD(uint32_t instr)          { return ( ( ((instr) >> 4) & 0x7) == 0x5) && ( ( ((instr) >> 21) & 0x3) == 0x2); } // 0b101 & 0b11
@@ -140,7 +141,24 @@ static inline int is_LDREXH(uint32_t instr)         { return ( ( ((instr) >> 20)
 
 //=== instr is extra load/store instructions ===
 //>> layer 3
+static inline int is_STRH_reg(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x0 ); } //0b01 and 0bxx0x0
+static inline int is_LDRH_reg(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x1 ); } //0b01 and 0bxx0x1
+static inline int is_STRH_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x4 ); } //0b01 and 0bxx1x0
+static inline int is_LDRH_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b01 and 0bxx1x1 and not 0b1111
+static inline int is_LDRH_lit(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b01 and 0bxx1x1 and 0b1111
 
+static inline int is_LDRD_reg(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x0 ); } //0b10 and 0bxx0x0
+static inline int is_LDRSB_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x1 ); } //0b10 and 0bxx0x1
+static inline int is_LDRD_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x4 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b10 and 0bxx1x0 and not 0b1111
+static inline int is_LDRD_lit(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x4 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b10 and 0bxx1x0 and 0b1111
+static inline int is_LDRSB_imm(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b10 and 0bxx1x1 and not 0b1111
+static inline int is_LDRSB_lit(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b10 and 0bxx1x1 and 0b1111
+
+static inline int is_STRD_reg(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x0 ); } //0b11 and 0bxx0x0
+static inline int is_LDRSH_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x1 ); } //0b11 and 0bxx0x1
+static inline int is_STRD_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x4 ); } //0b11 and 0bxx1x0
+static inline int is_LDRSH_imm(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b11 and 0bxx1x1 and not 0b1111
+static inline int is_LDRSH_lit(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b11 and 0bxx1x1 and 0b1111
 //==============================================
 
 //>> layer 2
@@ -149,7 +167,12 @@ static inline int is_LDREXH(uint32_t instr)         { return ( ( ((instr) >> 20)
 
 //=== instr is extra load/store instructions, unprivileged ===
 //>> layer 3
-
+static inline int is_STRHT(uint32_t instr)          { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x1) == 0x0 ); } //0b01 and 0b0
+static inline int is_LDRHT(uint32_t instr)          { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x1) == 0x1 ); } //0b01 and 0b1
+static inline int is_UNPRED(uint32_t instr)         { return ( ( ((instr) >> 5) & 0x2) == 0x2 ) && ( ( ((instr) >> 20) & 0x1) == 0x0 ) && ( ( ((instr) >> 12) & 0x1) == 0x0 ); } //0b01 and 0b1 and 0bxxx0
+static inline int is_UNDEF(uint32_t instr)          { return ( ( ((instr) >> 5) & 0x2) == 0x2 ) && ( ( ((instr) >> 20) & 0x1) == 0x0 ) && ( ( ((instr) >> 12) & 0x1) == 0x1 ); } //0b01 and 0b1 and 0bxxx1
+static inline int is_LDRSBT(uint32_t instr)         { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x1) == 0x1 ); } //0b10 and 0b1
+static inline int is_LDRSHT(uint32_t instr)         { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x1) == 0x1 ); } //0b11 and 0b1
 //============================================================
 
 //>>>>>>>>>>>>>
@@ -164,20 +187,41 @@ static inline int is_LDREXH(uint32_t instr)         { return ( ( ((instr) >> 20)
 
 //=== instr is data-processing (immediate) ===
 //>> layer 3
+// also uses some data-proc (register) inline functions
+static inline int is_SUB_imm(uint32_t instr)        { return is_SUB(instr) && ( ( ((instr) >> 16) & 0xF) != 0xF); } // 0b0010x and not 0b1111
+static inline int is_ADR(uint32_t instr)            { return is_SUB(instr) && ( ( ((instr) >> 16) & 0xF) == 0xF); } // 0b0010x and 0b1111
+static inline int is_ADD_imm(uint32_t instr)        { return is_SUB(instr) && ( ( ((instr) >> 16) & 0xF) != 0xF); } // 0b0100x and not 0b1111
+static inline int is_ADR_2(uint32_t instr)          { return is_SUB(instr) && ( ( ((instr) >> 16) & 0xF) == 0xF); } // 0b0100x and 0b1111
+static inline int is_MOV_imm(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x1E) == 0x1A); } // 0b1101x
+
 
 //============================================
 
 //>> layer 2
 // instruction is 16-bit immediate load (low or high halfword)
 #define IS_16_IMM_LD(instr)     ( ( ((instr) >> 20) & 0x1B) == 0x10 ) // 0b10x00
+//=== instr is 16-bit immediate load (low or high halfword) ===
+//>> layer 3
+static inline int is_MOV_imm_2(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1F) == 0x10 ); } // 0b10000
+static inline int is_MOVT(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x1F) == 0x14 ); } // 0b10100
+//=============================================================
 
 //>> layer 2
 // instruction is MSR (immediate) and hints
 #define IS_MSR_HINTS(instr)        ( ( ((instr) >> 20) & 0x1B) == 0x12 ) // not 10x10
-
 //=== instr is MSR (immediate) and hints ===
 //>> layer 3
-
+static inline int is_NOP(uint32_t instr)            { return ( ( ((instr) >> 22) & 0x1) == 0x0 ) && ( ( ((instr) >> 16) & 0xF) == 0x0) && ( ( ((instr) >> 0) & 0xFF) == 0x0); } // 0b0 and 0b0000 and 0b00000000
+static inline int is_YIELD(uint32_t instr)          { return ( ( ((instr) >> 22) & 0x1) == 0x0 ) && ( ( ((instr) >> 16) & 0xF) == 0x0) && ( ( ((instr) >> 0) & 0xFF) == 0x1); } // 0b0 and 0b0000 and 0b00000001
+static inline int is_WFE(uint32_t instr)            { return ( ( ((instr) >> 22) & 0x1) == 0x0 ) && ( ( ((instr) >> 16) & 0xF) == 0x0) && ( ( ((instr) >> 0) & 0xFF) == 0x2); } // 0b0 and 0b0000 and 0b00000010
+static inline int is_WFI(uint32_t instr)            { return ( ( ((instr) >> 22) & 0x1) == 0x0 ) && ( ( ((instr) >> 16) & 0xF) == 0x0) && ( ( ((instr) >> 0) & 0xFF) == 0x3); } // 0b0 and 0b0000 and 0b00000011
+static inline int is_SEV(uint32_t instr)            { return ( ( ((instr) >> 22) & 0x1) == 0x0 ) && ( ( ((instr) >> 16) & 0xF) == 0x0) && ( ( ((instr) >> 0) & 0xFF) == 0x4); } // 0b0 and 0b0000 and 0b00000100
+static inline int is_DBG(uint32_t instr)            { return ( ( ((instr) >> 22) & 0x1) == 0x0 ) && ( ( ((instr) >> 16) & 0xF) == 0x0) && ( ( ((instr) >> 0) & 0xFF) == 0xF0); } // 0b0 and 0b0000 and 0b1111xxxx
+static inline int is_MSR_imm_app(uint32_t instr)    { return ( ( ((instr) >> 22) & 0x1) == 0x0 ) && 
+                                                                ( ( ( ((instr) >> 16) & 0xF) == 0x4) || ( ( ((instr) >> 16) & 0xB) == 0x8) ); } // 0b0 and (0100 or 1x00)
+static inline int is_MSR_imm_sys(uint32_t instr)    { return ( ( ( ((instr) >> 22) & 0x1) == 0x0 ) && 
+                                                                ( ( ( ((instr) >> 16) & 0x3) == 0x1) || ( ( ((instr) >> 16) & 0x2) == 0x2) ) ) ||
+                                                                ( ( ((instr) >> 22) & 0x1) == 0x1 ); } // (0b0 and (xx01 or xx1x)) or 0b1
 //==========================================
 
 //>>>>>>>>>>>>>
@@ -191,7 +235,8 @@ static inline int is_LDREXH(uint32_t instr)         { return ( ( ((instr) >> 20)
 #define IS_LD_STR(instr)            ( ( ((instr) >> 25) & 0x7) == 0x2 ) || ( ( ( ((instr) >> 25) & 0x7) == 0x3 ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ) ) // 0b010 or (0b011 and 0b0)
 //======================================
 //>> layer 3
-
+static inline int is_STR_imm(instr)                 { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x0 ) && ( ( ((instr) >> 20) & 0x17) != 0x2 ) ); } // 0b0 and (0bxx0x0 and not 0b0x010)
+static inline int is_STR_reg(instr)                 { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x0 ) && ( ( ((instr) >> 20) & 0x17) != 0x2 ) ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b1 and (0bxx0x0 and not 0b0x010) and 0b0
 //======================================
 
 //>> layer 2
