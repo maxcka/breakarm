@@ -237,16 +237,133 @@ static inline int is_MSR_imm_sys(uint32_t instr)    { return ( ( ( ((instr) >> 2
 //>> layer 3
 static inline int is_STR_imm(instr)                 { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x0 ) && ( ( ((instr) >> 20) & 0x17) != 0x2 ) ); } // 0b0 and (0bxx0x0 and not 0b0x010)
 static inline int is_STR_reg(instr)                 { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x0 ) && ( ( ((instr) >> 20) & 0x17) != 0x2 ) ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b1 and (0bxx0x0 and not 0b0x010) and 0b0
+static inline int is_STRT(instr)                    { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ((instr) >> 20) & 0x17) == 0x2 ); } // 0b0 and 0b0x010
+static inline int is_STRT_2(instr)                  { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ((instr) >> 20) & 0x17) == 0x2 ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b0 and 0b0x010 and 0b0
+
+static inline int is_LDR_imm(instr)                 { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x1 ) && ( ( ((instr) >> 20) & 0x17) != 0x3 ) ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } // 0b0 and (0bxx0x1 and not 0b0x011) and not 0b1111
+static inline int is_LDR_lit(instr)                 { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x1 ) && ( ( ((instr) >> 20) & 0x17) != 0x3 ) ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } // 0b0 and (0bxx0x1 and not 0b0x011) and 0b1111
+static inline int is_LDR_reg(instr)                 { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x1 ) && ( ( ((instr) >> 20) & 0x17) != 0x3 ) ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b1 and (0bxx0x1 and not 0b0x011) and 0b0
+static inline int is_LDRT(instr)                    { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ((instr) >> 20) & 0x17) == 0x3 ); } // 0b0 and 0b0x010
+static inline int is_LDRT_2(instr)                  { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ((instr) >> 20) & 0x17) == 0x3 ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b0 and 0b0x010 and 0b0
+
+static inline int is_STRB_imm(instr)                { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x4 ) && ( ( ((instr) >> 20) & 0x17) != 0x6 ) ); } // 0b0 and (0bxx1x0 and not 0b0x110)
+static inline int is_STRB_reg(instr)                { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x0 ) && ( ( ((instr) >> 20) & 0x17) != 0x2 ) ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b1 and (0bxx1x0 and not 0b0x110) and 0b0
+static inline int is_STRBT(instr)                   { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ((instr) >> 20) & 0x17) == 0x6 ); } // 0b0 and 0b0x110
+static inline int is_STRBT_2(instr)                 { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ((instr) >> 20) & 0x17) == 0x6 ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b0 and 0b0x110 and 0b0
+
+static inline int is_LDRB_imm(instr)                { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 20) & 0x17) != 0x7 ) ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } // 0b0 and (0bxx1x1 and not 0b0x111) and not 0b1111
+static inline int is_LDRB_lit(instr)                { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 20) & 0x17) != 0x7 ) ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } // 0b0 and (0bxx1x1 and not 0b0x111) and 0b1111
+static inline int is_LDRB_reg(instr)                { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 20) & 0x17) != 0x7 ) ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b1 and (0bxx1x1 and not 0b0x111) and 0b0
+static inline int is_LDRBT(instr)                   { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ((instr) >> 20) & 0x17) == 0x7 ); } // 0b0 and 0b0x111
+static inline int is_LDRBT_2(instr)                 { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ((instr) >> 20) & 0x17) == 0x7 ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b0 and 0b0x111 and 0b0
 //======================================
 
 //>> layer 2
 // instruction is media instructions
 #define IS_MED(instr)               ( ( ( ((instr) >> 25) & 0x7) == 0x3 ) && ( ( ((instr) >> 4) & 0x1) == 0x1 ) ) // 0b011 and 0b1
-//======================================
+
 //>> layer 3
+// instruction is parallel addition and subtraction, signed
+#define IS_PAS_S(instr)             ( ( ( ((instr) >> 20) & 0x1C) == 0x0 ) ) // 0b000xx
 
+//>> layer 4
+// instruction is normal signed
+#define IS_PAS_S_NORM(instr)        ( ( ( ((instr) >> 20) & 0x3) == 0x1 ) ) // 0b01
+//======================================
+//>> layer 5
+static inline int is_ADD16(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x7) == 0x0 ); } // 0b000
+static inline int is_ASX(uint32_t instr)        { return ( ( ((instr) >> 5) & 0x7) == 0x1 ); } // 0b001
+static inline int is_SAX(uint32_t instr)        { return ( ( ((instr) >> 5) & 0x7) == 0x2 ); } // 0b010
+static inline int is_SUB16(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x7) == 0x3 ); } // 0b011
+static inline int is_ADD8(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x7) == 0x4 ); } // 0b100
+static inline int is_SUB8(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x7) == 0x7 ); } // 0b111
 //======================================
 
+//>> layer 4
+// instruction is saturating signed
+#define IS_PAS_S_SAT(instr)        ( ( ( ((instr) >> 20) & 0x3) == 0x2 ) ) // 0b10
+//==============
+//>> layer 5
+// same layer 5 as previous
+//==============
+
+//>> layer 4
+// instruction is halving signed
+#define IS_PAS_S_HALV(instr)        ( ( ( ((instr) >> 20) & 0x3) == 0x3 ) ) // 0b11
+//==============
+//>> layer 5
+// same layer 5 as previous
+//==============
+
+//>> layer 3
+// instruction is parallel addition and subtraction, unsigned
+#define IS_PAS_U(instr)             ( ( ( ((instr) >> 20) & 0x1C) == 0x4 ) ) // 0b001xx
+
+//>> layer 4
+// instruction is normal unsigned
+#define IS_PAS_U_NORM(instr)        ( ( ( ((instr) >> 20) & 0x3) == 0x1 ) ) // 0b01
+//==============
+//>> layer 5
+// same layer 5 as previous
+//==============
+
+//>> layer 4
+// instruction is saturating unsigned
+#define IS_PAS_U_SAT(instr)        ( ( ( ((instr) >> 20) & 0x3) == 0x2 ) ) // 0b10
+//==============
+//>> layer 5
+// same layer 5 as previous
+//==============
+
+//>> layer 4
+// instruction is halving unsigned
+#define IS_PAS_U_HALV(instr)        ( ( ( ((instr) >> 20) & 0x3) == 0x3 ) ) // 0b11
+//==============
+//>> layer 5
+// same layer 5 as previous
+//==============
+
+//>> layer 3
+// instruction is packing, unpacking, saturation, and reversal
+#define IS_PUSR(instr)             ( ( ( ((instr) >> 20) & 0x18) == 0x8 ) ) // 0b01xxx
+//--- helper macros ---
+// is extend and add byte base instruction (used several times in layer 4)
+#define IS_XTAB(instr)                ( ( ( ((instr) >> 5) & 0x7) == 0x3 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ) ) // 0b011 and not 0b1111
+// is extend byte base instruction (used several times in layer 4)
+#define IS_XTB(instr)                ( ( ( ((instr) >> 5) & 0x7) == 0x3 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ) ) // 0b011 and 0b1111
+//---------------------
+//=========================
+//>> layer 4
+static inline int is_PKH(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x7) == 0x0 ) && ( ( ((instr) >> 5) & 0x1) == 0x0 ); } // 0b000 and 0bxx0
+static inline int is_SXTAB16(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x7) == 0x0 ) && IS_XTAB(instr); } // 0b000 and IS_XTAB()
+static inline int is_SXTB16(uint32_t instr)         { return ( ( ((instr) >> 20) & 0x7) == 0x0 ) && IS_XTB(instr); } // 0b000 and IS_XTB()
+static inline int is_SEL(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x7) == 0x0 ) && ( ( ((instr) >> 5) & 0x7) == 0x5 ); } // 0b000 and 0b101
+
+static inline int is_SSAT(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x6) == 0x2 ) && ( ( ((instr) >> 5) & 0x1) == 0x0 ); } // 0b01x and 0bxx0
+
+static inline int is_SSAT16(uint32_t instr)         { return ( ( ((instr) >> 20) & 0x7) == 0x2 ) && ( ( ((instr) >> 5) & 0x7) == 0x1 ); } // 0b010 and 0b001
+static inline int is_SXTAB(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x2 ) && IS_XTAB(instr); } // 0b010 and IS_XTAB()
+static inline int is_SXTB(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x7) == 0x2 ) && IS_XTB(instr); } // 0b010 and IS_XTB()
+
+static inline int is_REV(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x7) == 0x3 ) && ( ( ((instr) >> 5) & 0x7) == 0x1 ); } // 0b011 and 0b001
+static inline int is_SXTAH(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x3 ) && IS_XTAB(instr); } // 0b011 and IS_XTAB()
+static inline int is_SXTH(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x7) == 0x3 ) && IS_XTB(instr); } // 0b011 and IS_XTB()
+static inline int is_REV16(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x3 ) && ( ( ((instr) >> 5) & 0x7) == 0x5 ); } // 0b011 and 0b101
+
+static inline int is_UXTAB16(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x7) == 0x4 ) && IS_XTAB(instr); } // 0b011 and IS_XTAB()
+static inline int is_UXTB16(uint32_t instr)         { return ( ( ((instr) >> 20) & 0x7) == 0x4 ) && IS_XTB(instr); } // 0b011 and IS_XTB()
+
+static inline int is_USAT(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x6) == 0x6 ) && ( ( ((instr) >> 5) & 0x1) == 0x0 ); } // 0b01x and 0bxx0
+
+static inline int is_USAT16(uint32_t instr)         { return ( ( ((instr) >> 20) & 0x7) == 0x6 ) && ( ( ((instr) >> 5) & 0x7) == 0x1 ); } // 0b011 and 0b001
+static inline int is_UXTAB(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x6 ) && IS_XTAB(instr); } // 0b011 and IS_XTAB()
+static inline int is_UXTB(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x7) == 0x6 ) && IS_XTB(instr); } // 0b011 and IS_XTB()
+
+static inline int is_RBIT(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x7) == 0x7 ) && ( ( ((instr) >> 5) & 0x7) == 0x1 ); } // 0b111 and 0b001
+static inline int is_UXTAH(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x7 ) && IS_XTAB(instr); } // 0b011 and IS_XTAB()
+static inline int is_UXTH(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x7) == 0x7 ) && IS_XTB(instr); } // 0b011 and IS_XTB()
+static inline int is_REVSH(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x7 ) && ( ( ((instr) >> 5) & 0x7) == 0x5 ); } // 0b011 and 0b101
+//=========================
 
 //>>>>>>>>>>>>>
 //>> layer 1 <<
