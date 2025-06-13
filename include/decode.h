@@ -12,14 +12,6 @@
 #define A32_INSTR_SIZE 4
 
 
-// start and end indices of different instruction categories in the proc_instr_table 
-#define DP_REG_START 0
-#define DP_REG_END 21
-#define DP_RSR_START 21
-#define DP_RSR_END 40
-#define MISC_START 40
-
-
 
 
 extern const char *core_reg[16];
@@ -78,34 +70,42 @@ typedef enum {
     AL
 } Cond;
 
+
+//==> instructions groupings:
+// 1. instruction class -- e.g. DATA_PROC
+// 1. instruction group -- e.g. DATA_PROC_REG
+// 2. instruction type -- e.g. TYPE_0
+
 // this might get really large
 typedef enum {
     // data proc instructions
-    TYPE_0,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
-    TYPE_0_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
+    TYPE_DP_0,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
+    TYPE_DP_0_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
 
-    TYPE_1,     // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
-    TYPE_1_RSR, // syntax: <MNEMONIC><c> <Rn>, <Rm>, <type> <Rs>
+    TYPE_DP_1,     // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
+    TYPE_DP_1_RSR, // syntax: <MNEMONIC><c> <Rn>, <Rm>, <type> <Rs>
 
-    TYPE_2,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
+    TYPE_DP_2,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
 
-    TYPE_3,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
-    TYPE_3_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>
+    TYPE_DP_3,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
+    TYPE_DP_3_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>
 
-    TYPE_4,      // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm> {, <shift>}
-    TYPE_4_RSR,  // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, <type> <Rs>
-} Instr_type;
+    TYPE_DP_4,      // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm> {, <shift>}
+    TYPE_DP_4_RSR,  // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, <type> <Rs>
+} IType;
 
 // TODO not used in code yet.
 typedef enum {
-    DATA_PROC
-} Group;
+    GROUP_DP_REG,
+    GROUP_DP_RSR,
+    GROUP_MISC
+} IGroup;
 
 // have a lookup table for group to print function like print_table[group] = print_fn
 
 typedef struct {
-    Group group; // TODO not used yet
-    Instr_type i_type; // instruction type
+    IGroup igroup; // TODO not used yet
+    IType itype; // instruction type
 
     uint8_t special;
     const char *mnemonic;
@@ -120,8 +120,20 @@ typedef struct {
 } Instr;
 
 
+typedef int (*InstrHandler)(uint32_t);
+
+typedef struct {
+    InstrHandler (*table)[2];
+    int num_rows;
+} InstrHandlerTable;
+
+// === elements of the proc_instr_group_table ===
+extern InstrHandler proc_dp_reg_table[][2];
+extern InstrHandler proc_dp_rsr_table[][2];
+// ==============================================
 // lookup table for processing instructions
-extern int (*proc_instr_table[][2])(uint32_t);
+//extern int (*proc_instr_table[][2])(uint32_t);
+extern InstrHandlerTable proc_instr_group_table[];
 // lookup table for printing an instruction by calling a function based on the instruction group that it is in
 extern void (*print_instr_table[])(Instr *);
 
@@ -160,7 +172,7 @@ int BIC_instr(uint32_t instr);
 int MVN_instr(uint32_t instr);
 
 // main functions
-void find_and_decode(uint32_t instr, int start_idx, int end_idx);
+void find_and_decode(uint32_t instr, IGroup igroup);
 
 void decode_dp_op_0(uint32_t instr);
 void decode_dp_op_1(uint32_t instr);

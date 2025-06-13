@@ -42,13 +42,14 @@ const char *cond_codes[16] = {
 
 
 void (*print_instr_table[])(Instr *) = {
-    print_data_proc_instr,      // DATA_PROC
+    print_data_proc_instr,      // DATA_PROC_REG
+    print_data_proc_instr      // DATA_PROC_RSR
+    
 };
 
 
-// lookup table for processing instructions
-// format: { bit-matching fn, processing function }
-int (*proc_instr_table[][2])(uint32_t) = {
+//int (*data_proc_reg_table[][2])(uint32_t) = {
+InstrHandler proc_dp_reg_table[][2] = {
     // data-processing reg
     { is_AND    , AND_instr },
     { is_EOR    , EOR_instr },
@@ -71,6 +72,9 @@ int (*proc_instr_table[][2])(uint32_t) = {
     { is_ROR_imm, ROR_instr },
     { is_BIC    , BIC_instr },
     { is_MVN    , MVN_instr },
+};
+
+InstrHandler proc_dp_rsr_table[][2] = {
     // data-processing rsr
     { is_AND    , AND_instr },
     { is_EOR    , EOR_instr },
@@ -90,7 +94,10 @@ int (*proc_instr_table[][2])(uint32_t) = {
     { is_ASR_reg, ASR_instr },
     { is_ROR_reg, ROR_instr },
     { is_BIC    , BIC_instr },
-    { is_MVN    , MVN_instr },
+    { is_MVN    , MVN_instr }
+};
+
+InstrHandler proc_misc_table[][2] = {
     // miscellaneous
     //{ is_MRS_BANKED, }, 
     //{ is_MSR_BANKED, }, 
@@ -109,5 +116,14 @@ int (*proc_instr_table[][2])(uint32_t) = {
     //{ is_BKPT, }, 
     //{ is_HVC, }, 
     //{ is_SMC, }
+};
 
+// lookup table for processing instructions
+// format: { bit-matching fn, processing function }
+//int (*proc_instr_table[][2])(uint32_t) = {
+
+// an array where each element is an InstrHandlerTable struct
+InstrHandlerTable proc_instr_group_table[] = {  
+    { proc_dp_reg_table, sizeof(proc_dp_reg_table) / sizeof(proc_dp_reg_table[0]) },
+    { proc_dp_rsr_table, sizeof(proc_dp_rsr_table) / sizeof(proc_dp_rsr_table[0]) }
 };

@@ -48,5 +48,5 @@ void get_shift_str(Shift shift, char *shift_str, int buf_sz) {
 // print_instr_table[instr_s.group]
 
 void print_asm_instr(Instr *instr_s) {
-    print_instr_table[instr_s->group](instr_s);
+    print_instr_table[instr_s->igroup](instr_s);
 }

@@ -24,9 +24,11 @@ static const char *default_str = "UNKNOWN";
 // ===============
 // === Decoder ===
 // ===============
-void find_and_decode(uint32_t instr, int start_idx, int end_idx) {
-    //int num_rows = sizeof(proc_instr_table) / sizeof(proc_instr_table[0]);
-    for (int i = start_idx; i < end_idx; i++) {
+void find_and_decode(uint32_t instr, IGroup igroup) {
+    InstrHandlerTable IH_table = proc_instr_group_table[igroup];
+    int num_rows = IH_table.num_rows;
+    InstrHandler (*proc_instr_table)[2] = IH_table.table;
+    for (int i = 0; i < num_rows; i++) {
         if (proc_instr_table[i][0](instr)) { // if this instruction matches the current A32 instruction
             proc_instr_table[i][1](instr); // process the instruction
             return;
@@ -38,10 +40,10 @@ void find_and_decode(uint32_t instr, int start_idx, int end_idx) {
 void decode_dp_op_0(uint32_t instr) {
     if (IS_DP_REG_OR_RSR(instr)) {           // layer 2
         if (IS_DP_REG(instr)) {               // layer 3
-            find_and_decode(instr, DP_REG_START, DP_REG_END);
+            find_and_decode(instr, GROUP_DP_REG);
         }
         else if (IS_DP_RSR(instr)) {          // layer 3
-            find_and_decode(instr, DP_RSR_START, DP_RSR_END);
+            find_and_decode(instr, GROUP_DP_RSR);
         }
         else {
             printf("%s\n", default_str);
@@ -49,11 +51,11 @@ void decode_dp_op_0(uint32_t instr) {
     }
     else if (IS_MISC_OR_HALF_MULT(instr)) {  // layer 2
         if (IS_MISC(instr)) {                 // layer 3
-            find_and_decode(instr, MISC_START, 42);
+            find_and_decode(instr, GROUP_MISC);
         }
-        else if (IS_HALF_MULT(instr)) {     // layer 3
-            
-        }
+        // else if (IS_HALF_MULT(instr)) {     // layer 3
+        // 
+        // }
         else {
             printf("%s\n", default_str);
         }
@@ -132,9 +134,9 @@ void decode_instr(uint32_t instr) {
             printf("%s\n", default_str);
         }
     }
-    else if (IS_UNCOND(instr)) {
-
-    }
+    // else if (IS_UNCOND(instr)) {
+    // 
+    // }
     else {
             printf("%s\n", default_str);
     }
