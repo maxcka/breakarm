@@ -22,8 +22,6 @@ const char *shift_codes[5] = {
 
 
 
-
-
 const char *cond_codes[16] = {
     "EQ",
     "NE",
@@ -40,6 +38,11 @@ const char *cond_codes[16] = {
     "GT",
     "LE",
     ""  // AL is not printed bc it is the default
+};
+
+
+void (*print_instr_table[])(Instr *) = {
+    print_data_proc_instr,      // DATA_PROC
 };
 
 

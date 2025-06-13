@@ -1,7 +1,7 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g -I.
+CFLAGS = -Wall -Wextra -g -I../include
 LDFLAGS = -lelf -lcapstone
-SRC = main.c decode.c decode_utils.c a32_tables.c instr_data_proc.c
+SRC = main.c decode.c decode_utils.c a32_tables.c instr/instr_data_proc.c
 OBJ = $(SRC:.c=.o)
 PROG = arm32_disasm
 

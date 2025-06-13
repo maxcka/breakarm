@@ -12,6 +12,16 @@
 #define A32_INSTR_SIZE 4
 
 
+// start and end indices of different instruction categories in the proc_instr_table 
+#define DP_REG_START 0
+#define DP_REG_END 21
+#define DP_RSR_START 21
+#define DP_RSR_END 40
+#define MISC_START 40
+
+
+
+
 extern const char *core_reg[16];
 extern const char *shift_codes[5];
 extern const char *cond_codes[16];
@@ -68,7 +78,9 @@ typedef enum {
     AL
 } Cond;
 
+// this might get really large
 typedef enum {
+    // data proc instructions
     TYPE_0,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
     TYPE_0_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
 
@@ -80,12 +92,21 @@ typedef enum {
     TYPE_3,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
     TYPE_3_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>
 
-    TYPE_4,      // syntax: <MNEMONIC>{S}{<c>} <Rd>, <Rm> {, <shift>}
+    TYPE_4,      // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm> {, <shift>}
     TYPE_4_RSR,  // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, <type> <Rs>
 } Instr_type;
 
+// TODO not used in code yet.
+typedef enum {
+    DATA_PROC
+} Group;
+
+// have a lookup table for group to print function like print_table[group] = print_fn
+
 typedef struct {
+    Group group; // TODO not used yet
     Instr_type i_type; // instruction type
+
     uint8_t special;
     const char *mnemonic;
     Shift shift;
@@ -99,6 +120,12 @@ typedef struct {
 } Instr;
 
 
+// lookup table for processing instructions
+extern int (*proc_instr_table[][2])(uint32_t);
+// lookup table for printing an instruction by calling a function based on the instruction group that it is in
+extern void (*print_instr_table[])(Instr *);
+
+
 // need comments for fn declarations
 
 // auxiliary functions
@@ -108,6 +135,7 @@ void print_asm_instr(Instr *instr_s);
 
 // instruction processing functions
 //> data-processing (register)
+void print_data_proc_instr(Instr *instr_s);
 int process_data_proc_instr(uint32_t instr, Instr *instr_s);
 int AND_instr(uint32_t instr);
 int EOR_instr(uint32_t instr);

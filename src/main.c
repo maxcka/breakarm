@@ -10,7 +10,7 @@
 
 #include "decode.h"
 
-
+// flow: main.c -> decode.c -> a32_tables.c -> instr_*.c 
 
 void fatal(const char *msg) {
     perror(msg);

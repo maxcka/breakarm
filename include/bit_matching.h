@@ -479,17 +479,6 @@ static inline int is_MCR2(uint32_t instr)           { return ( ( ((instr) >> 20)
 static inline int is_MRC2(uint32_t instr)           { return ( ( ((instr) >> 20) & 0xF1) == 0xE1 ) && ( ( ((instr) >> 4) & 0x1) == 0x1 ); } // 0b1110xxx1 and 0b1
 //=======================
 
-// start indices in the proc_instr_table 
-#define DP_REG_START 0
-#define DP_REG_END 21
-#define DP_RSR_START 21
-#define DP_RSR_END 40
-#define MISC_START 40
-
-// lookup table for processing instructions
-extern int (*proc_instr_table[][2])(uint32_t);
-
-
 
 
 
