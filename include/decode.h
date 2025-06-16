@@ -6,17 +6,28 @@
 
 //===================================================
 
+#define BUF_10 10
 #define BUF_20 20
 
 // A32 instructions are 4 bytes wide
 #define A32_INSTR_SIZE 4
 
+#define INSTR_HANDLER_ARR_SIZE 2
+#define BANKED_REG_TABLE_ROWS 8
+#define BANKED_REG_TABLE_COLS 4
+#define NUM_REG 16
+#define NUM_SPEC_REG 3
+#define NUM_SHIFT_TYPES 5
 
+#define APSR_POS 2 // application level special register position
 
+#define UNPRED_STR "UNPRED"
+#define UNDEF_STR "UNDEF"
 
-extern const char *core_reg[16];
-extern const char *shift_codes[5];
-extern const char *cond_codes[16];
+extern const char *core_reg[NUM_REG];
+extern const char *spec_reg[NUM_SPEC_REG];
+extern const char *shift_codes[NUM_SHIFT_TYPES];
+extern const char *cond_codes[NUM_REG];
 
 typedef enum {
     R0,
@@ -92,6 +103,22 @@ typedef enum {
 
     TYPE_DP_4,      // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm> {, <shift>}
     TYPE_DP_4_RSR,  // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, <type> <Rs>
+
+    // misc instructions
+    TYPE_MISC_BANKED_0,    // syntax: <MNEMONIC><c> <Rd>, <banked_reg>
+    TYPE_MISC_BANKED_1,    // syntax: <MNEMONIC><c> <banked_reg>, <Rn>
+
+    TYPE_MISC_1,            // syntax: <MNEMONIC><c> <Rd>, <spec_reg>
+    
+    TYPE_MISC_2_APP,    // syntax: <MNEMONIC><c> <spec_reg>, <Rn>
+    TYPE_MISC_2_SYS,    // syntax: <MNEMONIC><c> <spec_reg>, <Rn>
+
+    TYPE_MISC_3,    // syntax: <MNEMONIC><c> <Rm>
+
+    TYPE_MISC_4,    // syntax: <MNEMONIC><c> <Rm>
+
+    TYPE_UNPRED,
+    TYPE_UNDEF
 } IType;
 
 // TODO not used in code yet.
@@ -110,26 +137,33 @@ typedef struct {
     uint8_t special;
     const char *mnemonic;
     Shift shift;
-    char shift_str[BUF_20];
+    union { // extra string buffer
+        char shift_str[BUF_20];
+        char banked_reg_str[BUF_20];
+        char spec_reg_str[BUF_20];
+    };
     Cond c;
     Register Rd;
     Register Rn;
     Register Rm;
     Register Rs; //^ this overlaps with imm5 (make union??) (used in RSR instructions)
     uint8_t S;
+    uint8_t R;
 } Instr;
+
 
 
 typedef int (*InstrHandler)(uint32_t);
 
 typedef struct {
-    InstrHandler (*table)[2];
+    InstrHandler (*table)[INSTR_HANDLER_ARR_SIZE];
     int num_rows;
 } InstrHandlerTable;
 
+
 // === elements of the proc_instr_group_table ===
-extern InstrHandler proc_dp_reg_table[][2];
-extern InstrHandler proc_dp_rsr_table[][2];
+extern InstrHandler proc_dp_reg_table[][INSTR_HANDLER_ARR_SIZE];
+extern InstrHandler proc_dp_rsr_table[][INSTR_HANDLER_ARR_SIZE];
 // ==============================================
 // lookup table for processing instructions
 //extern int (*proc_instr_table[][2])(uint32_t);
@@ -138,9 +172,16 @@ extern InstrHandlerTable proc_instr_group_table[];
 extern void (*print_instr_table[])(Instr *);
 
 
+
+extern const char *banked_reg_table[][BANKED_REG_TABLE_ROWS][BANKED_REG_TABLE_COLS];
+
+
 // need comments for fn declarations
 
 // auxiliary functions
+void get_sys_sr_str(Instr *instr_s, uint8_t mask);
+void get_app_sr_str(Instr *instr_s, uint8_t mask);
+void get_banked_reg_str(uint8_t m, uint8_t m1, uint8_t R, char *banked_reg_str, int buf_sz);
 Shift decode_imm_shift(ShiftType type, uint8_t imm5);
 void get_shift_str(Shift shift, char *shift_str, int buf_sz);
 void print_asm_instr(Instr *instr_s);
@@ -170,6 +211,11 @@ int RRX_instr(uint32_t instr);
 int ROR_instr(uint32_t instr);
 int BIC_instr(uint32_t instr);
 int MVN_instr(uint32_t instr);
+
+//> miscellaneous
+void print_misc_instr(Instr *instr_s);
+int process_misc_instr(uint32_t instr, Instr *instr_s);
+int MRS_BANKED_instr(uint32_t instr);
 
 // main functions
 void find_and_decode(uint32_t instr, IGroup igroup);

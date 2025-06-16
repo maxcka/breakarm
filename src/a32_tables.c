@@ -3,16 +3,22 @@
 #include "bit_matching.h"
 
 
-const char *core_reg[16] = {
+const char *core_reg[NUM_REG] = {
     "R0", "R1", "R2", "R3",
     "R4", "R5", "R6", "R7",
     "R8", "R9", "SL", "FP",
     "IP", "SP", "LR", "PC"  // R12 can be called IP or R12
 };
 
+const char *spec_reg[NUM_SPEC_REG] = {
+    "CPSR",
+    "SPSR",
+    "APSR"
+};
 
 
-const char *shift_codes[5] = {
+
+const char *shift_codes[NUM_SHIFT_TYPES] = {
     "LSL",
     "LSR",
     "ASR",
@@ -22,7 +28,7 @@ const char *shift_codes[5] = {
 
 
 
-const char *cond_codes[16] = {
+const char *cond_codes[NUM_REG] = {
     "EQ",
     "NE",
     "CS",
@@ -38,6 +44,31 @@ const char *cond_codes[16] = {
     "GT",
     "LE",
     ""  // AL is not printed bc it is the default
+};
+
+
+// [R][SYSm<2:0>][SYSm<4:3>]
+const char *banked_reg_table[][BANKED_REG_TABLE_ROWS][BANKED_REG_TABLE_COLS] = {
+    {
+        { "R8_usr",     "R8_fiq",   "LR_irq", "UNPRED" },
+        { "R9_usr",     "R9_fiq",   "SP_irq", "UNPRED" },
+        { "R10_usr",    "R10_fiq",  "LR_svc", "UNPRED" },
+        { "R11_usr",    "R11_fiq",  "SP_svc", "UNPRED" },
+        { "R12_usr",    "R12_fiq",  "LR_abt", "LR_mon" },
+        { "SP_usr",     "SP_fiq",   "SP_abt", "SP_mon" },
+        { "LR_usr",     "LR_fiq",   "LR_und", "ELR_hyp" },
+        { "UNPRED",     "UNPRED",   "SP_und", "SP_hyp" }
+    },
+    {
+        { "UNPRED", "UNPRED",   "SPSR_irq", "UNPRED" },
+        { "UNPRED", "UNPRED",   "UNPRED",   "UNPRED" },
+        { "UNPRED", "UNPRED",   "SPSR_svc", "UNPRED" },
+        { "UNPRED", "UNPRED",   "UNPRED",   "UNPRED" },
+        { "UNPRED", "UNPRED",   "SPSR_abt", "SPSR_mon" },
+        { "UNPRED", "UNPRED",   "UNPRED",   "UNPRED" },
+        { "UNPRED", "SPSR_fiq", "SPSR_und", "SPSR_hyp" },
+        { "UNPRED", "UNPRED",   "UNPRED",   "UNPRED" }
+    }
 };
 
 
@@ -99,7 +130,7 @@ InstrHandler proc_dp_rsr_table[][2] = {
 
 InstrHandler proc_misc_table[][2] = {
     // miscellaneous
-    //{ is_MRS_BANKED, }, 
+    { is_MRS_BANKED, MRS_BANKED_instr} 
     //{ is_MSR_BANKED, }, 
     //{ is_MRS, }, 
     //{ is_MSR_REG_APP, }, 

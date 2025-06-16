@@ -13,6 +13,7 @@
 void print_data_proc_instr(Instr *instr_s) {
     switch (instr_s->itype) {
         case TYPE_DP_0: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
+        {
             printf("%s%s%s %s, %s, %s%s\n", 
             instr_s->mnemonic, 
             (instr_s->S) ? "S" : "", 
@@ -22,8 +23,10 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rm], 
             instr_s->shift_str);
             break;
+        }
         
         case TYPE_DP_0_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
+        {
             printf("%s%s%s %s, %s, %s, %s %s\n", 
             instr_s->mnemonic, 
             (instr_s->S) ? "S" : "", 
@@ -34,8 +37,10 @@ void print_data_proc_instr(Instr *instr_s) {
             shift_codes[instr_s->shift.shift_t],
             core_reg[instr_s->Rs]);
             break;
+        }
         
         case TYPE_DP_1: // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
+        {
             printf("%s%s %s, %s%s\n", 
             instr_s->mnemonic, 
             cond_codes[instr_s->c], 
@@ -43,8 +48,10 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rm], 
             instr_s->shift_str);
             break;
+        }
 
         case TYPE_DP_1_RSR: // syntax: <MNEMONIC><c> <Rn>, <Rm>, <type> <Rs>
+        {
             printf("%s%s %s, %s, %s %s\n", 
             instr_s->mnemonic, 
             cond_codes[instr_s->c], 
@@ -53,8 +60,10 @@ void print_data_proc_instr(Instr *instr_s) {
             shift_codes[instr_s->shift.shift_t],
             core_reg[instr_s->Rs]);
             break;
+        }
 
         case TYPE_DP_2: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
+        {
             printf("%s%s%s %s, %s\n", 
             instr_s->mnemonic,
             (instr_s->S) ? "S" : "",
@@ -62,8 +71,10 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rd], 
             core_reg[instr_s->Rm]);
             break;
+        }
 
         case TYPE_DP_3: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
+        {
             printf("%s%s%s %s, %s, #%d\n", 
             instr_s->mnemonic,
             (instr_s->S) ? "S" : "",
@@ -72,8 +83,10 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rm],
             instr_s->shift.shift_n);
             break;
+        }
 
         case TYPE_DP_3_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>
+        {
             printf("%s%s%s %s, %s, %s\n", 
             instr_s->mnemonic,
             (instr_s->S) ? "S" : "",
@@ -82,8 +95,10 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rn],
             core_reg[instr_s->Rm]);
             break;
+        }
 
         case TYPE_DP_4: // syntax: <MNEMONIC>S{<c>} <Rd>, <Rm>{, <shift>}
+        {
             printf("%s%s%s %s, %s%s\n", 
             instr_s->mnemonic,
             (instr_s->S) ? "S" : "",
@@ -92,8 +107,10 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rm],
             instr_s->shift_str);
             break;
+        }
 
         case TYPE_DP_4_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, <type> <Rs>
+        {
             printf("%s%s%s %s, %s, %s %s\n", 
             instr_s->mnemonic,
             (instr_s->S) ? "S" : "",
@@ -103,6 +120,14 @@ void print_data_proc_instr(Instr *instr_s) {
             shift_codes[instr_s->shift.shift_t],
             core_reg[instr_s->Rs]);
             break;
+        }
+    
+        default: 
+        {
+            printf("UNKNOWN\n");
+            break;
+        }
+
     }
 }
 
@@ -131,7 +156,7 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
         instr_s->mnemonic = "MVN";
     }
 
-    get_shift_str(instr_s->shift, instr_s->shift_str, BUF_20);
+    get_shift_str(instr_s->shift, instr_s->shift_str, sizeof(instr_s->shift_str));
 
     print_asm_instr(instr_s);
 
@@ -149,9 +174,11 @@ int AND_instr(uint32_t instr) {
     instr_s.mnemonic = "AND";
     // this is kind of redundant but I think it's better than creating multiple functions for AND
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_0;
     }
     else if (IS_DP_RSR(instr)) {
+        instr_s.igroup = GROUP_DP_RSR;
         instr_s.itype = TYPE_DP_0_RSR; // syntax: AND{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
     }
 
@@ -166,9 +193,11 @@ int EOR_instr(uint32_t instr) {
     instr_s.mnemonic = "EOR";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_0;
     }
-    else if (IS_DP_RSR(instr)) {   
+    else if (IS_DP_RSR(instr)) {
+        instr_s.igroup = GROUP_DP_RSR;   
         instr_s.itype = TYPE_DP_0_RSR;
     }
 
@@ -182,9 +211,11 @@ int SUB_instr(uint32_t instr) {
     instr_s.mnemonic = "SUB";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_0;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
 
@@ -198,9 +229,11 @@ int RSB_instr(uint32_t instr) {
     instr_s.mnemonic = "RSB";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_0;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
 
@@ -214,9 +247,11 @@ int ADD_instr(uint32_t instr) {
     instr_s.mnemonic = "ADD";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_0;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
 
@@ -230,9 +265,11 @@ int ADC_instr(uint32_t instr) {
     instr_s.mnemonic = "ADC";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_0;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
 
@@ -246,9 +283,11 @@ int SBC_instr(uint32_t instr) {
     instr_s.mnemonic = "SBC";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_0;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
 
@@ -262,9 +301,11 @@ int RSC_instr(uint32_t instr) {
     instr_s.mnemonic = "RSC";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_0;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
 
@@ -278,9 +319,11 @@ int TST_instr(uint32_t instr) {
     instr_s.mnemonic = "TST";
     
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_1;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_1_RSR;
     }
 
@@ -292,9 +335,11 @@ int TEQ_instr(uint32_t instr) {
     instr_s.mnemonic = "TEQ";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_1;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_1_RSR;
     }
 
@@ -306,9 +351,11 @@ int CMP_instr(uint32_t instr) {
     instr_s.mnemonic = "CMP";
     
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_1;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_1_RSR;
     }
 
@@ -320,9 +367,11 @@ int CMN_instr(uint32_t instr) {
     instr_s.mnemonic = "CMN";
     
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_1;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_1_RSR;
     }
 
@@ -334,9 +383,11 @@ int ORR_instr(uint32_t instr) {
     instr_s.mnemonic = "ORR";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_0;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
 
@@ -347,6 +398,7 @@ int ORR_instr(uint32_t instr) {
 int MOV_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "MOV";
+    instr_s.igroup = GROUP_DP_REG;
     instr_s.itype = TYPE_DP_2;
     return process_data_proc_instr(instr, &instr_s);
 }
@@ -357,9 +409,11 @@ int LSL_instr(uint32_t instr) {
     instr_s.mnemonic = "LSL";
     
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_3;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_3_RSR;
     }
 
@@ -371,9 +425,11 @@ int LSR_instr(uint32_t instr) {
     instr_s.mnemonic = "LSR";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_3;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_3_RSR;
     }
 
@@ -385,9 +441,11 @@ int ASR_instr(uint32_t instr) {
     instr_s.mnemonic = "ASR";
     
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_3;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_3_RSR;
     }
 
@@ -398,6 +456,7 @@ int ASR_instr(uint32_t instr) {
 int RRX_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "RRX";
+    instr_s.igroup = GROUP_DP_REG;
     instr_s.itype = TYPE_DP_2;
     return process_data_proc_instr(instr, &instr_s);
 }
@@ -408,9 +467,11 @@ int ROR_instr(uint32_t instr) {
     instr_s.mnemonic = "ROR";
     
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_3;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_3_RSR;
     }
 
@@ -423,9 +484,11 @@ int BIC_instr(uint32_t instr) {
     instr_s.mnemonic = "BIC";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_0;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
 
@@ -438,9 +501,11 @@ int MVN_instr(uint32_t instr) {
     instr_s.mnemonic = "MVN";
 
     if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_4;
     }
     else if (IS_DP_RSR(instr)) {   
+        instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_4_RSR;
     }
 

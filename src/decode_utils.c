@@ -1,5 +1,66 @@
 #include <stdio.h>
+#include <string.h>
 #include "decode.h"
+
+
+// sys special register string
+void get_sys_sr_str(Instr *instr_s, uint8_t mask) {
+    if (mask == 0 || instr_s->Rn == PC) {
+        instr_s->itype = TYPE_UNPRED;
+        return;
+    }
+    uint8_t mask_0 = (mask >> 0) & 0x1;
+    uint8_t mask_1 = (mask >> 1) & 0x1;
+    uint8_t mask_2 = (mask >> 2) & 0x1;
+    uint8_t mask_3 = (mask >> 3) & 0x1;
+
+    char suffix[BUF_10] = "";
+
+    if (mask_0 == 1) {
+        strcat(suffix, "c");
+    }
+    if (mask_1 == 1) {
+        strcat(suffix, "x");
+    }
+    if (mask_2 == 1) {
+        strcat(suffix, "s");
+    }
+    if (mask_3 == 1) {
+        strcat(suffix, "f");
+    }
+
+    snprintf(instr_s->spec_reg_str, sizeof(instr_s->spec_reg_str), "%s_%s", spec_reg[instr_s->R], suffix);
+
+}
+
+// app special register string
+void get_app_sr_str(Instr *instr_s, uint8_t mask) {
+    if (mask == 0 || instr_s->Rn == PC) {
+        instr_s->itype = TYPE_UNPRED;
+        return;
+    }
+    uint8_t mask_0 = (mask >> 0) & 0x1;
+    uint8_t mask_1 = (mask >> 1) & 0x1;
+
+    char suffix[BUF_10] = "";
+
+    if (mask_0 == 1) {
+        strcat(suffix, "nzcvq");
+    }
+    if (mask_1 == 1) {
+        strcat(suffix, "g");
+    }
+
+    snprintf(instr_s->spec_reg_str, sizeof(instr_s->spec_reg_str), "%s_%s", spec_reg[APSR_POS], suffix);
+}
+
+void get_banked_reg_str(uint8_t m, uint8_t m1, uint8_t R, char *banked_reg_str, int buf_sz) {
+    uint8_t SYSm = (m << 4) | m1; // SYSm = m:m1 0b(m)(m1)(m1)(m1)(m1)
+    uint8_t SYSm_2_0 = SYSm & 0x7;      // SYSm[2:0]
+    uint8_t SYSm_4_3 = (SYSm >> 3) & 0x3;   // SYSm[4:3]
+
+    snprintf(banked_reg_str, buf_sz, "%s", banked_reg_table[R][SYSm_2_0][SYSm_4_3]);
+}
 
 
 Shift decode_imm_shift(ShiftType type, uint8_t imm5) {
