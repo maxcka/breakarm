@@ -2,6 +2,10 @@
 #include <string.h>
 #include "decode.h"
 
+void get_imm_str(Instr *instr_s, uint8_t imm4, uint16_t imm12) {
+    uint16_t imm16 = (imm12 << 4) | imm4;
+    snprintf(instr_s->imm_str, sizeof(instr_s->imm_str), "#%d", imm16);
+}
 
 // sys special register string
 void get_sys_sr_str(Instr *instr_s, uint8_t mask) {
@@ -94,6 +98,7 @@ Shift decode_imm_shift(ShiftType type, uint8_t imm5) {
     return shift;
 }
 
+// maybe change this and just pass in Instr instr_s?
 void get_shift_str(Shift shift, char *shift_str, int buf_sz) {
     if (shift.shift_n == 0) {
         shift_str[0] = '\0';

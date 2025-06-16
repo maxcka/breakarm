@@ -155,6 +155,7 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
         instr_s->itype = TYPE_DP_4;
         instr_s->mnemonic = "MVN";
     }
+    //^ TODO need to handle UNPREDICTABLE instruction scenarios
 
     get_shift_str(instr_s->shift, instr_s->shift_str, sizeof(instr_s->shift_str));
 

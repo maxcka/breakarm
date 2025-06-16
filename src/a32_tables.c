@@ -73,14 +73,15 @@ const char *banked_reg_table[][BANKED_REG_TABLE_ROWS][BANKED_REG_TABLE_COLS] = {
 
 
 void (*print_instr_table[])(Instr *) = {
-    print_data_proc_instr,      // DATA_PROC_REG
-    print_data_proc_instr      // DATA_PROC_RSR
+    print_data_proc_instr,      // GROUP_DP_REG
+    print_data_proc_instr,      // GROUP_DP_RSR
+    print_misc_instr            // GROUP_MISC
     
 };
 
 
 //int (*data_proc_reg_table[][2])(uint32_t) = {
-InstrHandler proc_dp_reg_table[][2] = {
+InstrHandler proc_dp_reg_table[][IH_ARR_SIZE] = {
     // data-processing reg
     { is_AND    , AND_instr },
     { is_EOR    , EOR_instr },
@@ -105,7 +106,7 @@ InstrHandler proc_dp_reg_table[][2] = {
     { is_MVN    , MVN_instr },
 };
 
-InstrHandler proc_dp_rsr_table[][2] = {
+InstrHandler proc_dp_rsr_table[][IH_ARR_SIZE] = {
     // data-processing rsr
     { is_AND    , AND_instr },
     { is_EOR    , EOR_instr },
@@ -128,25 +129,25 @@ InstrHandler proc_dp_rsr_table[][2] = {
     { is_MVN    , MVN_instr }
 };
 
-InstrHandler proc_misc_table[][2] = {
+InstrHandler proc_misc_table[][IH_ARR_SIZE] = {
     // miscellaneous
-    { is_MRS_BANKED, MRS_BANKED_instr} 
-    //{ is_MSR_BANKED, }, 
-    //{ is_MRS, }, 
-    //{ is_MSR_REG_APP, }, 
-    //{ is_MSR_REG_SYS, }, 
-    //{ is_BX, }, 
-    //{ is_CLZ, }, 
-    //{ is_BXJ, }, 
-    //{ is_BLX_REG, }, 
-    //{ is_QADD, }, 
-    //{ is_QSUB, }, 
-    //{ is_QDADD, }, 
-    //{ is_QDSUB, }, 
-    //{ is_ERET, }, 
-    //{ is_BKPT, }, 
-    //{ is_HVC, }, 
-    //{ is_SMC, }
+    { is_MRS_BANKED , MRS_BANKED_instr },
+    { is_MSR_BANKED , MRS_BANKED_instr },
+    { is_MRS        , MRS_instr }, 
+    { is_MSR_reg_app, MSR_reg_app_instr }, 
+    { is_MSR_reg_sys, MSR_reg_sys_instr }, 
+    { is_BX         , BX_instr }, 
+    { is_CLZ        , CLZ_instr },
+    { is_BXJ        , BXJ_instr }, 
+    { is_BLX_reg    , BLX_reg_instr }, 
+    { is_QADD       , QADD_instr }, 
+    { is_QSUB       , QSUB_instr }, 
+    { is_QDADD      , QDADD_instr }, 
+    { is_QDSUB      , QDSUB_instr }, 
+    { is_ERET       , ERET_instr }, 
+    { is_BKPT       , BKPT_instr }, 
+    { is_HVC        , HVC_instr }, 
+    { is_SMC        , SMC_instr }
 };
 
 // lookup table for processing instructions
@@ -156,5 +157,6 @@ InstrHandler proc_misc_table[][2] = {
 // an array where each element is an InstrHandlerTable struct
 InstrHandlerTable proc_instr_group_table[] = {  
     { proc_dp_reg_table, sizeof(proc_dp_reg_table) / sizeof(proc_dp_reg_table[0]) },
-    { proc_dp_rsr_table, sizeof(proc_dp_rsr_table) / sizeof(proc_dp_rsr_table[0]) }
+    { proc_dp_rsr_table, sizeof(proc_dp_rsr_table) / sizeof(proc_dp_rsr_table[0]) },
+    { proc_misc_table, sizeof(proc_misc_table) / sizeof(proc_misc_table[0]) },
 };
