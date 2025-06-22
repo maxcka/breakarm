@@ -92,39 +92,34 @@ typedef enum {
     // data proc instructions
     TYPE_DP_0,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
     TYPE_DP_0_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
-
     TYPE_DP_1,     // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
     TYPE_DP_1_RSR, // syntax: <MNEMONIC><c> <Rn>, <Rm>, <type> <Rs>
-
     TYPE_DP_2,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
-
     TYPE_DP_3,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
     TYPE_DP_3_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>
-
     TYPE_DP_4,      // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm> {, <shift>}
     TYPE_DP_4_RSR,  // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, <type> <Rs>
 
     // misc instructions
     TYPE_MISC_BANKED_0,    // syntax: <MNEMONIC><c> <Rd>, <banked_reg>
     TYPE_MISC_BANKED_1,    // syntax: <MNEMONIC><c> <banked_reg>, <Rn>
-
     TYPE_MISC_1,            // syntax: <MNEMONIC><c> <Rd>, <spec_reg>
-    
     TYPE_MISC_2_APP,    // syntax: <MNEMONIC><c> <spec_reg>, <Rn>
     TYPE_MISC_2_SYS,    // syntax: <MNEMONIC><c> <spec_reg>, <Rn>
-
     TYPE_MISC_3,    // syntax: <MNEMONIC><c> <Rm>
     TYPE_MISC_3_1,  // syntax: <MNEMONIC><c> <Rm> (can be set to unpred if Rm == PC)
-
     TYPE_MISC_4,    // syntax: <MNEMONIC><c> <Rm>
-
     TYPE_MISC_5,    // syntax: <MNEMONIC><c> <Rd>, <Rm>, <Rn>
-
     TYPE_MISC_6,    // syntax: <MNEMONIC><c>
-
     TYPE_MISC_7,    // syntax: <MNEMONIC> #<imm16>
-
     TYPE_MISC_8,    // syntax: <MNEMONIC><c> #<imm4>
+
+    // half mult instructions
+    TYPE_HM_0,
+    TYPE_HM_1,
+    TYPE_HM_2,
+    TYPE_HM_3,
+    TYPE_HM_4,
 
     TYPE_UNPRED,
     TYPE_UNDEF
@@ -132,9 +127,10 @@ typedef enum {
 
 // TODO not used in code yet.
 typedef enum {
-    GROUP_DP_REG,
-    GROUP_DP_RSR,
-    GROUP_MISC
+    GROUP_DP_REG, // data proc reg
+    GROUP_DP_RSR, // data proc rsr
+    GROUP_MISC,   // misc
+    GROUP_HM      // half mult
 } IGroup;
 
 // have a lookup table for group to print function like print_table[group] = print_fn
@@ -157,8 +153,12 @@ typedef struct {
     Register Rn;
     Register Rm;
     Register Rs; //^ this overlaps with imm5 (make union??) (used in RSR instructions)
+    Register Ra;
+    Register RdLo;
     uint8_t S;
     uint8_t R;
+    uint8_t x; // char
+    uint8_t y; // char
 } Instr;
 
 
@@ -237,6 +237,13 @@ int BKPT_instr(uint32_t instr);
 int HVC_instr(uint32_t instr);
 int SMC_instr(uint32_t instr);
 
+//> halfword multiply and multiply accumulate
+void print_half_mult_instr(Instr *instr_s);
+int SMLA_instr(uint32_t instr);
+int SMLAW_instr(uint32_t instr);
+int SMULW_instr(uint32_t instr);
+int SMLALXY_instr(uint32_t instr);
+int SMLUL_instr(uint32_t instr);
 
 // auxiliary functions
 void get_imm_str(Instr *instr_s, uint8_t imm4, uint16_t imm12);
@@ -258,8 +265,6 @@ void decode_br_blk(uint32_t instr);
 void decode_co_spr(uint32_t instr);
 
 void decode_instr(uint32_t instr);
-
-
 
 
 #endif

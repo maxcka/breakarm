@@ -75,7 +75,8 @@ const char *banked_reg_table[][BANKED_REG_TABLE_ROWS][BANKED_REG_TABLE_COLS] = {
 void (*print_instr_table[])(Instr *) = {
     print_data_proc_instr,      // GROUP_DP_REG
     print_data_proc_instr,      // GROUP_DP_RSR
-    print_misc_instr            // GROUP_MISC
+    print_misc_instr,            // GROUP_MISC
+    print_half_mult_instr
     
 };
 
@@ -150,6 +151,15 @@ InstrHandler proc_misc_table[][IH_ARR_SIZE] = {
     { is_SMC        , SMC_instr }
 };
 
+InstrHandler proc_hm_table[][IH_ARR_SIZE] = {
+    // halfword multiply and multiply accumulate
+    { is_SMLA   , SMLA_instr },
+    { is_SMLAW  , SMLA_instr },
+    { is_SMULW  , SMLA_instr },
+    { is_SMLALXY, SMLA_instr },
+    { is_SMUL   , SMLA_instr }
+};
+
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
 //int (*proc_instr_table[][2])(uint32_t) = {
@@ -159,4 +169,5 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_dp_reg_table, sizeof(proc_dp_reg_table) / sizeof(proc_dp_reg_table[0]) },
     { proc_dp_rsr_table, sizeof(proc_dp_rsr_table) / sizeof(proc_dp_rsr_table[0]) },
     { proc_misc_table, sizeof(proc_misc_table) / sizeof(proc_misc_table[0]) },
+    { proc_hm_table, sizeof(proc_hm_table) / sizeof(proc_hm_table[0]) },
 };

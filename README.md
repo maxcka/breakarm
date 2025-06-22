@@ -39,3 +39,8 @@ Adding new instructions steps:
 6. put the inline bit-matching function and the instruction processing function in the "proc_instr_table" lookup table
 7. add a decode path for this instruction in the decode_instr function
 
+bit_matching.h 
+-> instr_*.c : *_instr() 
+-> instr_*.c : process_*()
+-> instr_*.c : print_*()
+

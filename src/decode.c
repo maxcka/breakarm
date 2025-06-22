@@ -53,9 +53,9 @@ void decode_dp_op_0(uint32_t instr) {
         if (IS_MISC(instr)) {                 // layer 3
             find_and_decode(instr, GROUP_MISC);
         }
-        // else if (IS_HALF_MULT(instr)) {     // layer 3
-        // 
-        // }
+        else if (IS_HALF_MULT(instr)) {     // layer 3
+            find_and_decode(instr, GROUP_HM);
+        }
         else {
             printf("%s\n", default_str);
         }
