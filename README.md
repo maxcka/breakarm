@@ -44,3 +44,24 @@ bit_matching.h
 -> instr_*.c : process_*()
 -> instr_*.c : print_*()
 
+
+
+TODO:
+- DONE data proc reg
+- DONE data proc rsr 
+- DONE misc
+- DONE half mult
+- DONE mult
+- sync
+- extra load/store
+- extra load/store unpriv
+- data proc imm
+- MOV, MOVT, MSR
+
+- load/store word
+- media part 1
+- media part 2
+- branch, branch with link, and block data transfer
+- coproc and supervisor
+
+- unconditional

@@ -15,11 +15,36 @@ static const char *default_str = "UNKNOWN";
 // === INSTRUCTIONS ===
 // ====================
 
+// only used for undefined instruction
+// undefined is used in several instruction groups so better to put it in a central place
+void print_default_instr(Instr *instr_s) {
+    switch (instr_s->itype) {
+        case TYPE_UNDEF:
+        {
+            printf("%s\n", UNDEF_STR);
+            break;
+        }
+
+        default: 
+        {
+            printf("UNKNOWN\n");
+            break;
+        }
+    }
+}
 
 
-// ---------------------
-// --- Miscellaneous ---
-// ---------------------
+int UNDEF_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.igroup = GROUP_DEFAULT;
+    instr_s.itype = TYPE_UNDEF;
+
+    (void)instr; // silence warning
+
+    print_asm_instr(&instr_s);
+    return 0;
+}
+
 
 // ===============
 // === Decoder ===
@@ -60,9 +85,9 @@ void decode_dp_op_0(uint32_t instr) {
             printf("%s\n", default_str);
         }
     }
-    //else if (IS_MULT_MULT(instr)) {          // layer 2
-    //
-    //}
+    else if (IS_MULT_MULT(instr)) {          // layer 2
+        find_and_decode(instr, GROUP_MULT);
+    }
     //else if (IS_SYNC(instr)) {               // layer 2
     //
     //}

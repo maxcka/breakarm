@@ -115,11 +115,18 @@ typedef enum {
     TYPE_MISC_8,    // syntax: <MNEMONIC><c> #<imm4>
 
     // half mult instructions
-    TYPE_HM_0,
-    TYPE_HM_1,
-    TYPE_HM_2,
-    TYPE_HM_3,
-    TYPE_HM_4,
+    TYPE_HM_0, // syntax: <MNEMONIC><x><y><c> <Rd>, <Rn>, <Rm>, <Ra>
+    TYPE_HM_1, // syntax: <MNEMONIC><y><c> <Rd>, <Rn>, <Rm>, <Ra>
+    TYPE_HM_2, // syntax: <MNEMONIC><y><c> <Rd>, <Rn>, <Rm>
+    TYPE_HM_3, // syntax: <MNEMONIC><x><y><c> <RdLo>, <RdHi>, <Rn>, <Rm>
+    TYPE_HM_4, // syntax: <MNEMONIC><x><y><c> <Rd>, <Rn>, <Rm>
+
+    // mult instructions
+    TYPE_MULT_0, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
+    TYPE_MULT_1, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <Ra>
+    TYPE_MULT_2, // syntax: <MNEMONIC><c> <RdLo>, <RdHi>, <Rn>, <Rm>
+    TYPE_MULT_3, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>, <Ra>
+    TYPE_MULT_4, // syntax: <MNEMONIC>{S}<c> <RdLo>, <RdHi>, <Rn>, <Rm>
 
     TYPE_UNPRED,
     TYPE_UNDEF
@@ -130,7 +137,9 @@ typedef enum {
     GROUP_DP_REG, // data proc reg
     GROUP_DP_RSR, // data proc rsr
     GROUP_MISC,   // misc
-    GROUP_HM      // half mult
+    GROUP_HM,     // half mult
+    GROUP_MULT,    // mult
+    GROUP_DEFAULT
 } IGroup;
 
 // have a lookup table for group to print function like print_table[group] = print_fn
@@ -244,6 +253,21 @@ int SMLAW_instr(uint32_t instr);
 int SMULW_instr(uint32_t instr);
 int SMLALXY_instr(uint32_t instr);
 int SMLUL_instr(uint32_t instr);
+
+//> multiply and multiply accumulate
+void print_mult_instr(Instr *instr_s);
+int MUL_instr(uint32_t instr);
+int MLA_instr(uint32_t instr);
+int UMAAL_instr(uint32_t instr);
+int MLS_instr(uint32_t instr);
+int UMULL_instr(uint32_t instr);
+int UMLAL_instr(uint32_t instr);
+int SMULL_instr(uint32_t instr);
+int SMLAL_instr(uint32_t instr);
+
+//> default
+void print_default_instr(Instr *instr_s);
+int UNDEF_instr(uint32_t instr);
 
 // auxiliary functions
 void get_imm_str(Instr *instr_s, uint8_t imm4, uint16_t imm12);

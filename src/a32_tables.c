@@ -160,6 +160,19 @@ InstrHandler proc_hm_table[][IH_ARR_SIZE] = {
     { is_SMUL   , SMLA_instr }
 };
 
+InstrHandler proc_mult_table[][IH_ARR_SIZE] = {
+    // multiply and multiply accumulate
+    { is_MUL    , MUL_instr },
+    { is_MLA    , MLA_instr },
+    { is_UMAAL  , UMAAL_instr },
+    { is_UNDEF  , UNDEF_instr },
+    { is_MLS    , MLS_instr },
+    { is_UNDEF_2, UNDEF_instr },
+    { is_UMULL  , UMULL_instr },
+    { is_UMLAL  , UMLAL_instr },
+    { is_SMULL  , SMULL_instr },
+    { is_SMLAL  , SMLAL_instr }
+};
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
 //int (*proc_instr_table[][2])(uint32_t) = {
@@ -170,4 +183,5 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_dp_rsr_table, sizeof(proc_dp_rsr_table) / sizeof(proc_dp_rsr_table[0]) },
     { proc_misc_table, sizeof(proc_misc_table) / sizeof(proc_misc_table[0]) },
     { proc_hm_table, sizeof(proc_hm_table) / sizeof(proc_hm_table[0]) },
+    { proc_mult_table, sizeof(proc_mult_table) / sizeof(proc_mult_table[0]) },
 };
