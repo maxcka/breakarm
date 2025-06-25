@@ -128,6 +128,16 @@ typedef enum {
     TYPE_MULT_3, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>, <Ra>
     TYPE_MULT_4, // syntax: <MNEMONIC>{S}<c> <RdLo>, <RdHi>, <Rn>, <Rm>
 
+    // sync instructions
+    TYPE_SYNC_0, // syntax: <MNEMONIC>{B}<c> <Rt>, <Rt2>, [<Rn>]
+    TYPE_SYNC_1, // syntax: <MNEMONIC><c> <Rd>, <Rt>, [<Rn>]
+    TYPE_SYNC_2, // syntax: <MNEMONIC><c> <Rt>, [<Rn>]
+    TYPE_SYNC_3, // syntax: <MNEMONIC><c> <Rd>, <Rt>, <Rt2>, [<Rn>]
+    TYPE_SYNC_4, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>]
+
+    // extra load/store instructions
+    TYPE_LS_0,
+    
     TYPE_UNPRED,
     TYPE_UNDEF
 } IType;
@@ -139,6 +149,8 @@ typedef enum {
     GROUP_MISC,   // misc
     GROUP_HM,     // half mult
     GROUP_MULT,    // mult
+    GROUP_SYNC,   // synchronization
+    GROUP_LD_STR, // extra load/store and load/store
     GROUP_DEFAULT
 } IGroup;
 
@@ -164,10 +176,17 @@ typedef struct {
     Register Rs; //^ this overlaps with imm5 (make union??) (used in RSR instructions)
     Register Ra;
     Register RdLo;
+    Register Rt;
+    Register Rt2;
+    uint8_t B;
     uint8_t S;
     uint8_t R;
     uint8_t x; // char
     uint8_t y; // char
+    
+    uint8_t index;
+    uint8_t add;
+    uint8_t wback;
 } Instr;
 
 
@@ -248,14 +267,17 @@ int SMC_instr(uint32_t instr);
 
 //> halfword multiply and multiply accumulate
 void print_half_mult_instr(Instr *instr_s);
+int process_half_mult_instr(uint32_t instr, Instr *instr_s);
 int SMLA_instr(uint32_t instr);
 int SMLAW_instr(uint32_t instr);
 int SMULW_instr(uint32_t instr);
 int SMLALXY_instr(uint32_t instr);
 int SMLUL_instr(uint32_t instr);
+int SMUL_instr(uint32_t instr);
 
 //> multiply and multiply accumulate
 void print_mult_instr(Instr *instr_s);
+int process_mult_instr(uint32_t instr, Instr *instr_s);
 int MUL_instr(uint32_t instr);
 int MLA_instr(uint32_t instr);
 int UMAAL_instr(uint32_t instr);
@@ -264,6 +286,19 @@ int UMULL_instr(uint32_t instr);
 int UMLAL_instr(uint32_t instr);
 int SMULL_instr(uint32_t instr);
 int SMLAL_instr(uint32_t instr);
+
+//> synchronization
+void print_sync_instr(Instr *instr_s);
+int process_sync_instr(uint32_t instr, Instr *instr_s);
+int SWP_instr(uint32_t instr);
+int STREX_instr(uint32_t instr);
+int LDREX_instr(uint32_t instr);
+int STREXD_instr(uint32_t instr);
+int LDREXD_instr(uint32_t instr);
+int STREXB_instr(uint32_t instr);
+int LDREXB_instr(uint32_t instr);
+int STREXH_instr(uint32_t instr);
+int LDREXH_instr(uint32_t instr);
 
 //> default
 void print_default_instr(Instr *instr_s);

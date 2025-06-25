@@ -52,7 +52,7 @@ TODO:
 - DONE misc
 - DONE half mult
 - DONE mult
-- sync
+- DONE sync
 - extra load/store
 - extra load/store unpriv
 - data proc imm

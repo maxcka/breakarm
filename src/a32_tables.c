@@ -76,8 +76,9 @@ void (*print_instr_table[])(Instr *) = {
     print_data_proc_instr,      // GROUP_DP_REG
     print_data_proc_instr,      // GROUP_DP_RSR
     print_misc_instr,            // GROUP_MISC
-    print_half_mult_instr
-    
+    print_half_mult_instr,
+    print_mult_instr,
+    print_sync_instr
 };
 
 
@@ -154,10 +155,10 @@ InstrHandler proc_misc_table[][IH_ARR_SIZE] = {
 InstrHandler proc_hm_table[][IH_ARR_SIZE] = {
     // halfword multiply and multiply accumulate
     { is_SMLA   , SMLA_instr },
-    { is_SMLAW  , SMLA_instr },
-    { is_SMULW  , SMLA_instr },
-    { is_SMLALXY, SMLA_instr },
-    { is_SMUL   , SMLA_instr }
+    { is_SMLAW  , SMLAW_instr },
+    { is_SMULW  , SMULW_instr },
+    { is_SMLALXY, SMLALXY_instr },
+    { is_SMUL   , SMUL_instr }
 };
 
 InstrHandler proc_mult_table[][IH_ARR_SIZE] = {
@@ -173,6 +174,19 @@ InstrHandler proc_mult_table[][IH_ARR_SIZE] = {
     { is_SMULL  , SMULL_instr },
     { is_SMLAL  , SMLAL_instr }
 };
+
+InstrHandler proc_sync_table[][IH_ARR_SIZE] = {
+    // synchronization
+    { is_SWP    , SWP_instr },
+    { is_STREX  , STREX_instr },
+    { is_LDREX  , LDREX_instr },
+    { is_STREXD , STREXD_instr },
+    { is_LDREXD , LDREXD_instr },
+    { is_STREXB , STREXB_instr },
+    { is_LDREXB , LDREXB_instr },
+    { is_STREXH , STREXH_instr },
+    { is_LDREXH , LDREXB_instr }
+};
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
 //int (*proc_instr_table[][2])(uint32_t) = {
@@ -184,4 +198,5 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_misc_table, sizeof(proc_misc_table) / sizeof(proc_misc_table[0]) },
     { proc_hm_table, sizeof(proc_hm_table) / sizeof(proc_hm_table[0]) },
     { proc_mult_table, sizeof(proc_mult_table) / sizeof(proc_mult_table[0]) },
+    { proc_sync_table, sizeof(proc_sync_table) / sizeof(proc_sync_table[0]) },
 };
