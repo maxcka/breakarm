@@ -25,6 +25,13 @@ void print_default_instr(Instr *instr_s) {
             break;
         }
 
+        case TYPE_UNPRED:
+        {
+            printf("%s\n", UNPRED_STR);
+            break;
+        }
+
+
         default: 
         {
             printf("UNKNOWN\n");
@@ -38,6 +45,17 @@ int UNDEF_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.igroup = GROUP_DEFAULT;
     instr_s.itype = TYPE_UNDEF;
+
+    (void)instr; // silence warning
+
+    print_asm_instr(&instr_s);
+    return 0;
+}
+
+int UNPRED_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.igroup = GROUP_DEFAULT;
+    instr_s.itype = TYPE_UNPRED;
 
     (void)instr; // silence warning
 
@@ -88,15 +106,15 @@ void decode_dp_op_0(uint32_t instr) {
     else if (IS_MULT_MULT(instr)) {          // layer 2
         find_and_decode(instr, GROUP_MULT);
     }
-    //else if (IS_SYNC(instr)) {               // layer 2
-    //
-    //}
-    //else if (IS_EX_LD_STR(instr)) {          // layer 2
-    //
-    //}
-    //else if (IS_EX_LD_STR_UNP(instr)) {      // layer 2
-    //
-    //}
+    else if (IS_SYNC(instr)) {               // layer 2
+        find_and_decode(instr, GROUP_SYNC);
+    }
+    else if (IS_EX_LD_STR(instr)) {          // layer 2
+        find_and_decode(instr, GROUP_LD_STR);
+    }
+    else if (IS_EX_LD_STR_UNP(instr)) {      // layer 2
+        find_and_decode(instr, GROUP_LD_STR);
+    }
     else {
         printf("%s\n", default_str);
     }

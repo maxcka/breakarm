@@ -5,6 +5,8 @@
 
 
 //===================================================
+#define FALSE 0
+#define TRUE 1
 
 #define BUF_10 10
 #define BUF_20 20
@@ -136,8 +138,13 @@ typedef enum {
     TYPE_SYNC_4, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>]
 
     // extra load/store instructions
-    TYPE_LS_0,
-    
+    TYPE_LS_REG, // syntax: <MNEMONIC><c> <Rt>, [<Rn>,+/-<Rm>]{!}
+    TYPE_LS_IMM_STR, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm8>]{!}
+    TYPE_LS_IMM, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm8>]{!}  note: Rn can be PC if wback true
+    TYPE_LS_DUAL_REG, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>,+/-<Rm>]{!}
+    TYPE_LS_DUAL_IMM, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>, #+/-<imm8>]{!} note: Rn can be PC if wback true
+    TYPE_LS_DUAL_IMM_STR, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>, #+/-<imm8>]{!}
+
     TYPE_UNPRED,
     TYPE_UNDEF
 } IType;
@@ -203,6 +210,10 @@ typedef struct {
 extern InstrHandler proc_dp_reg_table[][IH_ARR_SIZE];
 extern InstrHandler proc_dp_rsr_table[][IH_ARR_SIZE];
 extern InstrHandler proc_misc_table[][IH_ARR_SIZE];
+extern InstrHandler proc_hm_table[][IH_ARR_SIZE];
+extern InstrHandler proc_mult_table[][IH_ARR_SIZE];
+extern InstrHandler proc_sync_table[][IH_ARR_SIZE];
+extern InstrHandler proc_ld_str_table[][IH_ARR_SIZE];
 // ==============================================
 // lookup table for processing instructions
 //extern int (*proc_instr_table[][2])(uint32_t);
@@ -300,12 +311,34 @@ int LDREXB_instr(uint32_t instr);
 int STREXH_instr(uint32_t instr);
 int LDREXH_instr(uint32_t instr);
 
+//> extra load/store
+void print_load_store_instr(Instr *instr_s);
+int process_load_store_instr(uint32_t instr, Instr *instr_s);
+int STRH_reg_instr(uint32_t instr);
+int LDRH_reg_instr(uint32_t instr);
+int STRH_imm_instr(uint32_t instr);
+int LDRH_imm_instr(uint32_t instr);
+int LDRD_reg_instr(uint32_t instr);
+int LDRSB_reg_instr(uint32_t instr);
+int LDRD_imm_instr(uint32_t instr);
+int LDRSB_imm_instr(uint32_t instr);
+int STRD_reg_instr(uint32_t instr);
+int LDRSH_reg_instr(uint32_t instr);
+int STRD_imm_instr(uint32_t instr);
+int LDRSH_imm_instr(uint32_t instr);
+//>> extra load/store unprivileged
+int STRHT_instr(uint32_t instr);
+int LDRHT_instr(uint32_t instr);
+int LDRSBT_instr(uint32_t instr);
+int LDRSHT_instr(uint32_t instr);
+
 //> default
 void print_default_instr(Instr *instr_s);
 int UNDEF_instr(uint32_t instr);
+int UNPRED_instr(uint32_t instr);
 
 // auxiliary functions
-void get_imm_str(Instr *instr_s, uint8_t imm4, uint16_t imm12);
+void get_imm_str(Instr *instr_s, uint8_t imm4, uint16_t imm_high, uint8_t positive);
 void get_sys_sr_str(Instr *instr_s, uint8_t mask);
 void get_app_sr_str(Instr *instr_s, uint8_t mask);
 void get_banked_reg_str(uint8_t m, uint8_t m1, uint8_t R, char *banked_reg_str, int buf_sz);

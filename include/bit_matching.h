@@ -148,21 +148,26 @@ static inline int is_LDREXH(uint32_t instr)         { return ( ( ((instr) >> 20)
 static inline int is_STRH_reg(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x0 ); } //0b01 and 0bxx0x0
 static inline int is_LDRH_reg(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x1 ); } //0b01 and 0bxx0x1
 static inline int is_STRH_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x4 ); } //0b01 and 0bxx1x0
-static inline int is_LDRH_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b01 and 0bxx1x1 and not 0b1111
-static inline int is_LDRH_lit(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b01 and 0bxx1x1 and 0b1111
+static inline int is_LDRH_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ); } //0b01 and 0bxx1x1
+// LDRH_imm and LDRH_lit are basically the same
+//static inline int is_LDRH_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b01 and 0bxx1x1 and not 0b1111
+//static inline int is_LDRH_lit(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x1 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b01 and 0bxx1x1 and 0b1111
 
 static inline int is_LDRD_reg(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x0 ); } //0b10 and 0bxx0x0
 static inline int is_LDRSB_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x1 ); } //0b10 and 0bxx0x1
-static inline int is_LDRD_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x4 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b10 and 0bxx1x0 and not 0b1111
-static inline int is_LDRD_lit(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x4 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b10 and 0bxx1x0 and 0b1111
-static inline int is_LDRSB_imm(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b10 and 0bxx1x1 and not 0b1111
-static inline int is_LDRSB_lit(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b10 and 0bxx1x1 and 0b1111
+static inline int is_LDRD_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x4 ); } //0b10 and 0bxx1x0
+//static inline int is_LDRD_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x4 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b10 and 0bxx1x0 and not 0b1111
+//static inline int is_LDRD_lit(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x4 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b10 and 0bxx1x0 and 0b1111
+static inline int is_LDRSB_imm(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ); } //0b10 and 0bxx1x1
+//static inline int is_LDRSB_imm(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b10 and 0bxx1x1 and not 0b1111
+//static inline int is_LDRSB_lit(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b10 and 0bxx1x1 and 0b1111
 
 static inline int is_STRD_reg(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x0 ); } //0b11 and 0bxx0x0
 static inline int is_LDRSH_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x1 ); } //0b11 and 0bxx0x1
 static inline int is_STRD_imm(uint32_t instr)       { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x4 ); } //0b11 and 0bxx1x0
-static inline int is_LDRSH_imm(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b11 and 0bxx1x1 and not 0b1111
-static inline int is_LDRSH_lit(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b11 and 0bxx1x1 and 0b1111
+static inline int is_LDRSH_imm(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ); } //0b11 and 0bxx1x1
+//static inline int is_LDRSH_imm(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } //0b11 and 0bxx1x1 and not 0b1111
+//static inline int is_LDRSH_lit(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x3 ) && ( ( ((instr) >> 20) & 0x5) == 0x5 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } //0b11 and 0bxx1x1 and 0b1111
 //==============================================
 
 //>> layer 2

@@ -2,9 +2,10 @@
 #include <string.h>
 #include "decode.h"
 
-void get_imm_str(Instr *instr_s, uint8_t imm4, uint16_t imm12) {
-    uint16_t imm16 = (imm12 << 4) | imm4;
-    snprintf(instr_s->imm_str, sizeof(instr_s->imm_str), "#%d", imm16);
+void get_imm_str(Instr *instr_s, uint8_t imm4, uint16_t imm_high, uint8_t positive) {
+    //uint16_t imm16 = (imm_high << 4) | imm4;
+    uint16_t imm = (imm_high << 4) | (imm4 & 0xF);
+    snprintf(instr_s->imm_str, sizeof(instr_s->imm_str), "#%s%d", (positive) ? "" : "-", imm);
 }
 
 // sys special register string

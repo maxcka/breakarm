@@ -65,3 +65,6 @@ TODO:
 - coproc and supervisor
 
 - unconditional
+
+
+check for "// NOTE", "// TODO", and "// FIX"

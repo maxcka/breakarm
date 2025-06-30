@@ -187,6 +187,30 @@ InstrHandler proc_sync_table[][IH_ARR_SIZE] = {
     { is_STREXH , STREXH_instr },
     { is_LDREXH , LDREXB_instr }
 };
+
+InstrHandler proc_ld_str_table[][IH_ARR_SIZE] = {
+    // extra load/store
+    { is_STRH_reg   , STRH_reg_instr },
+    { is_LDRH_reg   , LDRH_reg_instr },
+    { is_STRH_imm   , STRH_imm_instr },
+    { is_LDRH_imm   , LDRH_imm_instr },
+    { is_LDRD_reg   , LDRD_reg_instr },
+    { is_LDRSB_reg  , LDRSB_reg_instr },
+    { is_LDRD_imm   , LDRD_imm_instr },
+    { is_LDRSB_imm  , LDRSB_imm_instr },
+    { is_STRD_reg   , STRD_reg_instr },
+    { is_LDRSH_reg  , LDRSH_reg_instr },
+    { is_STRD_imm   , STRD_imm_instr },
+    { is_LDRSH_imm  , LDRSH_imm_instr },
+    // extra load/store unprivileged
+    { is_STRHT  , STRHT_instr },
+    { is_LDRHT  , LDRHT_instr },
+    { is_UNPRED , UNPRED_instr },
+    { is_UNDEF_3, UNDEF_instr },
+    { is_LDRSBT , LDRSBT_instr },
+    { is_LDRSHT , LDRSHT_instr }
+};
+
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
 //int (*proc_instr_table[][2])(uint32_t) = {
@@ -199,4 +223,5 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_hm_table, sizeof(proc_hm_table) / sizeof(proc_hm_table[0]) },
     { proc_mult_table, sizeof(proc_mult_table) / sizeof(proc_mult_table[0]) },
     { proc_sync_table, sizeof(proc_sync_table) / sizeof(proc_sync_table[0]) },
+    { proc_ld_str_table, sizeof(proc_ld_str_table) / sizeof(proc_ld_str_table[0]) },
 };
