@@ -2,9 +2,9 @@
 #include <string.h>
 #include "decode.h"
 
-void get_imm_str(Instr *instr_s, uint8_t imm4, uint16_t imm_high, uint8_t positive) {
-    //uint16_t imm16 = (imm_high << 4) | imm4;
-    uint16_t imm = (imm_high << 4) | (imm4 & 0xF);
+void get_imm_str(Instr *instr_s, uint8_t imm_high, uint16_t imm_low, uint8_t shift, uint8_t positive) {
+    uint16_t mask = (1 << shift) - 1;
+    uint16_t imm = (imm_high << shift) | (imm_low & mask);
     snprintf(instr_s->imm_str, sizeof(instr_s->imm_str), "#%s%d", (positive) ? "" : "-", imm);
 }
 

@@ -38,6 +38,18 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rs]);
             break;
         }
+
+        case TYPE_DP_0_IMM: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, #<const>
+        {
+            printf("%s%s%s %s, %s, %s\n",
+                instr_s->mnemonic, 
+                (instr_s->S) ? "S" : "",
+                cond_codes[instr_s->c], 
+                core_reg[instr_s->Rd], 
+                core_reg[instr_s->Rn],
+                instr_s->imm_str);
+            break;
+        }
         
         case TYPE_DP_1: // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
         {
@@ -62,6 +74,16 @@ void print_data_proc_instr(Instr *instr_s) {
             break;
         }
 
+        case TYPE_DP_1_IMM: // syntax: <MNEMONIC><c> <Rn>, #<const>
+        {
+            printf("%s%s %s, %s\n",
+                instr_s->mnemonic, 
+                cond_codes[instr_s->c], 
+                core_reg[instr_s->Rn],
+                instr_s->imm_str);
+            break;
+        }
+
         case TYPE_DP_2: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
         {
             printf("%s%s%s %s, %s\n", 
@@ -70,6 +92,27 @@ void print_data_proc_instr(Instr *instr_s) {
             cond_codes[instr_s->c], 
             core_reg[instr_s->Rd], 
             core_reg[instr_s->Rm]);
+            break;
+        }
+
+        case TYPE_DP_2_IMM: // syntax: <MNEMONIC>{S}<c> <Rd>, #<const>
+        {
+            printf("%s%s%s %s, %s\n",
+                instr_s->mnemonic,
+                (instr_s->S) ? "S" : "",
+                cond_codes[instr_s->c], 
+                core_reg[instr_s->Rd],
+                instr_s->imm_str);
+            break;
+        }
+
+        case TYPE_DP_2_IMM16: // syntax: <MNEMONIC><c> <Rd>, #<imm16>
+        {
+            printf("%s%s %s, %s\n",
+                instr_s->mnemonic,
+                cond_codes[instr_s->c], 
+                core_reg[instr_s->Rd],
+                instr_s->imm_str);
             break;
         }
 
@@ -121,6 +164,12 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rs]);
             break;
         }
+
+        case TYPE_UNPRED:
+        {
+            printf("%s\n", UNPRED_STR);
+            break;
+        }
     
         default: 
         {
@@ -137,7 +186,9 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
 
     // maybe add these vars into decode_imm_shift() depending on how repetitive
     uint8_t type = (instr >> 5) & 0x3;
+    uint8_t imm4 = (instr >> 16) & 0xF; // used for movw and movt
     uint8_t imm5 = (instr >> 7) & 0x1F;
+    uint8_t imm12 = (instr >> 0) & 0xFFF; // used for immediate instr
     instr_s->shift = decode_imm_shift(type, imm5);
     instr_s->c =  (instr >> 28) & 0xF; // c is condition
     instr_s->Rd = (instr >> 12) & 0xF; // 0b1111
@@ -151,14 +202,23 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
     // special case Encoding A2: <opc2>S{<c>}{<q>} <Rd>, <Rm> {, <shift>}
     if ((instr_s->itype == TYPE_DP_0 || instr_s->itype == TYPE_DP_2 || instr_s->itype == TYPE_DP_3) 
         && instr_s->S == 0x1 && instr_s->Rd == PC) {
-        //instr_s->special = 1;
         instr_s->itype = TYPE_DP_4;
         instr_s->mnemonic = "MVN";
     }
     //^ TODO need to handle UNPREDICTABLE instruction scenarios
 
-    get_shift_str(instr_s->shift, instr_s->shift_str, sizeof(instr_s->shift_str));
-
+    if (instr_s->igroup == GROUP_DP_IMM) {
+        get_imm_str(instr_s, imm12, 0, 0, TRUE);
+    }
+    else if (instr_s->igroup == GROUP_DP_IMM16) {
+        if (instr_s->Rd == PC) {
+            instr_s->itype = TYPE_UNPRED;
+        }
+        get_imm_str(instr_s, imm4, imm12, 12, TRUE);
+    }
+    else {
+        get_shift_str(instr_s->shift, instr_s->shift_str, sizeof(instr_s->shift_str));
+    }
     print_asm_instr(instr_s);
 
     return 0;
@@ -182,7 +242,10 @@ int AND_instr(uint32_t instr) {
         instr_s.igroup = GROUP_DP_RSR;
         instr_s.itype = TYPE_DP_0_RSR; // syntax: AND{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
     }
-
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_0_IMM;
+    }
 
     return process_data_proc_instr(instr, &instr_s); // return dummy value because functions need to have same return type to be stored in the same fn ptr array
 }
@@ -200,6 +263,10 @@ int EOR_instr(uint32_t instr) {
     else if (IS_DP_RSR(instr)) {
         instr_s.igroup = GROUP_DP_RSR;   
         instr_s.itype = TYPE_DP_0_RSR;
+    }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_0_IMM;
     }
 
     return process_data_proc_instr(instr, &instr_s);
@@ -219,6 +286,10 @@ int SUB_instr(uint32_t instr) {
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_0_IMM;
+    }
 
     return process_data_proc_instr(instr, &instr_s);
 }
@@ -236,6 +307,10 @@ int RSB_instr(uint32_t instr) {
     else if (IS_DP_RSR(instr)) {   
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
+    }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_0_IMM;
     }
 
     return process_data_proc_instr(instr, &instr_s);
@@ -255,6 +330,10 @@ int ADD_instr(uint32_t instr) {
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_0_IMM;
+    }
 
     return process_data_proc_instr(instr, &instr_s);
 }
@@ -272,6 +351,10 @@ int ADC_instr(uint32_t instr) {
     else if (IS_DP_RSR(instr)) {   
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
+    }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_0_IMM;
     }
 
     return process_data_proc_instr(instr, &instr_s);
@@ -291,6 +374,10 @@ int SBC_instr(uint32_t instr) {
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_0_IMM;
+    }
 
     return process_data_proc_instr(instr, &instr_s);
 }
@@ -308,6 +395,10 @@ int RSC_instr(uint32_t instr) {
     else if (IS_DP_RSR(instr)) {   
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
+    }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_0_IMM;
     }
 
     return process_data_proc_instr(instr, &instr_s);
@@ -327,6 +418,10 @@ int TST_instr(uint32_t instr) {
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_1_RSR;
     }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_1_IMM;
+    }
 
     return process_data_proc_instr(instr, &instr_s);
 }
@@ -342,6 +437,10 @@ int TEQ_instr(uint32_t instr) {
     else if (IS_DP_RSR(instr)) {   
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_1_RSR;
+    }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_1_IMM;
     }
 
     return process_data_proc_instr(instr, &instr_s);
@@ -359,6 +458,10 @@ int CMP_instr(uint32_t instr) {
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_1_RSR;
     }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_1_IMM;
+    }
 
     return process_data_proc_instr(instr, &instr_s);
 }
@@ -374,6 +477,10 @@ int CMN_instr(uint32_t instr) {
     else if (IS_DP_RSR(instr)) {   
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_1_RSR;
+    }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_1_IMM;
     }
 
     return process_data_proc_instr(instr, &instr_s);
@@ -391,16 +498,27 @@ int ORR_instr(uint32_t instr) {
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_0_IMM;
+    }
 
     return process_data_proc_instr(instr, &instr_s);
 }
 // process MOV (register) instruction
 // syntax: MOV{S}<c> <Rd>, <Rm>
-int MOV_reg_instr(uint32_t instr) {
+int MOV_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "MOV";
-    instr_s.igroup = GROUP_DP_REG;
-    instr_s.itype = TYPE_DP_2;
+
+    if (IS_DP_REG(instr)) {
+        instr_s.igroup = GROUP_DP_REG;
+        instr_s.itype = TYPE_DP_2;
+    }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_2_IMM;
+    }
     return process_data_proc_instr(instr, &instr_s);
 }
 // process LSL (immediate) instruction
@@ -492,6 +610,10 @@ int BIC_instr(uint32_t instr) {
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_0_RSR;
     }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_0_IMM;
+    }
 
     return process_data_proc_instr(instr, &instr_s);
 }
@@ -509,6 +631,34 @@ int MVN_instr(uint32_t instr) {
         instr_s.igroup = GROUP_DP_RSR; 
         instr_s.itype = TYPE_DP_4_RSR;
     }
+    else if (IS_DP_IMM(instr)) {
+        instr_s.igroup = GROUP_DP_IMM;
+        instr_s.itype = TYPE_DP_2_IMM;
+    }
+
+    return process_data_proc_instr(instr, &instr_s);
+}
+
+
+// 16-bit mov and movt
+// syntax: MOVW<c> <Rd>, #<imm16>
+int MOVW_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "MOVW";
+
+    instr_s.igroup = GROUP_DP_IMM16;
+    instr_s.itype = TYPE_DP_2_IMM16;
+
+    return process_data_proc_instr(instr, &instr_s);
+}
+
+// syntax: MOVT<c> <Rd>, #<imm16>
+int MOVT_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "MOVT";
+
+    instr_s.igroup = GROUP_DP_IMM16;
+    instr_s.itype = TYPE_DP_2_IMM16;
 
     return process_data_proc_instr(instr, &instr_s);
 }

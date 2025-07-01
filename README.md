@@ -53,8 +53,8 @@ TODO:
 - DONE half mult
 - DONE mult
 - DONE sync
-- extra load/store
-- extra load/store unpriv
+- DONE extra load/store
+- DONE extra load/store unpriv
 - data proc imm
 - MOV, MOVT, MSR
 

@@ -94,13 +94,18 @@ typedef enum {
     // data proc instructions
     TYPE_DP_0,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>{, <shift>}
     TYPE_DP_0_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
+    TYPE_DP_0_IMM, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, #<const>
     TYPE_DP_1,     // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
     TYPE_DP_1_RSR, // syntax: <MNEMONIC><c> <Rn>, <Rm>, <type> <Rs>
+    TYPE_DP_1_IMM, // syntax: <MNEMONIC><c> <Rn>, #<const>
     TYPE_DP_2,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
+    TYPE_DP_2_IMM,  // syntax: <MNEMONIC>{S}<c> <Rd>, #<const>
     TYPE_DP_3,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
     TYPE_DP_3_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>
     TYPE_DP_4,      // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm> {, <shift>}
     TYPE_DP_4_RSR,  // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, <type> <Rs>
+
+    TYPE_DP_2_IMM16,  // syntax: <MNEMONIC><c> <Rd>, #<imm16>
 
     // misc instructions
     TYPE_MISC_BANKED_0,    // syntax: <MNEMONIC><c> <Rd>, <banked_reg>
@@ -158,6 +163,8 @@ typedef enum {
     GROUP_MULT,    // mult
     GROUP_SYNC,   // synchronization
     GROUP_LD_STR, // extra load/store and load/store
+    GROUP_DP_IMM, // data proc imm
+    GROUP_DP_IMM16, // movw and movt
     GROUP_DEFAULT
 } IGroup;
 
@@ -214,6 +221,8 @@ extern InstrHandler proc_hm_table[][IH_ARR_SIZE];
 extern InstrHandler proc_mult_table[][IH_ARR_SIZE];
 extern InstrHandler proc_sync_table[][IH_ARR_SIZE];
 extern InstrHandler proc_ld_str_table[][IH_ARR_SIZE];
+extern InstrHandler proc_dp_imm_table[][IH_ARR_SIZE];
+extern InstrHandler proc_dp_imm16_table[][IH_ARR_SIZE];
 // ==============================================
 // lookup table for processing instructions
 //extern int (*proc_instr_table[][2])(uint32_t);
@@ -230,7 +239,7 @@ extern const char *banked_reg_table[][BANKED_REG_TABLE_ROWS][BANKED_REG_TABLE_CO
 
 
 // instruction processing functions
-//> data-processing (register)
+//> data-processing
 void print_data_proc_instr(Instr *instr_s);
 int process_data_proc_instr(uint32_t instr, Instr *instr_s);
 int AND_instr(uint32_t instr);
@@ -246,7 +255,7 @@ int TEQ_instr(uint32_t instr);
 int CMP_instr(uint32_t instr);
 int CMN_instr(uint32_t instr);
 int ORR_instr(uint32_t instr);
-int MOV_reg_instr(uint32_t instr);
+int MOV_instr(uint32_t instr);
 int LSL_instr(uint32_t instr);
 int LSR_instr(uint32_t instr);
 int ASR_instr(uint32_t instr);
@@ -254,6 +263,9 @@ int RRX_instr(uint32_t instr);
 int ROR_instr(uint32_t instr);
 int BIC_instr(uint32_t instr);
 int MVN_instr(uint32_t instr);
+//> data-processing 16-bit immediate
+int MOVW_instr(uint32_t instr);
+int MOVT_instr(uint32_t instr);
 
 //> miscellaneous
 void print_misc_instr(Instr *instr_s);
@@ -338,7 +350,7 @@ int UNDEF_instr(uint32_t instr);
 int UNPRED_instr(uint32_t instr);
 
 // auxiliary functions
-void get_imm_str(Instr *instr_s, uint8_t imm4, uint16_t imm_high, uint8_t positive);
+void get_imm_str(Instr *instr_s, uint8_t imm_high, uint16_t imm_low, uint8_t shift, uint8_t positive);
 void get_sys_sr_str(Instr *instr_s, uint8_t mask);
 void get_app_sr_str(Instr *instr_s, uint8_t mask);
 void get_banked_reg_str(uint8_t m, uint8_t m1, uint8_t R, char *banked_reg_str, int buf_sz);

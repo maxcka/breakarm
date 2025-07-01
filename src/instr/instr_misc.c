@@ -128,7 +128,7 @@ int process_misc_instr(uint32_t instr, Instr *instr_s) {
     uint8_t imm12 = (instr >> 8) & 0xFFF;
 
     if (instr_s->itype == TYPE_MISC_7 || instr_s->itype == TYPE_MISC_8) {
-        get_imm_str(instr_s, imm4, imm12, FALSE);
+        get_imm_str(instr_s, imm12, imm4, 4, FALSE);
     }
 
     instr_s->c =  (instr >> 28) & 0xF; // c is condition

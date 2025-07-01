@@ -108,7 +108,7 @@ int process_load_store_instr(uint32_t instr, Instr *instr_s) {
         instr_s->Rm = (instr >> 0) & 0xF;
     }
     else if (instr_s->itype == TYPE_LS_IMM_STR) {
-        get_imm_str(instr_s, imm4L, (uint16_t)imm4H, instr_s->add);
+        get_imm_str(instr_s, (uint16_t)imm4H, imm4L, 4, instr_s->add);
     }
     else if (instr_s->itype == TYPE_LS_DUAL_REG || instr_s->itype == TYPE_LS_DUAL_IMM) {
         instr_s->Rm = (instr >> 0) & 0xF;

@@ -197,10 +197,7 @@ static inline int is_LDRSHT(uint32_t instr)         { return ( ( ((instr) >> 5) 
 //=== instr is data-processing (immediate) ===
 //>> layer 3
 // also uses some data-proc (register) inline functions
-static inline int is_SUB_imm(uint32_t instr)        { return is_SUB(instr) && ( ( ((instr) >> 16) & 0xF) != 0xF); } // 0b0010x and not 0b1111
-static inline int is_ADR(uint32_t instr)            { return is_SUB(instr) && ( ( ((instr) >> 16) & 0xF) == 0xF); } // 0b0010x and 0b1111
-static inline int is_ADD_imm(uint32_t instr)        { return is_SUB(instr) && ( ( ((instr) >> 16) & 0xF) != 0xF); } // 0b0100x and not 0b1111
-static inline int is_ADR_2(uint32_t instr)          { return is_SUB(instr) && ( ( ((instr) >> 16) & 0xF) == 0xF); } // 0b0100x and 0b1111
+// TODO: decode ADR (not really necessary)
 static inline int is_MOV_imm(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x1E) == 0x1A); } // 0b1101x
 
 
@@ -211,7 +208,7 @@ static inline int is_MOV_imm(uint32_t instr)        { return ( ( ((instr) >> 20)
 #define IS_16_IMM_LD(instr)     ( ( ((instr) >> 20) & 0x1B) == 0x10 ) // 0b10x00
 //=== instr is 16-bit immediate load (low or high halfword) ===
 //>> layer 3
-static inline int is_MOV_imm_2(uint32_t instr)      { return ( ( ((instr) >> 20) & 0x1F) == 0x10 ); } // 0b10000
+static inline int is_MOVW(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x1F) == 0x10 ); } // 0b10000
 static inline int is_MOVT(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x1F) == 0x14 ); } // 0b10100
 //=============================================================
 

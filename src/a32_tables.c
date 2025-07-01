@@ -98,7 +98,7 @@ InstrHandler proc_dp_reg_table[][IH_ARR_SIZE] = {
     { is_CMP    , CMP_instr },
     { is_CMN    , CMN_instr },
     { is_ORR    , ORR_instr },
-    { is_MOV_reg, MOV_reg_instr },
+    { is_MOV_reg, MOV_instr },
     { is_LSL_imm, LSL_instr },
     { is_LSR_imm, LSR_instr },
     { is_ASR_imm, ASR_instr },
@@ -211,6 +211,34 @@ InstrHandler proc_ld_str_table[][IH_ARR_SIZE] = {
     { is_LDRSHT , LDRSHT_instr }
 };
 
+InstrHandler proc_dp_imm_table[][IH_ARR_SIZE] = {
+    // data-processing imm
+    { is_AND    , AND_instr },
+    { is_EOR    , EOR_instr },
+    { is_SUB    , SUB_instr },
+    { is_RSB    , RSB_instr },
+    { is_ADD    , ADD_instr },
+    { is_ADC    , ADC_instr },
+    { is_SBC    , SBC_instr },
+    { is_RSC    , RSC_instr },
+    { is_TST    , TST_instr },
+    { is_TEQ    , TEQ_instr },
+    { is_CMP    , CMP_instr },
+    { is_CMN    , CMN_instr },
+    { is_ORR    , ORR_instr },
+    { is_MOV_imm, MOV_instr },
+    { is_BIC    , BIC_instr },
+    { is_MVN    , MVN_instr },
+};
+
+InstrHandler proc_dp_imm16_table[][IH_ARR_SIZE] = {
+    // data-processing imm16
+    { is_MOVW   , MOVW_instr },
+    { is_MOVT   , MOVT_instr }
+};
+
+
+
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
 //int (*proc_instr_table[][2])(uint32_t) = {
@@ -224,4 +252,6 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_mult_table, sizeof(proc_mult_table) / sizeof(proc_mult_table[0]) },
     { proc_sync_table, sizeof(proc_sync_table) / sizeof(proc_sync_table[0]) },
     { proc_ld_str_table, sizeof(proc_ld_str_table) / sizeof(proc_ld_str_table[0]) },
+    { proc_dp_imm_table, sizeof(proc_dp_imm_table) / sizeof(proc_dp_imm_table[0]) },
+    { proc_dp_imm16_table, sizeof(proc_dp_imm16_table) / sizeof(proc_dp_imm16_table[0]) }
 };
