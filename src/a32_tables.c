@@ -72,15 +72,6 @@ const char *banked_reg_table[][BANKED_REG_TABLE_ROWS][BANKED_REG_TABLE_COLS] = {
 };
 
 
-void (*print_instr_table[])(Instr *) = {
-    print_data_proc_instr,      // GROUP_DP_REG
-    print_data_proc_instr,      // GROUP_DP_RSR
-    print_misc_instr,            // GROUP_MISC
-    print_half_mult_instr,
-    print_mult_instr,
-    print_sync_instr
-};
-
 
 //int (*data_proc_reg_table[][2])(uint32_t) = {
 InstrHandler proc_dp_reg_table[][IH_ARR_SIZE] = {
@@ -237,6 +228,18 @@ InstrHandler proc_dp_imm16_table[][IH_ARR_SIZE] = {
     { is_MOVT   , MOVT_instr }
 };
 
+InstrHandler proc_misc_hints_table[][IH_ARR_SIZE] = {
+    // msr and hints
+    { is_NOP, NOP_instr},
+    { is_YIELD, YIELD_instr},
+    { is_WFE, WFE_instr},
+    { is_WFI, WFI_instr},
+    { is_SEV, SEV_instr},
+    { is_DBG, DBG_instr},
+    { is_MSR_imm_app, MSR_imm_app_instr},
+    { is_MSR_imm_sys, MSR_imm_sys_instr}
+};
+
 
 
 // lookup table for processing instructions
@@ -244,6 +247,7 @@ InstrHandler proc_dp_imm16_table[][IH_ARR_SIZE] = {
 //int (*proc_instr_table[][2])(uint32_t) = {
 
 // an array where each element is an InstrHandlerTable struct
+// index has to match with group enum
 InstrHandlerTable proc_instr_group_table[] = {  
     { proc_dp_reg_table, sizeof(proc_dp_reg_table) / sizeof(proc_dp_reg_table[0]) },
     { proc_dp_rsr_table, sizeof(proc_dp_rsr_table) / sizeof(proc_dp_rsr_table[0]) },
@@ -253,5 +257,22 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_sync_table, sizeof(proc_sync_table) / sizeof(proc_sync_table[0]) },
     { proc_ld_str_table, sizeof(proc_ld_str_table) / sizeof(proc_ld_str_table[0]) },
     { proc_dp_imm_table, sizeof(proc_dp_imm_table) / sizeof(proc_dp_imm_table[0]) },
-    { proc_dp_imm16_table, sizeof(proc_dp_imm16_table) / sizeof(proc_dp_imm16_table[0]) }
+    { proc_dp_imm16_table, sizeof(proc_dp_imm16_table) / sizeof(proc_dp_imm16_table[0]) },
+    { proc_misc_hints_table, sizeof(proc_misc_hints_table) / sizeof(proc_misc_hints_table[0]) }
+};
+
+
+// index has to match with group enum
+void (*print_instr_table[])(Instr *) = {
+    print_data_proc_instr,      // GROUP_DP_REG
+    print_data_proc_instr,      // GROUP_DP_RSR
+    print_misc_instr,            // GROUP_MISC
+    print_half_mult_instr,     // GROUP_HM
+    print_mult_instr,           // GROUP_MULT
+    print_sync_instr,           // GROUP_SYNC
+    print_load_store_instr,        // GROUP_LD_STR
+    print_data_proc_instr, // GROUP_DP_IMM
+    print_data_proc_instr, // GROUP_DP_IMM16
+    print_misc_instr, // GROUP_MISC_HINTS
+    print_default_instr
 };

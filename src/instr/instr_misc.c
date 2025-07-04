@@ -104,6 +104,14 @@ void print_misc_instr(Instr *instr_s) {
             break;
         }
 
+        case TYPE_MISC_HINT: // syntax: <MNEMONIC><c>
+        {
+            printf("%s%s\n",
+                instr_s->mnemonic,
+                cond_codes[instr_s->c]);
+            break;
+        }
+
         case TYPE_UNPRED:
         {
             printf("%s\n", UNPRED_STR);
@@ -128,7 +136,10 @@ int process_misc_instr(uint32_t instr, Instr *instr_s) {
     uint8_t imm12 = (instr >> 8) & 0xFFF;
 
     if (instr_s->itype == TYPE_MISC_7 || instr_s->itype == TYPE_MISC_8) {
-        get_imm_str(instr_s, imm12, imm4, 4, FALSE);
+        get_imm_str(instr_s, imm12, imm4, 4, TRUE);
+    }
+    if (instr_s->itype == TYPE_MISC_2_IMM_APP || instr_s->itype == TYPE_MISC_2_IMM_SYS) {
+        get_imm_str(instr_s, imm12, 0, 0, TRUE);
     }
 
     instr_s->c =  (instr >> 28) & 0xF; // c is condition
@@ -139,18 +150,16 @@ int process_misc_instr(uint32_t instr, Instr *instr_s) {
     if (instr_s->itype == TYPE_MISC_5) {
         instr_s->Rn = (instr >> 16) & 0xF;
     }
-
-    // so far, misc instr are not reused, so set the group in here
-    instr_s->igroup = GROUP_MISC; 
+    
 
     if (instr_s->itype == TYPE_MISC_BANKED_0 || instr_s->itype == TYPE_MISC_BANKED_1) {
         get_banked_reg_str(m, m1, instr_s->R, instr_s->banked_reg_str, sizeof(instr_s->banked_reg_str));
     }
-    else if (instr_s->itype == TYPE_MISC_2_APP) { // APSR
+    else if (instr_s->itype == TYPE_MISC_2_APP || instr_s->itype == TYPE_MISC_2_IMM_APP) { // APSR
         mask = (instr >> 18) & 0x3;
         get_app_sr_str(instr_s, mask);
     }
-    else if (instr_s->itype == TYPE_MISC_2_SYS) { // SPSR or CPSR
+    else if (instr_s->itype == TYPE_MISC_2_SYS || instr_s->itype == TYPE_MISC_2_IMM_SYS) { // SPSR or CPSR
         mask = (instr >> 16) & 0xF;
         get_sys_sr_str(instr_s, mask);
     }
@@ -166,6 +175,8 @@ int process_misc_instr(uint32_t instr, Instr *instr_s) {
     else if (instr_s->itype == TYPE_MISC_7 && instr_s->c != AL) {
         instr_s->itype = TYPE_UNPRED;
     }
+
+
     
     print_asm_instr(instr_s);
 
@@ -179,6 +190,7 @@ int MRS_BANKED_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "MRS";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_BANKED_0;
 
     return process_misc_instr(instr, &instr_s);
@@ -189,6 +201,7 @@ int MSR_BANKED_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "MSR";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_BANKED_1;
 
     return process_misc_instr(instr, &instr_s);
@@ -199,6 +212,7 @@ int MRS_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "MRS";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_1;
 
     return process_misc_instr(instr, &instr_s);
@@ -209,6 +223,7 @@ int MSR_reg_app_instr(uint32_t instr) {
     Instr instr_s= {0};
     instr_s.mnemonic = "MSR";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_2_APP;
 
     return process_misc_instr(instr, &instr_s);
@@ -219,6 +234,7 @@ int MSR_reg_sys_instr(uint32_t instr) {
     Instr instr_s= {0};
     instr_s.mnemonic = "MSR";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_2_SYS;
 
     return process_misc_instr(instr, &instr_s);
@@ -229,6 +245,7 @@ int BX_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "BX";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_3;
 
     return process_misc_instr(instr, &instr_s);
@@ -239,6 +256,7 @@ int CLZ_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "CLZ";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_4;
 
     return process_misc_instr(instr, &instr_s);
@@ -249,6 +267,7 @@ int BXJ_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "BXJ";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_3_1;
 
     return process_misc_instr(instr, &instr_s);
@@ -259,6 +278,7 @@ int BLX_reg_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "BLX";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_3_1;
 
     return process_misc_instr(instr, &instr_s);
@@ -269,6 +289,7 @@ int QADD_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "QADD";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_5;
 
     return process_misc_instr(instr, &instr_s);
@@ -279,6 +300,7 @@ int QSUB_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "QSUB";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_5;
 
     return process_misc_instr(instr, &instr_s);
@@ -289,6 +311,7 @@ int QDADD_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "QDADD";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_5;
 
     return process_misc_instr(instr, &instr_s);
@@ -299,6 +322,7 @@ int QDSUB_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "QDSUB";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_5;
 
     return process_misc_instr(instr, &instr_s);
@@ -309,6 +333,7 @@ int ERET_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "ERET";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_6;
 
     return process_misc_instr(instr, &instr_s);
@@ -319,6 +344,7 @@ int BKPT_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "BKPT";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_7;
 
     return process_misc_instr(instr, &instr_s);
@@ -329,6 +355,7 @@ int HVC_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "HVC";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_7;
 
     return process_misc_instr(instr, &instr_s);
@@ -339,10 +366,104 @@ int SMC_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "SMC";
 
+    instr_s.igroup = GROUP_MISC; 
     instr_s.itype = TYPE_MISC_8;
 
     return process_misc_instr(instr, &instr_s);
 }
+
+
+
+//> MSR immediate and hints
+
+// MSR<c> <spec_reg>, #<imm12>
+int MSR_imm_app_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "MSR";
+
+    instr_s.igroup = GROUP_MISC_HINTS;
+    instr_s.itype = TYPE_MISC_2_IMM_APP;
+
+    return process_misc_instr(instr, &instr_s);
+}
+
+// MSR<c> <spec_reg>, #<imm12>
+int MSR_imm_sys_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "MSR";
+
+    instr_s.igroup = GROUP_MISC_HINTS;
+    instr_s.itype = TYPE_MISC_2_IMM_SYS;
+
+    return process_misc_instr(instr, &instr_s);
+}
+
+// NOP<c>
+int NOP_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "NOP";
+
+    instr_s.igroup = GROUP_MISC_HINTS;
+    instr_s.itype = TYPE_MISC_HINT;
+
+    return process_misc_instr(instr, &instr_s);
+}
+
+// YIELD<c>
+int YIELD_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "YIELD";
+
+    instr_s.igroup = GROUP_MISC_HINTS;
+    instr_s.itype = TYPE_MISC_HINT;
+
+    return process_misc_instr(instr, &instr_s);
+}
+
+// WFE<c>
+int WFE_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "WFE";
+
+    instr_s.igroup = GROUP_MISC_HINTS;
+    instr_s.itype = TYPE_MISC_HINT;
+
+    return process_misc_instr(instr, &instr_s);
+}
+
+// WFI<c>
+int WFI_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "WFI";
+
+    instr_s.igroup = GROUP_MISC_HINTS;
+    instr_s.itype = TYPE_MISC_HINT;
+
+    return process_misc_instr(instr, &instr_s);
+}
+
+// SEV<c>
+int SEV_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "SEV";
+
+    instr_s.igroup = GROUP_MISC_HINTS;
+    instr_s.itype = TYPE_MISC_HINT;
+
+    return process_misc_instr(instr, &instr_s);
+}
+
+// DBG<c>
+int DBG_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.mnemonic = "DBG";
+
+    instr_s.igroup = GROUP_MISC_HINTS;
+    instr_s.itype = TYPE_MISC_HINT;
+
+    return process_misc_instr(instr, &instr_s);
+}
+
 
 
 

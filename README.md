@@ -55,8 +55,9 @@ TODO:
 - DONE sync
 - DONE extra load/store
 - DONE extra load/store unpriv
-- data proc imm
-- MOV, MOVT, MSR
+- DONE data proc imm
+- DONE MOV, MOVT, 
+- MSR and hints
 
 - load/store word
 - media part 1

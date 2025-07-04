@@ -31,7 +31,6 @@ void print_default_instr(Instr *instr_s) {
             break;
         }
 
-
         default: 
         {
             printf("UNKNOWN\n");
@@ -127,9 +126,9 @@ void decode_dp_op_1(uint32_t instr) {
     else if (IS_16_IMM_LD(instr)) {          // layer 2
         find_and_decode(instr, GROUP_DP_IMM16);
     }
-    //else if (IS_MSR_HINTS(instr)) {          // layer 2
-    //
-    //}
+    else if (IS_MSR_HINTS(instr)) {          // layer 2
+        find_and_decode(instr, GROUP_MISC_HINTS);
+    }
     else {
         printf("%s\n", default_str);
     }

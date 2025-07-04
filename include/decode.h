@@ -113,6 +113,8 @@ typedef enum {
     TYPE_MISC_1,            // syntax: <MNEMONIC><c> <Rd>, <spec_reg>
     TYPE_MISC_2_APP,    // syntax: <MNEMONIC><c> <spec_reg>, <Rn>
     TYPE_MISC_2_SYS,    // syntax: <MNEMONIC><c> <spec_reg>, <Rn>
+    TYPE_MISC_2_IMM_APP,    // syntax: <MNEMONIC><c> <spec_reg>, #<imm12>
+    TYPE_MISC_2_IMM_SYS,    // syntax: <MNEMONIC><c> <spec_reg>, #<imm12>
     TYPE_MISC_3,    // syntax: <MNEMONIC><c> <Rm>
     TYPE_MISC_3_1,  // syntax: <MNEMONIC><c> <Rm> (can be set to unpred if Rm == PC)
     TYPE_MISC_4,    // syntax: <MNEMONIC><c> <Rm>
@@ -120,6 +122,7 @@ typedef enum {
     TYPE_MISC_6,    // syntax: <MNEMONIC><c>
     TYPE_MISC_7,    // syntax: <MNEMONIC> #<imm16>
     TYPE_MISC_8,    // syntax: <MNEMONIC><c> #<imm4>
+    TYPE_MISC_HINT,
 
     // half mult instructions
     TYPE_HM_0, // syntax: <MNEMONIC><x><y><c> <Rd>, <Rn>, <Rm>, <Ra>
@@ -165,6 +168,7 @@ typedef enum {
     GROUP_LD_STR, // extra load/store and load/store
     GROUP_DP_IMM, // data proc imm
     GROUP_DP_IMM16, // movw and movt
+    GROUP_MISC_HINTS, // msr and hints
     GROUP_DEFAULT
 } IGroup;
 
@@ -179,9 +183,11 @@ typedef struct {
     Shift shift;
     union { // extra string buffer
         char shift_str[BUF_20];
+        char imm_str[BUF_20];
+    };
+    union {
         char banked_reg_str[BUF_20];
         char spec_reg_str[BUF_20];
-        char imm_str[BUF_20];
     };
     Cond c;
     Register Rd;
@@ -287,6 +293,16 @@ int ERET_instr(uint32_t instr);
 int BKPT_instr(uint32_t instr);
 int HVC_instr(uint32_t instr);
 int SMC_instr(uint32_t instr);
+//> msr and hints
+int MSR_imm_app_instr(uint32_t instr);
+int MSR_imm_sys_instr(uint32_t instr);
+int NOP_instr(uint32_t instr);
+int YIELD_instr(uint32_t instr);
+int WFE_instr(uint32_t instr);
+int WFI_instr(uint32_t instr);
+int SEV_instr(uint32_t instr);
+int DBG_instr(uint32_t instr);
+
 
 //> halfword multiply and multiply accumulate
 void print_half_mult_instr(Instr *instr_s);
