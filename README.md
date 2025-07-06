@@ -57,7 +57,7 @@ TODO:
 - DONE extra load/store unpriv
 - DONE data proc imm
 - DONE MOV, MOVT, 
-- MSR and hints
+- DONE MSR and hints
 
 - load/store word
 - media part 1

@@ -109,10 +109,10 @@ void decode_dp_op_0(uint32_t instr) {
         find_and_decode(instr, GROUP_SYNC);
     }
     else if (IS_EX_LD_STR(instr)) {          // layer 2
-        find_and_decode(instr, GROUP_LD_STR);
+        find_and_decode(instr, GROUP_EX_LD_STR);
     }
     else if (IS_EX_LD_STR_UNP(instr)) {      // layer 2
-        find_and_decode(instr, GROUP_LD_STR);
+        find_and_decode(instr, GROUP_EX_LD_STR);
     }
     else {
         printf("%s\n", default_str);
@@ -136,11 +136,11 @@ void decode_dp_op_1(uint32_t instr) {
 
 void decode_ld_str_med(uint32_t instr) {
     if (IS_LD_STR(instr)) {
-
+        find_and_decode(instr, GROUP_LD_STR);
     }
-    else if (IS_MED(instr)) {
-
-    }
+    //else if (IS_MED(instr)) {
+    //
+    //}
     else {
         printf("%s\n", default_str);
     }

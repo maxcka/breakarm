@@ -11,6 +11,8 @@
 #define BUF_10 10
 #define BUF_20 20
 
+#define UNINIT 255 // for registers that we don't want to check for unpred conditions
+
 // A32 instructions are 4 bytes wide
 #define A32_INSTR_SIZE 4
 
@@ -146,12 +148,15 @@ typedef enum {
     TYPE_SYNC_4, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>]
 
     // extra load/store instructions
-    TYPE_LS_REG, // syntax: <MNEMONIC><c> <Rt>, [<Rn>,+/-<Rm>]{!}
-    TYPE_LS_IMM_STR, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm8>]{!}
-    TYPE_LS_IMM, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm8>]{!}  note: Rn can be PC if wback true
-    TYPE_LS_DUAL_REG, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>,+/-<Rm>]{!}
-    TYPE_LS_DUAL_IMM, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>, #+/-<imm8>]{!} note: Rn can be PC if wback true
-    TYPE_LS_DUAL_IMM_STR, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>, #+/-<imm8>]{!}
+    TYPE_EX_LS_REG, // syntax: <MNEMONIC><c> <Rt>, [<Rn>,+/-<Rm>]{!}
+    TYPE_EX_LS_IMM_STR, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm8>]{!}
+    TYPE_EX_LS_IMM, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm8>]{!}  note: Rn can be PC if wback true
+    TYPE_EX_LS_DUAL_REG, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>,+/-<Rm>]{!}
+    TYPE_EX_LS_DUAL_IMM, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>, #+/-<imm8>]{!} note: Rn can be PC if wback true
+    TYPE_EX_LS_DUAL_IMM_STR, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>, #+/-<imm8>]{!}
+    TYPE_LS_REG, // syntax: <MNEMONIC><c> <Rt>, [<Rn>,+/-<Rm>{, <shift>}]{!}
+    TYPE_LS_IMM_STR, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm12>]!
+    TYPE_LS_IMM, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm12>]! note: Rn can be PC if wback true
 
     TYPE_UNPRED,
     TYPE_UNDEF
@@ -165,10 +170,11 @@ typedef enum {
     GROUP_HM,     // half mult
     GROUP_MULT,    // mult
     GROUP_SYNC,   // synchronization
-    GROUP_LD_STR, // extra load/store and load/store
+    GROUP_EX_LD_STR, // extra load/store
     GROUP_DP_IMM, // data proc imm
     GROUP_DP_IMM16, // movw and movt
     GROUP_MISC_HINTS, // msr and hints
+    GROUP_LD_STR, // load/store
     GROUP_DEFAULT
 } IGroup;
 
@@ -359,6 +365,15 @@ int STRHT_instr(uint32_t instr);
 int LDRHT_instr(uint32_t instr);
 int LDRSBT_instr(uint32_t instr);
 int LDRSHT_instr(uint32_t instr);
+//> load/store
+int STR_instr(uint32_t instr);
+int STRT_instr(uint32_t instr);
+int LDR_instr(uint32_t instr);
+int LDRT_instr(uint32_t instr);
+int STRB_instr(uint32_t instr);
+int STRBT_instr(uint32_t instr);
+int LDRB_instr(uint32_t instr);
+int LDRBT_instr(uint32_t instr);
 
 //> default
 void print_default_instr(Instr *instr_s);
@@ -366,7 +381,7 @@ int UNDEF_instr(uint32_t instr);
 int UNPRED_instr(uint32_t instr);
 
 // auxiliary functions
-void get_imm_str(Instr *instr_s, uint8_t imm_high, uint16_t imm_low, uint8_t shift, uint8_t positive);
+void get_imm_str(Instr *instr_s, uint16_t imm_high, uint8_t imm_low, uint8_t shift, uint8_t positive);
 void get_sys_sr_str(Instr *instr_s, uint8_t mask);
 void get_app_sr_str(Instr *instr_s, uint8_t mask);
 void get_banked_reg_str(uint8_t m, uint8_t m1, uint8_t R, char *banked_reg_str, int buf_sz);

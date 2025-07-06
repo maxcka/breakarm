@@ -86,9 +86,9 @@ int process_sync_instr(uint32_t instr, Instr *instr_s) {
     instr_s->B = (instr >> 22) & 0x1;
 
     instr_s->Rn = (instr >> 16) & 0xF;
-    instr_s->Rd = 0;
-    instr_s->Rt = 0;
-    instr_s->Rt2 = 0;
+    instr_s->Rd = UNINIT;
+    instr_s->Rt = UNINIT;
+    instr_s->Rt2 = UNINIT;
     
 
     if (instr_s->itype == TYPE_SYNC_0) {

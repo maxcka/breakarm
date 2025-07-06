@@ -179,7 +179,7 @@ InstrHandler proc_sync_table[][IH_ARR_SIZE] = {
     { is_LDREXH , LDREXB_instr }
 };
 
-InstrHandler proc_ld_str_table[][IH_ARR_SIZE] = {
+InstrHandler proc_ex_ld_str_table[][IH_ARR_SIZE] = {
     // extra load/store
     { is_STRH_reg   , STRH_reg_instr },
     { is_LDRH_reg   , LDRH_reg_instr },
@@ -240,7 +240,25 @@ InstrHandler proc_misc_hints_table[][IH_ARR_SIZE] = {
     { is_MSR_imm_sys, MSR_imm_sys_instr}
 };
 
-
+InstrHandler proc_ld_str_table[][IH_ARR_SIZE] = {
+    // load store
+    { is_STR_imm,   STR_instr},
+    { is_STR_reg,   STR_instr},
+    { is_STRT,      STRT_instr},
+    { is_STRT_2,    STRT_instr},
+    { is_LDR_imm,   LDR_instr},
+    { is_LDR_reg,   LDR_instr},
+    { is_LDRT,      LDRT_instr},
+    { is_LDRT_2,    LDRT_instr},
+    { is_STRB_imm,  STRB_instr},
+    { is_STRB_reg,  STRB_instr},
+    { is_STRBT,     STRBT_instr},
+    { is_STRBT_2,   STRBT_instr},
+    { is_LDRB_imm,  LDRB_instr},
+    { is_LDRB_reg,  LDRB_instr},
+    { is_LDRBT,     LDRBT_instr},
+    { is_LDRBT_2,   LDRBT_instr}
+};
 
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
@@ -255,10 +273,11 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_hm_table, sizeof(proc_hm_table) / sizeof(proc_hm_table[0]) },
     { proc_mult_table, sizeof(proc_mult_table) / sizeof(proc_mult_table[0]) },
     { proc_sync_table, sizeof(proc_sync_table) / sizeof(proc_sync_table[0]) },
-    { proc_ld_str_table, sizeof(proc_ld_str_table) / sizeof(proc_ld_str_table[0]) },
+    { proc_ex_ld_str_table, sizeof(proc_ex_ld_str_table) / sizeof(proc_ex_ld_str_table[0]) },
     { proc_dp_imm_table, sizeof(proc_dp_imm_table) / sizeof(proc_dp_imm_table[0]) },
     { proc_dp_imm16_table, sizeof(proc_dp_imm16_table) / sizeof(proc_dp_imm16_table[0]) },
-    { proc_misc_hints_table, sizeof(proc_misc_hints_table) / sizeof(proc_misc_hints_table[0]) }
+    { proc_misc_hints_table, sizeof(proc_misc_hints_table) / sizeof(proc_misc_hints_table[0]) },
+    { proc_ld_str_table, sizeof(proc_ld_str_table) / sizeof(proc_ld_str_table[0]) }
 };
 
 
@@ -270,9 +289,10 @@ void (*print_instr_table[])(Instr *) = {
     print_half_mult_instr,     // GROUP_HM
     print_mult_instr,           // GROUP_MULT
     print_sync_instr,           // GROUP_SYNC
-    print_load_store_instr,        // GROUP_LD_STR
+    print_load_store_instr,        // GROUP_EX_LD_STR
     print_data_proc_instr, // GROUP_DP_IMM
     print_data_proc_instr, // GROUP_DP_IMM16
     print_misc_instr, // GROUP_MISC_HINTS
+    print_load_store_instr,   // GROUP_LD_STR
     print_default_instr
 };
