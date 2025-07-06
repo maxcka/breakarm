@@ -2,6 +2,7 @@
     "files.associations": {
         "fcntl.h": "c",
         "bit_matching.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "decode.h": "c"
     }
 }

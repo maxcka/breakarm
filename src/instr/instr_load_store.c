@@ -133,10 +133,10 @@ int process_load_store_instr(uint32_t instr, Instr *instr_s) {
         instr_s->Rm = (instr >> 0) & 0xF;
         get_shift_str(instr_s->shift, instr_s->shift_str, sizeof(instr_s->shift_str));
     }
-    else if (instr_s->itype == TYPE_EX_LS_IMM_STR) {
+    else if (instr_s->itype == TYPE_EX_LS_IMM_STR || instr_s->itype == TYPE_EX_LS_IMM) {
         get_imm_str(instr_s, (uint16_t)imm4H, imm4L, 4, instr_s->add);
     }
-    else if (instr_s->itype == TYPE_LS_IMM_STR) {
+    else if (instr_s->itype == TYPE_LS_IMM_STR || instr_s->itype == TYPE_LS_IMM) {
         get_imm_str(instr_s, imm12, 0, 0, instr_s->add);
     }
     else if (instr_s->itype == TYPE_EX_LS_DUAL_REG || instr_s->itype == TYPE_EX_LS_DUAL_IMM) {
@@ -161,6 +161,7 @@ int process_load_store_instr(uint32_t instr, Instr *instr_s) {
         instr_s->itype = TYPE_UNPRED;
     }
 
+    print_asm_instr(instr_s);
     return 0;
 
 }

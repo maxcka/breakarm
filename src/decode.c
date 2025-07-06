@@ -138,9 +138,23 @@ void decode_ld_str_med(uint32_t instr) {
     if (IS_LD_STR(instr)) {
         find_and_decode(instr, GROUP_LD_STR);
     }
-    //else if (IS_MED(instr)) {
-    //
-    //}
+    else if (IS_MED(instr)) {
+        if (IS_PAS_S(instr) || IS_PAS_U(instr)) {
+            find_and_decode(instr, GROUP_PAS);
+        }
+        else {
+            printf("%s\n", default_str);
+        }
+        //else if (IS_PUSR(instr)) {
+        //
+        //}
+        //else if (IS_SMSUD(instr)) {
+        //
+        //}
+        //else {
+        //
+        //}
+    }
     else {
         printf("%s\n", default_str);
     }
@@ -163,9 +177,9 @@ void decode_instr(uint32_t instr) {
         else if (IS_DP_OP_1(instr)) {               // layer 1
             decode_dp_op_1(instr);
         }
-        //else if (IS_LD_STR_MED(instr)) {            // layer 1
-        //    decode_ld_str_med(instr);
-        //}
+        else if (IS_LD_STR_MED(instr)) {            // layer 1
+            decode_ld_str_med(instr);
+        }
         //else if (IS_BR_BLK(instr)) {
         //    decode_br_blk(instr);
         //}

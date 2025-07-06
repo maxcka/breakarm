@@ -260,6 +260,16 @@ InstrHandler proc_ld_str_table[][IH_ARR_SIZE] = {
     { is_LDRBT_2,   LDRBT_instr}
 };
 
+InstrHandler proc_pas_table[][IH_ARR_SIZE] = {
+    // parallel add and sub
+    { is_ADD16, ADD16_instr},
+    { is_ASX,   ASX_instr},
+    { is_SAX,   SAX_instr},
+    { is_SUB16, SUB16_instr},
+    { is_ADD8,  ADD8_instr},
+    { is_SUB8,  SUB8_instr}
+};
+
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
 //int (*proc_instr_table[][2])(uint32_t) = {
@@ -277,7 +287,8 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_dp_imm_table, sizeof(proc_dp_imm_table) / sizeof(proc_dp_imm_table[0]) },
     { proc_dp_imm16_table, sizeof(proc_dp_imm16_table) / sizeof(proc_dp_imm16_table[0]) },
     { proc_misc_hints_table, sizeof(proc_misc_hints_table) / sizeof(proc_misc_hints_table[0]) },
-    { proc_ld_str_table, sizeof(proc_ld_str_table) / sizeof(proc_ld_str_table[0]) }
+    { proc_ld_str_table, sizeof(proc_ld_str_table) / sizeof(proc_ld_str_table[0]) },
+    { proc_pas_table, sizeof(proc_pas_table) / sizeof(proc_pas_table[0]) }
 };
 
 
@@ -294,5 +305,6 @@ void (*print_instr_table[])(Instr *) = {
     print_data_proc_instr, // GROUP_DP_IMM16
     print_misc_instr, // GROUP_MISC_HINTS
     print_load_store_instr,   // GROUP_LD_STR
+    print_parallel_add_sub_instr, // GROUP_PAS
     print_default_instr
 };

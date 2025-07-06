@@ -56,11 +56,11 @@ TODO:
 - DONE extra load/store
 - DONE extra load/store unpriv
 - DONE data proc imm
-- DONE MOV, MOVT, 
+- DONE MOV, MOVT 
 - DONE MSR and hints
 
 - DONE load/store word
-- 7/6 media part 1
+- DONE media part 1
 - 7/6 media part 2
 - 7/13 branch, branch with link, and block data transfer
 - 7/13 coproc and supervisor

@@ -158,6 +158,9 @@ typedef enum {
     TYPE_LS_IMM_STR, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm12>]!
     TYPE_LS_IMM, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm12>]! note: Rn can be PC if wback true
 
+    // parallel addition and subtraction
+    TYPE_PAS, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
+
     TYPE_UNPRED,
     TYPE_UNDEF
 } IType;
@@ -175,6 +178,7 @@ typedef enum {
     GROUP_DP_IMM16, // movw and movt
     GROUP_MISC_HINTS, // msr and hints
     GROUP_LD_STR, // load/store
+    GROUP_PAS, // parallel add and sub
     GROUP_DEFAULT
 } IGroup;
 
@@ -232,9 +236,12 @@ extern InstrHandler proc_misc_table[][IH_ARR_SIZE];
 extern InstrHandler proc_hm_table[][IH_ARR_SIZE];
 extern InstrHandler proc_mult_table[][IH_ARR_SIZE];
 extern InstrHandler proc_sync_table[][IH_ARR_SIZE];
-extern InstrHandler proc_ld_str_table[][IH_ARR_SIZE];
+extern InstrHandler proc_ex_ld_str_table[][IH_ARR_SIZE];
 extern InstrHandler proc_dp_imm_table[][IH_ARR_SIZE];
 extern InstrHandler proc_dp_imm16_table[][IH_ARR_SIZE];
+extern InstrHandler proc_misc_hints_table[][IH_ARR_SIZE];
+extern InstrHandler proc_ld_str_table[][IH_ARR_SIZE];
+extern InstrHandler proc_pas_table[][IH_ARR_SIZE];
 // ==============================================
 // lookup table for processing instructions
 //extern int (*proc_instr_table[][2])(uint32_t);
@@ -374,6 +381,17 @@ int STRB_instr(uint32_t instr);
 int STRBT_instr(uint32_t instr);
 int LDRB_instr(uint32_t instr);
 int LDRBT_instr(uint32_t instr);
+
+//> parallel add and sub
+void print_parallel_add_sub_instr(Instr *instr_s);
+int process_parallel_add_sub_instr(uint32_t instr, Instr *instr_s);
+int ADD16_instr(uint32_t instr);
+int ASX_instr(uint32_t instr);
+int SAX_instr(uint32_t instr);
+int SUB16_instr(uint32_t instr);
+int ADD8_instr(uint32_t instr);
+int SUB8_instr(uint32_t instr);
+
 
 //> default
 void print_default_instr(Instr *instr_s);
