@@ -373,6 +373,36 @@ static inline int is_UXTH(uint32_t instr)           { return ( ( ((instr) >> 20)
 static inline int is_REVSH(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x7 ) && ( ( ((instr) >> 5) & 0x7) == 0x5 ); } // 0b011 and 0b101
 //=========================
 
+//>> layer 3
+// instruction is signed multiply, signed and unsigned divide
+#define IS_SMSUD(instr)             ( ( ( ((instr) >> 20) & 0x18) == 0x10 ) ) // 0b10xxx
+//=========================
+//>> layer 4
+static inline int is_SMLAD(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x0 ) && ( ( ((instr) >> 5) & 0x6) == 0x0 ) && ( ( ((instr) >> 12) & 0xF) != 0xF ); } // 0b000 and 0b00x and not 0b1111
+static inline int is_SMUAD(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x0 ) && ( ( ((instr) >> 5) & 0x6) == 0x0 ) && ( ( ((instr) >> 12) & 0xF) == 0xF ); } // 0b000 and 0b00x and 0b1111
+static inline int is_SMLSD(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x0 ) && ( ( ((instr) >> 5) & 0x6) == 0x2 ) && ( ( ((instr) >> 12) & 0xF) != 0xF ); } // 0b000 and 0b01x and not 0b1111
+static inline int is_SMUSD(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x0 ) && ( ( ((instr) >> 5) & 0x6) == 0x2 ) && ( ( ((instr) >> 12) & 0xF) == 0xF ); } // 0b000 and 0b01x and 0b1111
+static inline int is_SDIV(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x7) == 0x1 ) && ( ( ((instr) >> 5) & 0x7) == 0x0 ); } // 0b001 and 0b000
+static inline int is_UDIV(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x7) == 0x3 ) && ( ( ((instr) >> 5) & 0x7) == 0x0 ); } // 0b011 and 0b000
+static inline int is_SMLALD(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x7) == 0x4 ) && ( ( ((instr) >> 5) & 0x6) == 0x0 ); } // 0b100 and 0b00x
+static inline int is_SMLSLD(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x7) == 0x4 ) && ( ( ((instr) >> 5) & 0x6) == 0x2 ); } // 0b100 and 0b01x
+static inline int is_SMMLA(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x5 ) && ( ( ((instr) >> 5) & 0x6) == 0x0 ) && ( ( ((instr) >> 12) & 0xF) != 0xF ); } // 0b101 and 0b00x and not 0b1111
+static inline int is_SMMUL(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x5 ) && ( ( ((instr) >> 5) & 0x6) == 0x0 ) && ( ( ((instr) >> 12) & 0xF) == 0xF ); } // 0b101 and 0b00x and 0b1111
+static inline int is_SMMLS(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x7) == 0x5 ) && ( ( ((instr) >> 5) & 0x6) == 0x6 ); } // 0b101 and 0b11x
+//=========================
+
+//=========================
+//>> layer 3
+static inline int is_USAD8(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x1F) == 0x18 ) && ( ( ((instr) >> 5) & 0x7) == 0x0 ) && ( ( ((instr) >> 12) & 0xF) == 0xF ); } // 0b11000 and 0b000 and 0b1111
+static inline int is_USADA8(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x1F) == 0x18 ) && ( ( ((instr) >> 5) & 0x7) == 0x0 ) && ( ( ((instr) >> 12) & 0xF) != 0xF ); } // 0b11000 and 0b000 and not 0b1111
+static inline int is_SBFX(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x1E) == 0x1A ) && ( ( ((instr) >> 5) & 0x3) == 0x2 ); } // 0b1101x and 0bx10
+static inline int is_BFC(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x1E) == 0x1C ) && ( ( ((instr) >> 5) & 0x3) == 0x0 ) && ( ( ((instr) >> 0) & 0xF) == 0xF ); } // 0b1110x and 0bx00 and 0b1111
+static inline int is_BFI(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x1E) == 0x1C ) && ( ( ((instr) >> 5) & 0x3) == 0x0 ) && ( ( ((instr) >> 0) & 0xF) != 0xF ); } // 0b1110x and 0bx00 and not 0b1111
+static inline int is_UBFX(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x1E) == 0x1E ) && ( ( ((instr) >> 5) & 0x3) == 0x2 ); } // 0b1111x and 0bx10
+static inline int is_UDF(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x1F) == 0x1F ) && ( ( ((instr) >> 5) & 0x7) == 0x7 ) && ( ( ((instr) >> 28) & 0xF) == 0xE ); } // 0b1111x and 0b111 and 0b1110
+//=========================
+
+
 //>>>>>>>>>>>>>
 //>> layer 1 <<
 //>>>>>>>>>>>>>

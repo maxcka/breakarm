@@ -59,13 +59,15 @@ TODO:
 - DONE MOV, MOVT, 
 - DONE MSR and hints
 
-- load/store word
-- media part 1
-- media part 2
-- branch, branch with link, and block data transfer
-- coproc and supervisor
+- DONE load/store word
+- 7/6 media part 1
+- 7/6 media part 2
+- 7/13 branch, branch with link, and block data transfer
+- 7/13 coproc and supervisor
 
-- unconditional
+- 7/13 unconditional
+
+- 7/20 testing and cleanup
 
 
 check for "// NOTE", "// TODO", and "// FIX"
