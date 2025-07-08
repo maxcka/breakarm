@@ -102,12 +102,12 @@ typedef enum {
     TYPE_DP_1_IMM, // syntax: <MNEMONIC><c> <Rn>, #<const>
     TYPE_DP_2,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
     TYPE_DP_2_IMM,  // syntax: <MNEMONIC>{S}<c> <Rd>, #<const>
+    TYPE_DP_2_IMM16,  // syntax: <MNEMONIC><c> <Rd>, #<imm16>
     TYPE_DP_3,     // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
     TYPE_DP_3_RSR, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>
     TYPE_DP_4,      // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm> {, <shift>}
     TYPE_DP_4_RSR,  // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, <type> <Rs>
 
-    TYPE_DP_2_IMM16,  // syntax: <MNEMONIC><c> <Rd>, #<imm16>
 
     // misc instructions
     TYPE_MISC_BANKED_0,    // syntax: <MNEMONIC><c> <Rd>, <banked_reg>
@@ -119,7 +119,7 @@ typedef enum {
     TYPE_MISC_2_IMM_SYS,    // syntax: <MNEMONIC><c> <spec_reg>, #<imm12>
     TYPE_MISC_3,    // syntax: <MNEMONIC><c> <Rm>
     TYPE_MISC_3_1,  // syntax: <MNEMONIC><c> <Rm> (can be set to unpred if Rm == PC)
-    TYPE_MISC_4,    // syntax: <MNEMONIC><c> <Rm>
+    TYPE_MISC_4,    // syntax: <MNEMONIC><c> <Rd>, <Rm>
     TYPE_MISC_5,    // syntax: <MNEMONIC><c> <Rd>, <Rm>, <Rn>
     TYPE_MISC_6,    // syntax: <MNEMONIC><c>
     TYPE_MISC_7,    // syntax: <MNEMONIC> #<imm16>
@@ -147,7 +147,7 @@ typedef enum {
     TYPE_SYNC_3, // syntax: <MNEMONIC><c> <Rd>, <Rt>, <Rt2>, [<Rn>]
     TYPE_SYNC_4, // syntax: <MNEMONIC><c> <Rt>, <Rt2>, [<Rn>]
 
-    // extra load/store instructions
+    // load/store instructions
     TYPE_EX_LS_REG, // syntax: <MNEMONIC><c> <Rt>, [<Rn>,+/-<Rm>]{!}
     TYPE_EX_LS_IMM_STR, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm8>]{!}
     TYPE_EX_LS_IMM, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm8>]{!}  note: Rn can be PC if wback true
@@ -399,13 +399,19 @@ int UNDEF_instr(uint32_t instr);
 int UNPRED_instr(uint32_t instr);
 
 // auxiliary functions
+uint8_t is_itype(uint8_t itype, uint8_t count, ...);
+#define IS_ITYPE(itype, ...) is_itype(itype, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)
+#define IS_IGROUP(igroup, ...) is_itype(igroup, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)
+uint8_t is_any_reg_target_reg(Register target, uint8_t count, ...);
+#define IS_TARGET_REG(target, ...) is_any_reg_target_reg(target, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)
 void get_imm_str(Instr *instr_s, uint16_t imm_high, uint8_t imm_low, uint8_t shift, uint8_t positive);
 void get_sys_sr_str(Instr *instr_s, uint8_t mask);
 void get_app_sr_str(Instr *instr_s, uint8_t mask);
 void get_banked_reg_str(uint8_t m, uint8_t m1, uint8_t R, char *banked_reg_str, int buf_sz);
-Shift decode_imm_shift(ShiftType type, uint8_t imm5);
-void get_shift_str(Shift shift, char *shift_str, int buf_sz);
+Shift decode_imm_shift(ShiftType type, uint8_t imm);
+void get_shift_str(Instr *instr_s, ShiftType type, uint8_t imm);
 void print_asm_instr(Instr *instr_s);
+
 
 
 // main functions

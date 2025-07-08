@@ -198,3 +198,24 @@ int SMLAL_instr(uint32_t instr) {
     return process_mult_instr(instr, &instr_s);
 }
 
+
+// TODO: also add signed multiply, signed and unsigned divide
+
+
+// syntax: SMLAD{X}<c> <Rd>, <Rn>, <Rm>, <Ra>
+// syntax: SMLSD{X}<c> <Rd>, <Rn>, <Rm>, <Ra>
+
+// syntax: SMUAD{X}<c> <Rd>, <Rn>, <Rm>
+// syntax: SMUSD{X}<c> <Rd>, <Rn>, <Rm>
+
+
+// syntax: SDIV<c> <Rd>, <Rn>, <Rm>
+// syntax: UDIV<c> <Rd>, <Rn>, <Rm>
+
+// syntax: SMLALD{X}<c> <RdLo>, <RdHi>, <Rn>, <Rm>
+// syntax: SMLSLD{X}<c> <RdLo>, <RdHi>, <Rn>, <Rm>
+
+// syntax: SMMLA{R}<c> <Rd>, <Rn>, <Rm>, <Ra>
+// syntax: SMMLS{R}<c> <Rd>, <Rn>, <Rm>, <Ra>
+
+// syntax: SMMUL{R}<c> <Rd>, <Rn>, <Rm>

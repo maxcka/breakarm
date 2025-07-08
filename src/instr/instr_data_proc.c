@@ -189,7 +189,6 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
     uint8_t imm4 = (instr >> 16) & 0xF; // used for movw and movt
     uint8_t imm5 = (instr >> 7) & 0x1F;
     uint8_t imm12 = (instr >> 0) & 0xFFF; // used for immediate instr
-    instr_s->shift = decode_imm_shift(type, imm5);
     instr_s->c =  (instr >> 28) & 0xF; // c is condition
     instr_s->Rd = (instr >> 12) & 0xF; // 0b1111
     instr_s->Rn = (instr >> 16) & 0xF;
@@ -217,7 +216,7 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
         get_imm_str(instr_s, imm4, imm12, 12, TRUE);
     }
     else {
-        get_shift_str(instr_s->shift, instr_s->shift_str, sizeof(instr_s->shift_str));
+        get_shift_str(instr_s, type, imm5);
     }
     print_asm_instr(instr_s);
 

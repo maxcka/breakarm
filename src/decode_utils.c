@@ -1,6 +1,37 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include "decode.h"
+
+uint8_t is_itype(uint8_t itype, uint8_t count, ...) {
+    va_list args;
+    va_start(args, count);
+
+    for (int i = 0; i < count; i++) {
+        int target = va_arg(args, int);
+        if (itype == target) {
+            va_end(args);
+            return TRUE;
+        }
+    }
+    va_end(args);
+    return FALSE;
+}
+
+uint8_t is_any_reg_target_reg(Register target, uint8_t count, ...) {
+    va_list args;
+    va_start(args, count);
+
+    for (int i = 0; i < count; i++) {
+        Register reg = va_arg(args, int);
+        if (reg == target) {
+            va_end(args);
+            return TRUE;
+        }
+    }
+    va_end(args);
+    return FALSE;
+}
 
 void get_imm_str(Instr *instr_s, uint16_t imm_high, uint8_t imm_low, uint8_t shift, uint8_t positive) {
     uint16_t mask = (1 << shift) - 1;
@@ -68,30 +99,30 @@ void get_banked_reg_str(uint8_t m, uint8_t m1, uint8_t R, char *banked_reg_str, 
 }
 
 
-Shift decode_imm_shift(ShiftType type, uint8_t imm5) {
+Shift decode_imm_shift(ShiftType type, uint8_t imm) {
     Shift shift;
     switch(type) {
         case LSL:
             shift.shift_t = LSL;
-            shift.shift_n = imm5;
+            shift.shift_n = imm;
             break;
         case LSR:
             shift.shift_t = LSR;
-            shift.shift_n = (imm5 == 0) ? 32 : imm5;
+            shift.shift_n = (imm == 0) ? 32 : imm;
             break;
         case ASR:
             shift.shift_t = ASR;
-            shift.shift_n = (imm5 == 0) ? 32 : imm5;
+            shift.shift_n = (imm == 0) ? 32 : imm;
             break;
         case ROR:
         case RRX: // doesn't need to be here but compiler complains
-            if (imm5 == 0) {
+            if (imm == 0) {
                 shift.shift_t = RRX;
                 shift.shift_n = 1;
             }
             else {
                 shift.shift_t = ROR;
-                shift.shift_n = imm5;
+                shift.shift_n = imm;
             }
             break;
     }
@@ -99,13 +130,13 @@ Shift decode_imm_shift(ShiftType type, uint8_t imm5) {
     return shift;
 }
 
-// maybe change this and just pass in Instr instr_s?
-void get_shift_str(Shift shift, char *shift_str, int buf_sz) {
-    if (shift.shift_n == 0) {
-        shift_str[0] = '\0';
+void get_shift_str(Instr *instr_s, ShiftType type, uint8_t imm) {
+    instr_s->shift = decode_imm_shift(type, imm);
+    if (instr_s->shift.shift_n == 0) {
+        instr_s->shift_str[0] = '\0';
     }
     else {
-        snprintf(shift_str, buf_sz, ", %s #%d", shift_codes[shift.shift_t], shift.shift_n);
+        snprintf(instr_s->shift_str, sizeof(instr_s->shift_str), ", %s #%d", shift_codes[instr_s->shift.shift_t], instr_s->shift.shift_n);
     }
 }
 

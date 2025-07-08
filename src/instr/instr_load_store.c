@@ -123,7 +123,9 @@ int process_load_store_instr(uint32_t instr, Instr *instr_s) {
 
     uint8_t type = (instr >> 5) & 0x3;
     uint8_t imm5 = (instr >> 7) & 0x1F;
-    instr_s->shift = decode_imm_shift(type, imm5);
+
+    
+    uint8_t is_DUAL = IS_ITYPE(instr_s->itype, TYPE_EX_LS_DUAL_REG, TYPE_EX_LS_DUAL_IMM, TYPE_EX_LS_DUAL_IMM_STR);
 
     // doing itype-specific actions
     if (instr_s->itype == TYPE_EX_LS_REG) {
@@ -131,33 +133,42 @@ int process_load_store_instr(uint32_t instr, Instr *instr_s) {
     }
     else if (instr_s->itype == TYPE_LS_REG)  {
         instr_s->Rm = (instr >> 0) & 0xF;
-        get_shift_str(instr_s->shift, instr_s->shift_str, sizeof(instr_s->shift_str));
+        get_shift_str(instr_s, type, imm5);
     }
-    else if (instr_s->itype == TYPE_EX_LS_IMM_STR || instr_s->itype == TYPE_EX_LS_IMM) {
+    else if (IS_ITYPE(instr_s->itype, TYPE_EX_LS_IMM_STR, TYPE_EX_LS_IMM)) {
         get_imm_str(instr_s, (uint16_t)imm4H, imm4L, 4, instr_s->add);
     }
-    else if (instr_s->itype == TYPE_LS_IMM_STR || instr_s->itype == TYPE_LS_IMM) {
+    else if (IS_ITYPE(instr_s->itype, TYPE_LS_IMM_STR, TYPE_LS_IMM)) {
         get_imm_str(instr_s, imm12, 0, 0, instr_s->add);
     }
-    else if (instr_s->itype == TYPE_EX_LS_DUAL_REG || instr_s->itype == TYPE_EX_LS_DUAL_IMM) {
+    else if (IS_ITYPE(instr_s->itype, TYPE_EX_LS_DUAL_REG, TYPE_EX_LS_DUAL_IMM)) {
         instr_s->Rm = (instr >> 0) & 0xF;
         instr_s->Rt2 = instr_s->Rt + 1;
     }
 
     // checking if unpredictable
-    if (instr_s->igroup == GROUP_EX_LD_STR && instr_s->Rt == PC) {
+    if (instr_s->igroup == GROUP_EX_LD_STR && 
+        instr_s->Rt == PC) {
+
         instr_s->itype = TYPE_UNPRED;
     }
-    if (instr_s->Rm == PC || instr_s->Rt2 == PC ||
-        (instr_s->wback && (instr_s->Rn == instr_s->Rt || instr_s->Rn == instr_s->Rt2))) {
+    if ((IS_IGROUP(instr_s->igroup, GROUP_EX_LD_STR, GROUP_LD_STR)) &&
+        (IS_TARGET_REG(PC, instr_s->Rm, instr_s->Rt2) ||
+        (instr_s->wback && (instr_s->Rn == instr_s->Rt || instr_s->Rn == instr_s->Rt2)))) {
+
         instr_s->itype = TYPE_UNPRED;
     }
     // applies to reg and str immediate instructions
-    if ((instr_s->itype != TYPE_EX_LS_IMM || instr_s->itype != TYPE_EX_LS_DUAL_IMM || instr_s->itype != TYPE_LS_IMM) && (instr_s->wback && instr_s->Rn == PC)) {
+    if ((IS_IGROUP(instr_s->igroup, GROUP_EX_LD_STR, GROUP_LD_STR)) &&
+        ((instr_s->itype != TYPE_EX_LS_IMM || instr_s->itype != TYPE_EX_LS_DUAL_IMM || instr_s->itype != TYPE_LS_IMM) && 
+        (instr_s->wback && instr_s->Rn == PC))) {
+
          instr_s->itype = TYPE_UNPRED;
     }
     // applies to dual instructions
-    if ((instr_s->itype == TYPE_EX_LS_DUAL_REG || instr_s->itype == TYPE_EX_LS_DUAL_IMM || instr_s->itype == TYPE_EX_LS_DUAL_IMM_STR) && (instr_s->Rm == instr_s->Rt || (instr_s->Rt & 0x1) == 1)) {
+    if (IS_IGROUP(instr_s->igroup, GROUP_EX_LD_STR, GROUP_LD_STR) &&
+        (is_DUAL && 
+        (instr_s->Rm == instr_s->Rt || (instr_s->Rt & 0x1) == 1))) {
         instr_s->itype = TYPE_UNPRED;
     }
 

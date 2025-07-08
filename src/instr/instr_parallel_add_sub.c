@@ -148,3 +148,18 @@ int SUB8_instr(uint32_t instr) {
 
     return process_mult_instr(instr, &instr_s);
 }
+
+
+//>> other media instructions
+
+// USAD8, USADA8, SBFX, BFC, BFI, UBFX, UDF
+
+
+// syntax: USAD8<c> <Rd>, <Rn>, <Rm>
+
+// syntax: USADA8<c> <Rd>, <Rn>, <Rm>, <Ra>
+
+// syntax: SBFX<c> <Rd>, <Rn>, #<lsb>, #<width>
+// syntax: BFC<c> <Rd>, #<lsb>, #<width>
+// syntax: BFI<c> <Rd>, <Rn>, #<lsb>, #<width>
+// syntax: UBFX<c> <Rd>, <Rn>, #<lsb>, #<width>
