@@ -313,6 +313,17 @@ InstrHandler proc_signed_mult_table[][IH_ARR_SIZE] = {
     { is_SMMUL, SMMUL_instr }
 };
 
+InstrHandler proc_other_media_table[][IH_ARR_SIZE] = {
+    // other media instructions
+    { is_USAD8, USAD8_instr},
+    { is_USADA8, USADA8_instr},
+    { is_SBFX, SBFX_instr},
+    { is_BFC, BFC_instr},
+    { is_BFI, BFI_instr},
+    { is_UBFX, UBFX_instr},
+    { is_UDF, UDF_instr}
+};
+
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
 //int (*proc_instr_table[][2])(uint32_t) = {
@@ -333,7 +344,8 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_ld_str_table, sizeof(proc_ld_str_table) / sizeof(proc_ld_str_table[0]) },
     { proc_pas_table, sizeof(proc_pas_table) / sizeof(proc_pas_table[0]) },
     { proc_pusr_table, sizeof(proc_pusr_table) / sizeof(proc_pusr_table[0]) },
-    { proc_signed_mult_table, sizeof(proc_signed_mult_table) / sizeof(proc_signed_mult_table[0]) }
+    { proc_signed_mult_table, sizeof(proc_signed_mult_table) / sizeof(proc_signed_mult_table[0]) },
+    { proc_other_media_table, sizeof(proc_other_media_table) / sizeof(proc_other_media_table[0]) }
 };
 
 
@@ -353,5 +365,6 @@ void (*print_instr_table[])(Instr *) = {
     print_parallel_add_sub_instr, // GROUP_PAS
     print_pusr_instr, // GROUP_PUSR
     print_mult_instr, // GROUP_SIGNED_MULT
+    print_parallel_add_sub_instr, // GROUP_OTHER_MEDIA
     print_default_instr
 };

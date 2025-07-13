@@ -164,7 +164,12 @@ typedef enum {
     TYPE_LS_IMM, // syntax: <MNEMONIC><c> <Rt>, [<Rn>, #+/-<imm12>]! note: Rn can be PC if wback true
 
     // parallel addition and subtraction
-    TYPE_PAS, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
+    TYPE_PAS_0, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
+    TYPE_PAS_1, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>, <Ra>
+    TYPE_PAS_FIELD_0, // syntax: <MNEMONIC><c> <Rd>, <Rn>, #<lsb>, #<width>
+    TYPE_PAS_FIELD_0_1, // syntax: <MNEMONIC><c> <Rd>, <Rn>, #<lsb>, #<width>
+    TYPE_PAS_FIELD_1, // syntax: <MNEMONIC><c> <Rd>, #<lsb>, #<width>
+    TYPE_PAS_UDF, // syntax: <MNEMONIC><c> #<imm16>
 
     // packing, unpacking, saturation, and reversal
     TYPE_PUSR_0, // syntax: <MNEMONIC><x><y><c> <Rd>, <Rn>, <Rm> {, <shift>}
@@ -194,6 +199,7 @@ typedef enum {
     GROUP_PAS, // parallel add and sub
     GROUP_PUSR, // packing, unpacking, saturation, reversal
     GROUP_SIGNED_MULT, // signed mult
+    GROUP_OTHER_MEDIA, // other media instructions
     GROUP_DEFAULT
 } IGroup;
 
@@ -235,6 +241,8 @@ typedef struct {
     uint8_t index;
     uint8_t add;
     uint8_t wback;
+    uint8_t lsb;
+    uint8_t width;
 } Instr;
 
 
@@ -416,6 +424,14 @@ int SAX_instr(uint32_t instr);
 int SUB16_instr(uint32_t instr);
 int ADD8_instr(uint32_t instr);
 int SUB8_instr(uint32_t instr);
+//> other media instructions
+int USAD8_instr(uint32_t instr);
+int USADA8_instr(uint32_t instr);
+int SBFX_instr(uint32_t instr);
+int BFC_instr(uint32_t instr);
+int BFI_instr(uint32_t instr);
+int UBFX_instr(uint32_t instr);
+int UDF_instr(uint32_t instr);
 
 //> packing, unpacking, saturation, and reversal
 void print_pusr_instr(Instr *instr_s);

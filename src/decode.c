@@ -149,7 +149,7 @@ void decode_ld_str_med(uint32_t instr) {
             find_and_decode(instr, GROUP_SIGNED_MULT);
         }
         else {
-            printf("%s\n", default_str);
+            find_and_decode(instr, GROUP_OTHER_MEDIA);
         }
     }
     else {
