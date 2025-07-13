@@ -124,9 +124,6 @@ int process_load_store_instr(uint32_t instr, Instr *instr_s) {
     uint8_t type = (instr >> 5) & 0x3;
     uint8_t imm5 = (instr >> 7) & 0x1F;
 
-    
-    uint8_t is_DUAL = IS_ITYPE(instr_s->itype, TYPE_EX_LS_DUAL_REG, TYPE_EX_LS_DUAL_IMM, TYPE_EX_LS_DUAL_IMM_STR);
-
     // doing itype-specific actions
     if (instr_s->itype == TYPE_EX_LS_REG) {
         instr_s->Rm = (instr >> 0) & 0xF;
@@ -159,16 +156,15 @@ int process_load_store_instr(uint32_t instr, Instr *instr_s) {
         instr_s->itype = TYPE_UNPRED;
     }
     // applies to reg and str immediate instructions
-    if ((IS_IGROUP(instr_s->igroup, GROUP_EX_LD_STR, GROUP_LD_STR)) &&
-        ((instr_s->itype != TYPE_EX_LS_IMM || instr_s->itype != TYPE_EX_LS_DUAL_IMM || instr_s->itype != TYPE_LS_IMM) && 
+    if (IS_IGROUP(instr_s->igroup, GROUP_EX_LD_STR, GROUP_LD_STR) &&
+        (IS_NOT_ITYPE(instr_s->itype, TYPE_EX_LS_IMM, TYPE_EX_LS_DUAL_IMM, TYPE_LS_IMM) && 
         (instr_s->wback && instr_s->Rn == PC))) {
 
          instr_s->itype = TYPE_UNPRED;
     }
     // applies to dual instructions
-    if (IS_IGROUP(instr_s->igroup, GROUP_EX_LD_STR, GROUP_LD_STR) &&
-        (is_DUAL && 
-        (instr_s->Rm == instr_s->Rt || (instr_s->Rt & 0x1) == 1))) {
+    if (IS_ITYPE(instr_s->itype, TYPE_EX_LS_DUAL_REG, TYPE_EX_LS_DUAL_IMM, TYPE_EX_LS_DUAL_IMM_STR) &&
+        (instr_s->Rm == instr_s->Rt || (instr_s->Rt & 0x1) == 1)) {
         instr_s->itype = TYPE_UNPRED;
     }
 

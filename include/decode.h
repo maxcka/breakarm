@@ -161,6 +161,14 @@ typedef enum {
     // parallel addition and subtraction
     TYPE_PAS, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
 
+    // packing, unpacking, saturation, and reversal
+    TYPE_PUSR_0, // syntax: <MNEMONIC><x><y><c> <Rd>, <Rn>, <Rm> {, <shift>}
+    TYPE_PUSR_1, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>{, <rotation>}
+    TYPE_PUSR_2, // syntax: <MNEMONIC><c> <Rd>, <Rm>{, <rotation>}
+    TYPE_PUSR_3, // syntax: <MNEMONIC><c> <Rd>, #<imm>, <Rn>{, <shift>}
+    TYPE_PUSR_4, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
+    TYPE_PUSR_5, // syntax: <MNEMONIC><c> <Rd>, <Rm>
+
     TYPE_UNPRED,
     TYPE_UNDEF
 } IType;
@@ -179,6 +187,7 @@ typedef enum {
     GROUP_MISC_HINTS, // msr and hints
     GROUP_LD_STR, // load/store
     GROUP_PAS, // parallel add and sub
+    GROUP_PUSR,
     GROUP_DEFAULT
 } IGroup;
 
@@ -191,10 +200,8 @@ typedef struct {
     uint8_t special;
     const char *mnemonic;
     Shift shift;
-    union { // extra string buffer
-        char shift_str[BUF_20];
-        char imm_str[BUF_20];
-    };
+    char shift_str[BUF_20];
+    char imm_str[BUF_20];
     union {
         char banked_reg_str[BUF_20];
         char spec_reg_str[BUF_20];
@@ -392,6 +399,20 @@ int SUB16_instr(uint32_t instr);
 int ADD8_instr(uint32_t instr);
 int SUB8_instr(uint32_t instr);
 
+//> packing, unpacking, saturation, and reversal
+void print_pusr_instr(Instr *instr_s);
+int process_pusr_instr(uint32_t instr, Instr *instr_s);
+int PKH_instr(uint32_t instr);
+int XTAB_instr(uint32_t instr);
+int XTB_instr(uint32_t instr);
+int SAT_instr(uint32_t instr);
+int SEL_instr(uint32_t instr);
+int REV_instr(uint32_t instr);
+int XTAH_instr(uint32_t instr);
+int XTH_instr(uint32_t instr);
+int RBIT_instr(uint32_t instr);
+int REVSH_instr(uint32_t instr);
+
 
 //> default
 void print_default_instr(Instr *instr_s);
@@ -399,6 +420,8 @@ int UNDEF_instr(uint32_t instr);
 int UNPRED_instr(uint32_t instr);
 
 // auxiliary functions
+uint8_t is_not_itype(uint8_t itype, uint8_t count, ...);
+#define IS_NOT_ITYPE(itype, ...) is_not_itype(itype, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)
 uint8_t is_itype(uint8_t itype, uint8_t count, ...);
 #define IS_ITYPE(itype, ...) is_itype(itype, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)
 #define IS_IGROUP(igroup, ...) is_itype(igroup, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)

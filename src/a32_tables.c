@@ -270,6 +270,32 @@ InstrHandler proc_pas_table[][IH_ARR_SIZE] = {
     { is_SUB8,  SUB8_instr}
 };
 
+InstrHandler proc_pusr_table[][IH_ARR_SIZE] = {
+    // packing, unpacking, saturation, and reversal
+    { is_PKH, PKH_instr},
+    { is_SXTAB16, XTAB_instr},
+    { is_UXTAB16, XTAB_instr},
+    { is_SXTAB, XTAB_instr},
+    { is_UXTAB, XTAB_instr},
+    { is_SXTB16, XTB_instr},
+    { is_UXTB16, XTB_instr},
+    { is_SXTB, XTB_instr},
+    { is_UXTB, XTB_instr},
+    { is_SSAT, SAT_instr},
+    { is_SSAT16, SAT_instr},
+    { is_USAT, SAT_instr},
+    { is_USAT16, SAT_instr},
+    { is_SEL, SEL_instr},
+    { is_REV, REV_instr},
+    { is_REV16, REV_instr},
+    { is_SXTAH, XTAH_instr},
+    { is_UXTAH, XTAH_instr},
+    { is_SXTH, XTH_instr},
+    { is_UXTH, XTH_instr},
+    { is_RBIT, RBIT_instr},
+    { is_REVSH, REVSH_instr}
+};
+
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
 //int (*proc_instr_table[][2])(uint32_t) = {
@@ -288,7 +314,8 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_dp_imm16_table, sizeof(proc_dp_imm16_table) / sizeof(proc_dp_imm16_table[0]) },
     { proc_misc_hints_table, sizeof(proc_misc_hints_table) / sizeof(proc_misc_hints_table[0]) },
     { proc_ld_str_table, sizeof(proc_ld_str_table) / sizeof(proc_ld_str_table[0]) },
-    { proc_pas_table, sizeof(proc_pas_table) / sizeof(proc_pas_table[0]) }
+    { proc_pas_table, sizeof(proc_pas_table) / sizeof(proc_pas_table[0]) },
+    { proc_pusr_table, sizeof(proc_pusr_table) / sizeof(proc_pusr_table[0]) }
 };
 
 
@@ -306,5 +333,6 @@ void (*print_instr_table[])(Instr *) = {
     print_misc_instr, // GROUP_MISC_HINTS
     print_load_store_instr,   // GROUP_LD_STR
     print_parallel_add_sub_instr, // GROUP_PAS
+    print_pusr_instr, // GROUP_PUSR
     print_default_instr
 };

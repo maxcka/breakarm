@@ -469,17 +469,18 @@ int DBG_instr(uint32_t instr) {
 
 // syntax: CPS<effect> <iflags>{, #<mode>}
 // syntax: SETEND <endian_specifier>
-// syntax: PLI [<Rn>, #+/-<imm12>]
-// syntax: PLD{W} [<Rn>, #+/-<imm12>]
+
 
 // syntax: CLREX
 // syntax: DSB <option>
 // syntax: DMB <option>
 // syntax: ISB <option>
 
-// belong in load/store instructions
+// belong in load/store instructions???
 // syntax: PLI [<Rn>,+/-<Rm>{, <shift>}]
 // syntax: PLD{W} [<Rn>,+/-<Rm>{, <shift>}]
+// syntax: PLI [<Rn>, #+/-<imm12>]
+// syntax: PLD{W} [<Rn>, #+/-<imm12>]
 
 
 

@@ -79,6 +79,7 @@ int ADD16_instr(uint32_t instr) {
     char mnemonic_buf[BUF_20] = "";
     add_pas_prefix(instr, mnemonic_buf);
     strcat(mnemonic_buf, "ADD16");
+    instr_s.mnemonic = mnemonic_buf;
 
     return process_mult_instr(instr, &instr_s);
 }
@@ -92,6 +93,7 @@ int ASX_instr(uint32_t instr) {
     char mnemonic_buf[BUF_20] = "";
     add_pas_prefix(instr, mnemonic_buf);
     strcat(mnemonic_buf, "ASX");
+    instr_s.mnemonic = mnemonic_buf;
 
     return process_mult_instr(instr, &instr_s);
 }
@@ -106,6 +108,7 @@ int SAX_instr(uint32_t instr) {
     char mnemonic_buf[BUF_20] = "";
     add_pas_prefix(instr, mnemonic_buf);
     strcat(mnemonic_buf, "SAX");
+    instr_s.mnemonic = mnemonic_buf;
 
     return process_mult_instr(instr, &instr_s);
 }
@@ -119,6 +122,7 @@ int SUB16_instr(uint32_t instr) {
     char mnemonic_buf[BUF_20] = "";
     add_pas_prefix(instr, mnemonic_buf);
     strcat(mnemonic_buf, "SUB16");
+    instr_s.mnemonic = mnemonic_buf;
 
     return process_mult_instr(instr, &instr_s);
 }
@@ -132,6 +136,7 @@ int ADD8_instr(uint32_t instr) {
     char mnemonic_buf[BUF_20] = "";
     add_pas_prefix(instr, mnemonic_buf);
     strcat(mnemonic_buf, "ADD8");
+    instr_s.mnemonic = mnemonic_buf;
 
     return process_mult_instr(instr, &instr_s);
 }
@@ -145,6 +150,7 @@ int SUB8_instr(uint32_t instr) {
     char mnemonic_buf[BUF_20] = "";
     add_pas_prefix(instr, mnemonic_buf);
     strcat(mnemonic_buf, "SUB8");
+    instr_s.mnemonic = mnemonic_buf;
 
     return process_mult_instr(instr, &instr_s);
 }

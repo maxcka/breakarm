@@ -142,18 +142,15 @@ void decode_ld_str_med(uint32_t instr) {
         if (IS_PAS_S(instr) || IS_PAS_U(instr)) {
             find_and_decode(instr, GROUP_PAS);
         }
-        else {
-            printf("%s\n", default_str);
+        else if (IS_PUSR(instr)) {
+            find_and_decode(instr, GROUP_PUSR);
         }
-        //else if (IS_PUSR(instr)) {
-        //
-        //}
         //else if (IS_SMSUD(instr)) {
         //
         //}
-        //else {
-        //
-        //}
+        else {
+            printf("%s\n", default_str);
+        }
     }
     else {
         printf("%s\n", default_str);

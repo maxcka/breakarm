@@ -3,6 +3,21 @@
 #include <stdarg.h>
 #include "decode.h"
 
+uint8_t is_not_itype(uint8_t itype, uint8_t count, ...) {
+    va_list args;
+    va_start(args, count);
+
+    for (int i = 0; i < count; i++) {
+        int target = va_arg(args, int);
+        if (itype == target) {
+            va_end(args);
+            return FALSE;
+        }
+    }
+    va_end(args);
+    return TRUE;
+}
+
 uint8_t is_itype(uint8_t itype, uint8_t count, ...) {
     va_list args;
     va_start(args, count);
