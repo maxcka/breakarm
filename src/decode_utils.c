@@ -3,6 +3,10 @@
 #include <stdarg.h>
 #include "decode.h"
 
+void get_char_suffix(Instr *instr_s) {
+    instr_s->str_suffix[0] = instr_s->char_suffix;
+}
+
 uint8_t is_not_itype(uint8_t itype, uint8_t count, ...) {
     va_list args;
     va_start(args, count);

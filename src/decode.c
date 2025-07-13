@@ -145,9 +145,9 @@ void decode_ld_str_med(uint32_t instr) {
         else if (IS_PUSR(instr)) {
             find_and_decode(instr, GROUP_PUSR);
         }
-        //else if (IS_SMSUD(instr)) {
-        //
-        //}
+        else if (IS_SMSUD(instr)) {
+            find_and_decode(instr, GROUP_SIGNED_MULT);
+        }
         else {
             printf("%s\n", default_str);
         }

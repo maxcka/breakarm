@@ -296,6 +296,23 @@ InstrHandler proc_pusr_table[][IH_ARR_SIZE] = {
     { is_REVSH, REVSH_instr}
 };
 
+InstrHandler proc_signed_mult_table[][IH_ARR_SIZE] = {
+    // signed multiply, signed and unsigned divide
+    { is_SMLAD, SMLXD_instr },
+    { is_SMLSD, SMLXD_instr },
+    { is_SMUAD, SMUXD_instr },
+    { is_SMUSD, SMUXD_instr },
+    { is_SDIV, XDIV_instr },
+    { is_UDIV, XDIV_instr },
+    { is_SMLAD, SMLXD_instr },
+    { is_SMLSD, SMLXD_instr },
+    { is_SMLALD, SMLXLD_instr },
+    { is_SMLSLD, SMLXLD_instr },
+    { is_SMMLA, SMMLX_instr },
+    { is_SMMLS, SMMLX_instr },
+    { is_SMMUL, SMMUL_instr }
+};
+
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
 //int (*proc_instr_table[][2])(uint32_t) = {
@@ -315,7 +332,8 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_misc_hints_table, sizeof(proc_misc_hints_table) / sizeof(proc_misc_hints_table[0]) },
     { proc_ld_str_table, sizeof(proc_ld_str_table) / sizeof(proc_ld_str_table[0]) },
     { proc_pas_table, sizeof(proc_pas_table) / sizeof(proc_pas_table[0]) },
-    { proc_pusr_table, sizeof(proc_pusr_table) / sizeof(proc_pusr_table[0]) }
+    { proc_pusr_table, sizeof(proc_pusr_table) / sizeof(proc_pusr_table[0]) },
+    { proc_signed_mult_table, sizeof(proc_signed_mult_table) / sizeof(proc_signed_mult_table[0]) }
 };
 
 
@@ -334,5 +352,6 @@ void (*print_instr_table[])(Instr *) = {
     print_load_store_instr,   // GROUP_LD_STR
     print_parallel_add_sub_instr, // GROUP_PAS
     print_pusr_instr, // GROUP_PUSR
+    print_mult_instr, // GROUP_SIGNED_MULT
     print_default_instr
 };

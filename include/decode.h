@@ -135,10 +135,15 @@ typedef enum {
 
     // mult instructions
     TYPE_MULT_0, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
+    TYPE_MULT_0_X, // syntax: <MNEMONIC>{X}<c> <Rd>, <Rn>, <Rm>
+    TYPE_MULT_0_R, // syntax: <MNEMONIC>{R}<c> <Rd>, <Rn>, <Rm>
     TYPE_MULT_1, // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <Ra>
+    TYPE_MULT_1_X, // syntax: <MNEMONIC>{X}<c> <Rd>, <Rn>, <Rm>, <Ra>
+    TYPE_MULT_1_R, // syntax: <MNEMONIC>{R}<c> <Rd>, <Rn>, <Rm>, <Ra>
     TYPE_MULT_2, // syntax: <MNEMONIC><c> <RdLo>, <RdHi>, <Rn>, <Rm>
     TYPE_MULT_3, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>, <Ra>
     TYPE_MULT_4, // syntax: <MNEMONIC>{S}<c> <RdLo>, <RdHi>, <Rn>, <Rm>
+    TYPE_MULT_4_X, // syntax: <MNEMONIC>{X}<c> <RdLo>, <RdHi>, <Rn>, <Rm>
 
     // sync instructions
     TYPE_SYNC_0, // syntax: <MNEMONIC>{B}<c> <Rt>, <Rt2>, [<Rn>]
@@ -187,7 +192,8 @@ typedef enum {
     GROUP_MISC_HINTS, // msr and hints
     GROUP_LD_STR, // load/store
     GROUP_PAS, // parallel add and sub
-    GROUP_PUSR,
+    GROUP_PUSR, // packing, unpacking, saturation, reversal
+    GROUP_SIGNED_MULT, // signed mult
     GROUP_DEFAULT
 } IGroup;
 
@@ -215,9 +221,14 @@ typedef struct {
     Register RdLo;
     Register Rt;
     Register Rt2;
-    uint8_t B;
-    uint8_t S;
-    uint8_t R;
+    union {
+        uint8_t char_suffix;
+        uint8_t B;
+        uint8_t S;
+        uint8_t R;
+        uint8_t M;
+    };
+    char str_suffix[2];
     uint8_t x; // char
     uint8_t y; // char
     
@@ -345,6 +356,13 @@ int UMULL_instr(uint32_t instr);
 int UMLAL_instr(uint32_t instr);
 int SMULL_instr(uint32_t instr);
 int SMLAL_instr(uint32_t instr);
+//> signed multiply, signed and unsigned divide
+int SMLXD_instr(uint32_t instr);
+int SMUXD_instr(uint32_t instr);
+int XDIV_instr(uint32_t instr);
+int SMLXLD_instr(uint32_t instr);
+int SMMLX_instr(uint32_t instr);
+int SMMUL_instr(uint32_t instr);
 
 //> synchronization
 void print_sync_instr(Instr *instr_s);
@@ -420,6 +438,7 @@ int UNDEF_instr(uint32_t instr);
 int UNPRED_instr(uint32_t instr);
 
 // auxiliary functions
+void get_char_suffix(Instr *instr_s);
 uint8_t is_not_itype(uint8_t itype, uint8_t count, ...);
 #define IS_NOT_ITYPE(itype, ...) is_not_itype(itype, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)
 uint8_t is_itype(uint8_t itype, uint8_t count, ...);
