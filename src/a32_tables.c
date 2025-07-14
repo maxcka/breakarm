@@ -349,6 +349,20 @@ InstrHandler proc_branch_block_table[][IH_ARR_SIZE] = {
     { is_BL, BL_instr }
 };
 
+
+InstrHandler proc_coproc_table[][IH_ARR_SIZE] = {
+    // coprocessor and supervisor call instructions
+    { is_UNDEF_4, UNDEF_instr},
+    { is_SVC, SVC_instr},
+    { is_STC, STC_instr},
+    { is_LDC, LDC_instr},
+    { is_MCRR, MCRR_instr},
+    { is_MRRC, MRRC_instr},
+    { is_CDP, CDP_instr},
+    { is_MCR, MCR_instr},
+    { is_MRC, MRC_instr}
+};
+
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
 //int (*proc_instr_table[][2])(uint32_t) = {
@@ -370,7 +384,9 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_pas_table, sizeof(proc_pas_table) / sizeof(proc_pas_table[0]) },
     { proc_pusr_table, sizeof(proc_pusr_table) / sizeof(proc_pusr_table[0]) },
     { proc_signed_mult_table, sizeof(proc_signed_mult_table) / sizeof(proc_signed_mult_table[0]) },
-    { proc_other_media_table, sizeof(proc_other_media_table) / sizeof(proc_other_media_table[0]) }
+    { proc_other_media_table, sizeof(proc_other_media_table) / sizeof(proc_other_media_table[0]) },
+    { proc_branch_block_table, sizeof(proc_branch_block_table) / sizeof(proc_branch_block_table[0]) },
+    { proc_coproc_table, sizeof(proc_coproc_table) / sizeof(proc_coproc_table[0]) }
 };
 
 

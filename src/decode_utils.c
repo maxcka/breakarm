@@ -97,10 +97,14 @@ uint8_t is_any_reg_target_reg(Register target, uint8_t count, ...) {
     return FALSE;
 }
 
-void get_imm_str(Instr *instr_s, uint16_t imm_high, uint8_t imm_low, uint8_t shift, uint8_t positive) {
-    uint16_t mask = (1 << shift) - 1;
-    uint16_t imm = (imm_high << shift) | (imm_low & mask);
+void get_imm_str(Instr *instr_s, uint32_t imm_high, uint8_t imm_low, uint8_t shift, uint8_t positive) {
+    uint32_t mask = (1 << shift) - 1;
+    uint32_t imm = (imm_high << shift) | (imm_low & mask);
     snprintf(instr_s->imm_str, sizeof(instr_s->imm_str), "#%s%d", (positive) ? "" : "-", imm);
+}
+
+void get_option_str(Instr *instr_s, uint8_t option) {
+    snprintf(instr_s->option_str, sizeof(instr_s->option_str), "{%d}", option);
 }
 
 // sys special register string

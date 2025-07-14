@@ -162,7 +162,12 @@ void decode_br_blk(uint32_t instr) {
 }
 
 void decode_co_spr(uint32_t instr) {
-    instr += 1;
+    if (IS_SIMD(instr) && !is_SVC(instr) && !is_UNDEF_4(instr)) { // is SIMD but not one of the general instructions
+        printf("%s\n", default_str);
+    }
+    else {
+        find_and_decode(instr, GROUP_COPROC);
+    }
 }
 
 void decode_instr(uint32_t instr) {
@@ -180,16 +185,16 @@ void decode_instr(uint32_t instr) {
         else if (IS_BR_BLK(instr)) {
             decode_br_blk(instr);
         }
-        //else if (IS_CO_SPR(instr)) {
-        //    decode_co_spr(instr);
-        //}
+        else if (IS_CO_SPR(instr)) {
+            decode_co_spr(instr);
+        }
         else {
             printf("%s\n", default_str);
         }
     }
-    // else if (IS_UNCOND(instr)) {
-    // 
-    // }
+    //else if (IS_UNCOND(instr)) {
+    //    
+    //}
     else {
             printf("%s\n", default_str);
     }

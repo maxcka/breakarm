@@ -442,12 +442,13 @@ static inline int is_SVC(uint32_t instr)            { return ( ( ((instr) >> 20)
 //========================
 
 //>> layer 2
-#define IS_COPROC(instr)            ( ( ((instr) >> 8) & 0xE) != 0xA ) // 0b101x
+#define IS_COPROC(instr)            ( ( ((instr) >> 8) & 0xE) != 0xA ) // not 0b101x
 //=======================
 //>> layer 3
 static inline int is_STC(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x21) == 0x0 ) && ( ( ((instr) >> 20) & 0x3B) == 0x0 ); } // not 0b101x and (0bxxxx0 and not 000x00)
-static inline int is_LDC_imm(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x21) == 0x1 ) && ( ( ((instr) >> 20) & 0x3B) == 0x1 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } // not 0b101x and 0bxxxx0 and not 000x00 and not 0b1111
-static inline int is_LDC_lit(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x21) == 0x1 ) && ( ( ((instr) >> 20) & 0x3B) == 0x1 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } // not 0b101x and 0bxxxx0 and not 000x00 and 0b1111
+static inline int is_LDC(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x21) == 0x1 ) && ( ( ((instr) >> 20) & 0x3B) == 0x1 ); } // not 0b101x and 0bxxxx0 and not 000x01
+//static inline int is_LDC_imm(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x21) == 0x1 ) && ( ( ((instr) >> 20) & 0x3B) == 0x1 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } // not 0b101x and 0bxxxx0 and not 000x00 and not 0b1111
+//static inline int is_LDC_lit(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x21) == 0x1 ) && ( ( ((instr) >> 20) & 0x3B) == 0x1 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } // not 0b101x and 0bxxxx0 and not 000x00 and 0b1111
 static inline int is_MCRR(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x3F) == 0x4 ); } // 0b000100
 static inline int is_MRRC(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x3F) == 0x5 ); } // 0b000101
 static inline int is_CDP(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x30) == 0x20 ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b10xxxx and 0b0

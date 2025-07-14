@@ -197,11 +197,10 @@ typedef enum {
 
     // coprocessor
     TYPE_COPROC_0, // syntax: <MNEMONIC><c> #<imm24>
-    TYPE_COPROC_1, // syntax: <MNEMONIC>{L}<c> <coproc>, <CRd>, [<Rn>, #+/-<imm>]{!}
-    TYPE_COPROC_2, // syntax: <MNEMONIC>{L}{<c>}{<q>} <coproc>, <CRd>, [PC, #+/-<imm>]
-    TYPE_COPROC_3, // syntax: <MNEMONIC><c> <coproc>, <opc1>, <Rt>, <Rt2>, <CRm>
-    TYPE_COPROC_4, // syntax: <MNEMONIC><c> <coproc>, <opc>, <Rt>, <Rt2>, <CRm>
-    TYPE_COPROC_5, // syntax: <MNEMONIC><c> <coproc>, <opc1>, <CRd>, <CRn>, <CRm>, <opc2>
+    TYPE_COPROC_1, // syntax: <MNEMONIC>{2}{L}<c> <coproc>, <CRd>, [<Rn>, #+/-<imm>]{!}
+    TYPE_COPROC_2, // syntax: <MNEMONIC>{2}<c> <coproc>, <opc1>, <Rt>, <Rt2>, <CRm>
+    TYPE_COPROC_3_OPC2, // syntax: <MNEMONIC>{2}<c> <coproc>, <opc1>, <CRd>, <CRn>, <CRm>, <opc2>
+    TYPE_COPROC_4_OPC2, // syntax: <MNEMONIC>{2}<c> <coproc>, <opc1>, <Rt>, <CRn>, <CRm>{, <opc2>}
 
     TYPE_UNPRED,
     TYPE_UNDEF
@@ -236,11 +235,14 @@ typedef struct {
     IGroup igroup; // instruction group
     IType itype; // instruction type
 
-    uint8_t special;
     const char *mnemonic;
+    uint8_t special;
     Shift shift;
     char shift_str[BUF_20];
-    char imm_str[BUF_20];
+    union {
+        char imm_str[BUF_20];
+        char option_str[BUF_20];
+    };
     union {
         char banked_reg_str[BUF_20];
         char spec_reg_str[BUF_20];
@@ -261,19 +263,30 @@ typedef struct {
         uint8_t S;
         uint8_t R;
         uint8_t M;
+        uint8_t L; // technically D
     };
     char str_suffix[2];
     uint8_t x; // char
     uint8_t y; // char
     
-    uint8_t index;
-    uint8_t add;
+    union {
+        uint8_t index;
+        uint8_t P; // for amode table
+    };
+    union {
+        uint8_t add;
+        uint8_t U; // for amode table
+    };
     uint8_t wback;
     uint8_t lsb;
     uint8_t width;
     uint32_t label;
-    uint8_t P; // for amode table
-    uint8_t U; // for amode table
+    uint8_t coproc; // coproc number
+    uint8_t CRd; // coproc source or destination reg
+    uint8_t CRn;
+    uint8_t CRm;
+    uint8_t opc1;
+    uint8_t opc2;
 } Instr;
 
 
@@ -488,6 +501,18 @@ int LDM_instr(uint32_t instr);
 int B_instr(uint32_t instr);
 int BL_instr(uint32_t instr);
 
+//> coprocessor and supervisor call
+void print_coproc_instr(Instr *instr_s);
+int process_coproc_instr(uint32_t instr, Instr *instr_s);
+int SVC_instr(uint32_t instr);
+int STC_instr(uint32_t instr);
+int LDC_instr(uint32_t instr);
+int MCRR_instr(uint32_t instr);
+int MRRC_instr(uint32_t instr);
+int CDP_instr(uint32_t instr);
+int MCR_instr(uint32_t instr);
+int MRC_instr(uint32_t instr);
+
 //> default
 void print_default_instr(Instr *instr_s);
 int UNDEF_instr(uint32_t instr);
@@ -505,7 +530,8 @@ uint8_t is_itype(uint8_t itype, uint8_t count, ...);
 #define IS_IGROUP(igroup, ...) is_itype(igroup, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)
 uint8_t is_any_reg_target_reg(Register target, uint8_t count, ...);
 #define IS_TARGET_REG(target, ...) is_any_reg_target_reg(target, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)
-void get_imm_str(Instr *instr_s, uint16_t imm_high, uint8_t imm_low, uint8_t shift, uint8_t positive);
+void get_imm_str(Instr *instr_s, uint32_t imm_high, uint8_t imm_low, uint8_t shift, uint8_t positive);
+void get_option_str(Instr *instr_s, uint8_t option);
 void get_sys_sr_str(Instr *instr_s, uint8_t mask);
 void get_app_sr_str(Instr *instr_s, uint8_t mask);
 void get_banked_reg_str(uint8_t m, uint8_t m1, uint8_t R, char *banked_reg_str, int buf_sz);
