@@ -412,8 +412,8 @@ static inline int is_UDF(uint32_t instr)          { return ( ( ((instr) >> 20) &
 //>> layer 2
 static inline int is_STMDA(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x3D) == 0x0 ); } // 0b0000x0
 static inline int is_LDMDA(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x3D) == 0x1 ); } // 0b0000x1
-static inline int is_STM(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x3D) == 0x8 ); } // 0b0010x0
-static inline int is_LDM(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x3F) == 0x9 ) || ( ( ( ((instr) >> 20) & 0x3F) == 0xB ) && ( ( ((instr) >> 16) & 0xF) != 0xD ) ); } // 0b0010x0 or (0b001011 and not 0b1101)
+static inline int is_STMIA(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x3D) == 0x8 ); } // 0b0010x0
+static inline int is_LDMIA(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x3F) == 0x9 ) || ( ( ( ((instr) >> 20) & 0x3F) == 0xB ) && ( ( ((instr) >> 16) & 0xF) != 0xD ) ); } // 0b0010x0 or (0b001011 and not 0b1101)
 static inline int is_POP(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x3F) == 0xB ) && ( ( ((instr) >> 16) & 0xF) == 0xD ); } // 0b001011 and 0b1101
 static inline int is_STMDB(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x3F) == 0x10 ) || ( ( ( ((instr) >> 20) & 0x3F) == 0x12 ) && ( ( ((instr) >> 16) & 0xF) != 0xD ) ); } // 0b010000 or (0b010010 and not 0b1101)
 static inline int is_PUSH(uint32_t instr)           { return ( ( ((instr) >> 20) & 0x3F) == 0x12 ) && ( ( ((instr) >> 16) & 0xF) == 0xD ); } // 0b010010 and not 0b1101

@@ -12,6 +12,8 @@
 
 // flow: main.c -> decode.c -> a32_tables.c -> instr_*.c 
 
+uint64_t curr_addr;
+
 void fatal(const char *msg) {
     perror(msg);
     exit(1);
@@ -119,7 +121,7 @@ void customDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr) {
     //uint64_t end_addr = text_addr + text_size;
     uint32_t num_instr = text_size / a32_instr_size;
 
-    uint64_t curr_addr = start_addr;
+    curr_addr = start_addr;
     printf("\n%s\t%s\t\t%s\n", "ADDR", "INSTR", "ASSEMBLY");
     for (uint32_t i = 0; i < num_instr; i++) {
         // address, instruction

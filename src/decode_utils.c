@@ -3,6 +3,51 @@
 #include <stdarg.h>
 #include "decode.h"
 
+void get_reg_list(Instr *instr_s, uint16_t reg_list_bits) {
+    int start = 0;
+    int length = sizeof(reg_list_bits);
+    int i = 0;
+    strcat(instr_s->reg_list_str, "{ ");
+    while (i < length) {
+        start = i;
+        while (i < length-1 && ((reg_list_bits >> (i+1)) & 0x1) == 1) {
+            i++;
+        }
+
+        if (start != i) {
+            sprintf(instr_s->reg_list_str + strlen(instr_s->reg_list_str),
+                "%s-%s", core_reg[start], core_reg[i]);
+        }
+        else {
+            sprintf(instr_s->reg_list_str + strlen(instr_s->reg_list_str),
+                "%s", core_reg[start]);
+        }
+
+        if (i < length-1) {
+            strcat(instr_s->reg_list_str, ", ");
+        }
+        i++;
+    }
+    strcat(instr_s->reg_list_str, " }");
+}
+
+uint32_t get_label(uint32_t imm24) {
+    int32_t offset = sign_extend24(imm24);
+    uint32_t pc = (uint32_t)curr_addr + 8; // apparently actual PC is curr_addr + 8?
+    uint32_t label = pc + offset; 
+    return label;
+}
+
+int32_t sign_extend24(uint32_t imm24) {
+    // if bit 23 is set, the number is negative
+    if (imm24 & (1 << 23)) {
+        return (int32_t)(imm24 | 0xFF000000);
+    }
+    else {
+        return (int32_t)imm24;
+    }
+}
+
 void get_char_suffix(Instr *instr_s) {
     instr_s->str_suffix[0] = instr_s->char_suffix;
 }

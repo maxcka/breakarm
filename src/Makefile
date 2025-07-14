@@ -9,7 +9,8 @@ SRC = main.c decode.c decode_utils.c a32_tables.c \
 		instr/instr_sync.c \
 		instr/instr_load_store.c \
 		instr/instr_parallel_add_sub.c \
-		instr/instr_pack_sat_rev.c
+		instr/instr_pack_sat_rev.c \
+		instr/instr_branch_block.c
 OBJ = $(SRC:.c=.o)
 PROG = arm32_disasm
 

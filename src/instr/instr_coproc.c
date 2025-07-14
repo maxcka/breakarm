@@ -30,11 +30,12 @@ int process_coproc_instr(uint32_t instr, Instr *instr_s) {
 
 
 
-int _instr(uint32_t instr) {
 
-}
 
 // syntax: SVC<c> #<imm24>
+int SVC_instr(uint32_t instr) {
+
+}
 // syntax: STC{L}<c> <coproc>, <CRd>, [<Rn>, #+/-<imm>]{!}
 // syntax: immediate: LDC{L}<c> <coproc>, <CRd>, [<Rn>, #+/-<imm>]{!}
 // syntax: literal: LDC{L}{<c>}{<q>} <coproc>, <CRd>, [PC, #+/-<imm>]

@@ -158,7 +158,7 @@ void decode_ld_str_med(uint32_t instr) {
 }
 
 void decode_br_blk(uint32_t instr) {
-    instr += 1;
+    find_and_decode(instr, GROUP_BRANCH_BLK);
 }
 
 void decode_co_spr(uint32_t instr) {
@@ -177,9 +177,9 @@ void decode_instr(uint32_t instr) {
         else if (IS_LD_STR_MED(instr)) {            // layer 1
             decode_ld_str_med(instr);
         }
-        //else if (IS_BR_BLK(instr)) {
-        //    decode_br_blk(instr);
-        //}
+        else if (IS_BR_BLK(instr)) {
+            decode_br_blk(instr);
+        }
         //else if (IS_CO_SPR(instr)) {
         //    decode_co_spr(instr);
         //}

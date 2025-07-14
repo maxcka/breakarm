@@ -10,6 +10,7 @@
 
 #define BUF_10 10
 #define BUF_20 20
+#define BUF_40 40
 
 #define UNINIT 255 // for registers that we don't want to check for unpred conditions
 
@@ -25,13 +26,19 @@
 
 #define APSR_POS 2 // application level special register position
 
+#define AMODE_SIZE 2
+
 #define UNPRED_STR "UNPRED"
 #define UNDEF_STR "UNDEF"
+
+extern uint64_t curr_addr; // current address (PC)
 
 extern const char *core_reg[NUM_REG];
 extern const char *spec_reg[NUM_SPEC_REG];
 extern const char *shift_codes[NUM_SHIFT_TYPES];
 extern const char *cond_codes[NUM_REG];
+extern const char *amode_table[AMODE_SIZE][AMODE_SIZE];
+extern const char *banked_reg_table[][BANKED_REG_TABLE_ROWS][BANKED_REG_TABLE_COLS];
 
 typedef enum {
     R0,
@@ -82,7 +89,8 @@ typedef enum {
     LT,
     GT,
     LE,
-    AL
+    AL,
+    UNCOND
 } Cond;
 
 
@@ -179,6 +187,22 @@ typedef enum {
     TYPE_PUSR_4, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
     TYPE_PUSR_5, // syntax: <MNEMONIC><c> <Rd>, <Rm>
 
+    // branch and block data transfer
+    TYPE_BR_BLK_0, // syntax: <MNEMONIC><c> <Rn>{!}, <registers>
+    TYPE_BR_BLK_0_LDM, // syntax: <MNEMONIC><c> <Rn>{!}, <registers> (extra unpred condition)
+    TYPE_BR_BLK_1, // syntax: <MNEMONIC><c> <registers>
+    TYPE_BR_BLK_2, // syntax: <MNEMONIC>{<amode>}<c> <Rn>, <registers>^
+    TYPE_BR_BLK_2_LDM, // syntax: <MNEMONIC>{<amode>}<c> <Rn>, <registers>^ (extra unpred condition)
+    TYPE_BR_BLK_3, // syntax: <MNEMONIC><c> <label>
+
+    // coprocessor
+    TYPE_COPROC_0, // syntax: <MNEMONIC><c> #<imm24>
+    TYPE_COPROC_1, // syntax: <MNEMONIC>{L}<c> <coproc>, <CRd>, [<Rn>, #+/-<imm>]{!}
+    TYPE_COPROC_2, // syntax: <MNEMONIC>{L}{<c>}{<q>} <coproc>, <CRd>, [PC, #+/-<imm>]
+    TYPE_COPROC_3, // syntax: <MNEMONIC><c> <coproc>, <opc1>, <Rt>, <Rt2>, <CRm>
+    TYPE_COPROC_4, // syntax: <MNEMONIC><c> <coproc>, <opc>, <Rt>, <Rt2>, <CRm>
+    TYPE_COPROC_5, // syntax: <MNEMONIC><c> <coproc>, <opc1>, <CRd>, <CRn>, <CRm>, <opc2>
+
     TYPE_UNPRED,
     TYPE_UNDEF
 } IType;
@@ -200,13 +224,16 @@ typedef enum {
     GROUP_PUSR, // packing, unpacking, saturation, reversal
     GROUP_SIGNED_MULT, // signed mult
     GROUP_OTHER_MEDIA, // other media instructions
+    GROUP_BRANCH_BLK, // branch and block data transfer
+    GROUP_COPROC, // coproc
+    GROUP_UNCOND, // unconditional
     GROUP_DEFAULT
 } IGroup;
 
 // have a lookup table for group to print function like print_table[group] = print_fn
 
 typedef struct {
-    IGroup igroup; // TODO not used yet
+    IGroup igroup; // instruction group
     IType itype; // instruction type
 
     uint8_t special;
@@ -217,6 +244,7 @@ typedef struct {
     union {
         char banked_reg_str[BUF_20];
         char spec_reg_str[BUF_20];
+        char reg_list_str[BUF_40];
     };
     Cond c;
     Register Rd;
@@ -243,6 +271,9 @@ typedef struct {
     uint8_t wback;
     uint8_t lsb;
     uint8_t width;
+    uint32_t label;
+    uint8_t P; // for amode table
+    uint8_t U; // for amode table
 } Instr;
 
 
@@ -274,10 +305,6 @@ extern InstrHandler proc_pas_table[][IH_ARR_SIZE];
 extern InstrHandlerTable proc_instr_group_table[];
 // lookup table for printing an instruction by calling a function based on the instruction group that it is in
 extern void (*print_instr_table[])(Instr *);
-
-
-
-extern const char *banked_reg_table[][BANKED_REG_TABLE_ROWS][BANKED_REG_TABLE_COLS];
 
 
 // need comments for fn declarations
@@ -447,6 +474,19 @@ int XTH_instr(uint32_t instr);
 int RBIT_instr(uint32_t instr);
 int REVSH_instr(uint32_t instr);
 
+//> branch, branch with link, and block data transfer
+void print_branch_block_instr(Instr *instr_s);
+int process_branch_block_instr(uint32_t instr, Instr *instr_s);
+int STMDX_instr(uint32_t instr);
+int LDMDX_instr(uint32_t instr);
+int STMXX_instr(uint32_t instr);
+int LDMXX_instr(uint32_t instr);
+int POP_instr(uint32_t instr);
+int PUSH_instr(uint32_t instr);
+int STM_instr(uint32_t instr);
+int LDM_instr(uint32_t instr);
+int B_instr(uint32_t instr);
+int BL_instr(uint32_t instr);
 
 //> default
 void print_default_instr(Instr *instr_s);
@@ -454,6 +494,9 @@ int UNDEF_instr(uint32_t instr);
 int UNPRED_instr(uint32_t instr);
 
 // auxiliary functions
+void get_reg_list(Instr *instr_s, uint16_t reg_list_bits);
+uint32_t get_label(uint32_t imm24);
+int32_t sign_extend24(uint32_t imm24);
 void get_char_suffix(Instr *instr_s);
 uint8_t is_not_itype(uint8_t itype, uint8_t count, ...);
 #define IS_NOT_ITYPE(itype, ...) is_not_itype(itype, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)

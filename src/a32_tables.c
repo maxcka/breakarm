@@ -43,7 +43,13 @@ const char *cond_codes[NUM_REG] = {
     "LT",
     "GT",
     "LE",
-    ""  // AL is not printed bc it is the default
+    "",  // AL is not printed bc it is the default
+    "",  // UNCOND not printed
+};
+
+const char *amode_table[2][2] = {
+    { "DA", "IA" },
+    { "DB", "IB" }
 };
 
 
@@ -322,6 +328,25 @@ InstrHandler proc_other_media_table[][IH_ARR_SIZE] = {
     { is_BFI, BFI_instr},
     { is_UBFX, UBFX_instr},
     { is_UDF, UDF_instr}
+};
+
+InstrHandler proc_branch_block_table[][IH_ARR_SIZE] = {
+    // branch, branch and link, and block data transfer
+    { is_STMDA, STMDX_instr },
+    { is_LDMDA, LDMDX_instr },
+    { is_STMIA, STMXX_instr },
+    { is_LDMIA, LDMXX_instr },
+    { is_POP, POP_instr },
+    { is_STMDB, STMDX_instr },
+    { is_PUSH, PUSH_instr },
+    { is_LDMDB, LDMDX_instr },
+    { is_STMIB, STMXX_instr },
+    { is_LDMIB, LDMXX_instr },
+    { is_STM_usr, STM_instr },
+    { is_LDM_usr, LDM_instr },
+    { is_LDM_exc, LDM_instr },
+    { is_B, B_instr },
+    { is_BL, BL_instr }
 };
 
 // lookup table for processing instructions
