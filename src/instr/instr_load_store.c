@@ -4,6 +4,8 @@
 #include "decode.h"
 #include "bit_matching.h"
 
+static void print_ls_imm_syntactic_sugar(Instr *instr_s);
+
 // ------------------
 // --- Load/Store ---
 // ------------------
@@ -46,15 +48,7 @@ void print_load_store_instr(Instr *instr_s) {
         case TYPE_EX_LS_IMM_STR: // str imm
         case TYPE_EX_LS_IMM: // normal imm
         {
-            printf("%s%s %s, [%s%s, %s%s%s\n",
-                instr_s->mnemonic,
-                cond_codes[instr_s->c],
-                core_reg[instr_s->Rt],
-                core_reg[instr_s->Rn],
-                (instr_s->index == FALSE) ? "]" : "", // post-indexed
-                instr_s->imm_str,
-                (instr_s->index == TRUE) ? "]" : "", // offset or pre-indexed
-                (instr_s->index == 1 && instr_s->wback == 1) ? "!" : "");
+            print_ls_imm_syntactic_sugar(instr_s);
             break;
         }
 
@@ -102,6 +96,35 @@ void print_load_store_instr(Instr *instr_s) {
             break;
         }
     }
+}
+
+// syntactic sugar for push and pop
+static void print_ls_imm_syntactic_sugar(Instr *instr_s) {
+    char buf[BUF_40];
+    sprintf(buf, "%s%s %s, [%s%s, %s%s%s",
+                instr_s->mnemonic,
+                cond_codes[instr_s->c],
+                core_reg[instr_s->Rt],
+                core_reg[instr_s->Rn],
+                (instr_s->index == FALSE) ? "]" : "", // post-indexed
+                instr_s->imm_str,
+                (instr_s->index == TRUE) ? "]" : "", // offset or pre-indexed
+                (instr_s->index == 1 && instr_s->wback == 1) ? "!" : "");
+    
+    int second_cmp_idx = 6;
+    int used_sugar = 0;
+    // compare with pop: LDR XX, [SP], #4
+    if (strncmp(buf, "LDR ", 4) == 0 && strncmp(buf+second_cmp_idx, ", [SP], #4", 10) == 0) {
+        printf("POP {%s}\t@ (", core_reg[instr_s->Rt]);
+        used_sugar = 1;
+    }
+    // compare with push: STR XX, [SP, #-4]!
+    else if (strncmp(buf, "STR ", 4) == 0 && strncmp(buf+second_cmp_idx, ", [SP, #-4]!", 12) == 0) {
+        printf("PUSH {%s}\t@ (", core_reg[instr_s->Rt]);
+        used_sugar = 1;
+    }
+
+    printf("%s%s\n", buf, (used_sugar) ? ")" : "");
 }
 
 // main processing function

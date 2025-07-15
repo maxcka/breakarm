@@ -48,7 +48,7 @@ void print_branch_block_instr(Instr *instr_s) {
 
         case TYPE_BR_BLK_3:
         {
-            printf("%s%s %x\n",
+            printf("%s%s 0x%x\n",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 instr_s->label);

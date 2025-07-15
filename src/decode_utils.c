@@ -7,7 +7,7 @@ void get_reg_list(Instr *instr_s, uint16_t reg_list_bits) {
     int start = 0;
     int length = sizeof(reg_list_bits);
     int i = 0;
-    strcat(instr_s->reg_list_str, "{ ");
+    strcat(instr_s->reg_list_str, "{");
     while (i < length) {
         start = i;
         while (i < length-1 && ((reg_list_bits >> (i+1)) & 0x1) == 1) {
@@ -28,7 +28,7 @@ void get_reg_list(Instr *instr_s, uint16_t reg_list_bits) {
         }
         i++;
     }
-    strcat(instr_s->reg_list_str, " }");
+    strcat(instr_s->reg_list_str, "}");
 }
 
 uint32_t get_label(uint32_t imm, uint8_t bitwidth) {
