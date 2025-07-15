@@ -87,7 +87,7 @@ void print_mult_instr(Instr *instr_s) {
 
         default: 
         {
-            printf("UNKNOWN\n");
+            printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
             break;
         }
     }

@@ -120,7 +120,7 @@ void print_misc_instr(Instr *instr_s) {
 
         default: 
         {
-            printf("UNKNOWN\n");
+            printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
             break;
         }
     }
@@ -467,20 +467,12 @@ int DBG_instr(uint32_t instr) {
 
 //>> UNCONDITIONAL Instructions
 
-// syntax: CPS<effect> <iflags>{, #<mode>}
-// syntax: SETEND <endian_specifier>
 
 
-// syntax: CLREX
-// syntax: DSB <option>
-// syntax: DMB <option>
-// syntax: ISB <option>
 
-// belong in load/store instructions???
-// syntax: PLI [<Rn>,+/-<Rm>{, <shift>}]
-// syntax: PLD{W} [<Rn>,+/-<Rm>{, <shift>}]
-// syntax: PLI [<Rn>, #+/-<imm12>]
-// syntax: PLD{W} [<Rn>, #+/-<imm12>]
+
+
+
 
 
 

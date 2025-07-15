@@ -63,7 +63,7 @@ void print_branch_block_instr(Instr *instr_s) {
 
         default: 
         {
-            printf("UNKNOWN\n");
+            printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
             break;
         }
     }
@@ -78,7 +78,14 @@ int process_branch_block_instr(uint32_t instr, Instr *instr_s) {
     instr_s->P = (instr >> 24) & 0x1;
     instr_s->U = (instr >> 23) & 0x1;
     uint32_t imm24 = (instr >> 0) & 0xFFFFFF;
-    instr_s->label = get_label(imm24);
+    uint8_t H = (instr >> 24) & 0x1;
+
+    if (instr_s->c == UNCOND) {
+        instr_s->label = get_label((imm24 << 2) | (H << 1), 26);
+    }
+    else {
+        instr_s->label = get_label(imm24 << 2, 26);
+    }
 
     if (IS_ITYPE(instr_s->itype, TYPE_BR_BLK_1) && IS_TARGET_REG(SP, instr_s->Rt)) {
         instr_s->itype = TYPE_UNPRED;
@@ -221,11 +228,17 @@ int B_instr(uint32_t instr) {
 }
 
 // syntax: BL<c> <label>
-int BL_instr(uint32_t instr) {
+int BL_imm_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.igroup = GROUP_BRANCH_BLK;
     instr_s.itype = TYPE_BR_BLK_3;
-    instr_s.mnemonic = "BL";
+
+    if (IS_UNCOND(instr)) {
+        instr_s.mnemonic = "BLX";
+    }
+    else {
+        instr_s.mnemonic = "BL";
+    }
 
     return process_branch_block_instr(instr, &instr_s);
 }

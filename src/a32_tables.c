@@ -47,9 +47,29 @@ const char *cond_codes[NUM_REG] = {
     "",  // UNCOND not printed
 };
 
-const char *amode_table[2][2] = {
+const char *amode_table[AMODE_SIZE][AMODE_SIZE] = {
     { "DA", "IA" },
     { "DB", "IB" }
+};
+
+// used in DSB, DMB, ISB
+const char *option_table[OPTION_SIZE] = {
+    "", // 0b0000
+    "", // 0b0001
+    "OSHST", // 0b0010
+    "OSH", // 0b0011
+    "", // 0b0100
+    "", // 0b0101
+    "NSHST", // 0b0110
+    "NSH", // 0b0111
+    "", // 0b1000
+    "", // 0b1001
+    "ISHST", // 0b1010
+    "ISH", // 0b1011
+    "", // 0b1100
+    "", // 0b1101
+    "ST", // 0b1110
+    "SY" // 0b1111
 };
 
 
@@ -346,7 +366,7 @@ InstrHandler proc_branch_block_table[][IH_ARR_SIZE] = {
     { is_LDM_usr, LDM_instr },
     { is_LDM_exc, LDM_instr },
     { is_B, B_instr },
-    { is_BL, BL_instr }
+    { is_BL, BL_imm_instr }
 };
 
 
@@ -362,6 +382,47 @@ InstrHandler proc_coproc_table[][IH_ARR_SIZE] = {
     { is_MCR, MCR_instr},
     { is_MRC, MRC_instr}
 };
+
+InstrHandler proc_uncond_misc_table[][IH_ARR_SIZE] = {
+    // unconditional instructions (misc)
+    { is_CPS, CPS_instr},
+    { is_SETEND, SETEND_instr},
+    { is_SIMD_DP, NOT_IMP_instr},
+    { is_SIMD_LD_STR, NOT_IMP_instr},   
+    { is_NOP_2, NOP_instr},
+    { is_PLI_imm, PLI_imm_instr},
+    { is_UNPRED_2, UNPRED_instr},   
+    { is_PLDW_imm, PLD_imm_instr},
+    { is_UNPRED_3, UNPRED_instr},
+    { is_PLD_imm, PLD_imm_instr},
+    { is_UNPRED_4, UNPRED_instr},
+    { is_UNPRED_5, UNPRED_instr},
+    { is_CLREX, CLREX_instr},   
+    { is_DSB, DSB_instr},   
+    { is_DMB, DMB_instr},  
+    { is_ISB, ISB_instr},
+    { is_UNPRED_6, UNPRED_instr},
+    { is_NOP_3, NOP_instr}, 
+    { is_PLI_reg, PLI_reg_instr},   
+    { is_PLD_reg, PLD_reg_instr},   
+    { is_UNPRED_7, UNPRED_instr},
+    { is_UNDEF_5, UNDEF_instr}
+};
+
+InstrHandler proc_uncond_table[][IH_ARR_SIZE] = {
+    { is_SRS,       SRS_instr},   
+    { is_RFE,       RFE_instr},
+    { is_BLX_imm,   BL_imm_instr },
+    { is_STC2,      STC_instr },
+    { is_LDC2_imm,  LDC_instr },
+    { is_MCRR2,     MCRR_instr },
+    { is_MRRC2,     MRRC_instr },
+    { is_CDP2,      CDP_instr },
+    { is_MCR2,      MCR_instr },
+    { is_MRC2,      MRC_instr }
+};
+
+ 
 
 // lookup table for processing instructions
 // format: { bit-matching fn, processing function }
@@ -386,7 +447,9 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_signed_mult_table, sizeof(proc_signed_mult_table) / sizeof(proc_signed_mult_table[0]) },
     { proc_other_media_table, sizeof(proc_other_media_table) / sizeof(proc_other_media_table[0]) },
     { proc_branch_block_table, sizeof(proc_branch_block_table) / sizeof(proc_branch_block_table[0]) },
-    { proc_coproc_table, sizeof(proc_coproc_table) / sizeof(proc_coproc_table[0]) }
+    { proc_coproc_table, sizeof(proc_coproc_table) / sizeof(proc_coproc_table[0]) },
+    { proc_uncond_misc_table, sizeof(proc_uncond_misc_table) / sizeof(proc_uncond_misc_table[0]) },
+    { proc_uncond_table, sizeof(proc_uncond_table) / sizeof(proc_uncond_table[0]) }
 };
 
 
@@ -407,5 +470,9 @@ void (*print_instr_table[])(Instr *) = {
     print_pusr_instr, // GROUP_PUSR
     print_mult_instr, // GROUP_SIGNED_MULT
     print_parallel_add_sub_instr, // GROUP_OTHER_MEDIA
+    print_branch_block_instr, // GROUP_BRANCH_BLK
+    print_coproc_instr, // GROUP_COPROC
+    print_uncond_instr, // GROUP_UNCOND_MISC
+    print_uncond_instr, // GROUP_UNCOND
     print_default_instr
 };

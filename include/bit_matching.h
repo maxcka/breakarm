@@ -473,15 +473,16 @@ static inline int is_MRC(uint32_t instr)            { return ( ( ((instr) >> 20)
 //>> layer 2
 static inline int is_CPS(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x7F) == 0x10 ) && ( ( ((instr) >> 4) & 0x2) == 0x0 ) && ( ( ((instr) >> 16) & 0x1) == 0x0 ); } // 0b0010000 and xx0x and xxx0
 static inline int is_SETEND(uint32_t instr)         { return ( ( ((instr) >> 20) & 0x7F) == 0x10 ) && ( ( ((instr) >> 4) & 0xF) == 0x0 ) && ( ( ((instr) >> 16) & 0x1) == 0x1 ); } // 0b0010000 and 0000 and xxx0
-// 0b01xxxxx TODO: advanced SIMD data-proccessing not implemented
-// 0b100xxx0 TODO: advanced SIMD element or structure load/store not implemented
+static inline int is_SIMD_DP(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x60) == 0x20 ); } // 0b01xxxxx TODO: advanced SIMD data-proccessing not implemented
+static inline int is_SIMD_LD_STR(uint32_t instr)    { return ( ( ((instr) >> 20) & 0x71) == 0x40 ); } // 0b100xxx0 TODO: advanced SIMD element or structure load/store not implemented
 static inline int is_NOP_2(uint32_t instr)          { return ( ( ((instr) >> 20) & 0x77) == 0x41 ); } // 0b100x001
-static inline int is_PLI(uint32_t instr)            { return ( ( ((instr) >> 20) & 0x77) == 0x45 ); } // 0b100x101
+static inline int is_PLI_imm(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x77) == 0x45 ); } // 0b100x101
 static inline int is_UNPRED_2(uint32_t instr)       { return ( ( ((instr) >> 20) & 0x73) == 0x43 ); } // 0b100xx11
 static inline int is_PLDW_imm(uint32_t instr)       { return ( ( ((instr) >> 20) & 0x77) == 0x51 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } // 0b101x001 and not 0b1111
 static inline int is_UNPRED_3(uint32_t instr)       { return ( ( ((instr) >> 20) & 0x77) == 0x51 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } // 0b101x001 and 0b1111
-static inline int is_PLD_imm(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x77) == 0x55 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } // 0b101x101 and not 0b1111
-static inline int is_PLD_lit(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x77) == 0x55 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } // 0b101x101 and 0b1111
+static inline int is_PLD_imm(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x77) == 0x55 ); } // 0b101x101
+//static inline int is_PLD_imm(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x77) == 0x55 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } // 0b101x101 and not 0b1111
+//static inline int is_PLD_lit(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x77) == 0x55 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } // 0b101x101 and 0b1111
 static inline int is_UNPRED_4(uint32_t instr)       { return ( ( ((instr) >> 20) & 0x7F) == 0x53 ); } // 0b1010011
 static inline int is_UNPRED_5(uint32_t instr)       { return ( ( ((instr) >> 20) & 0x7F) == 0x57 ) && 
                                                         ( ( ( ((instr) >> 4) & 0xF) == 0x0 ) || ( ( ((instr) >> 4) & 0xE) == 0x2 ) || ( ( ((instr) >> 4) & 0xF) == 0x7 ) || ( ( ((instr) >> 4) & 0x8) == 0x8 ) ); } // 0b1010111 and (0b0000 or 001x or 0b0111 or 0b1xxx)
@@ -503,10 +504,11 @@ static inline int is_UNDEF_5(uint32_t instr)        { return ( ( ((instr) >> 20)
 //>> layer 1
 static inline int is_SRS(uint32_t instr)            { return ( ( ((instr) >> 20) & 0xE5) == 0x84 ); } // 0b100xx1x0
 static inline int is_RFE(uint32_t instr)            { return ( ( ((instr) >> 20) & 0xE5) == 0x81 ); } // 0b100xx0x1
-static inline int is_BL_imm(uint32_t instr)         { return ( ( ((instr) >> 20) & 0xE0) == 0xA0 ); } // 0b101xxxxx
+static inline int is_BLX_imm(uint32_t instr)         { return ( ( ((instr) >> 20) & 0xE0) == 0xA0 ); } // 0b101xxxxx
 static inline int is_STC2(uint32_t instr)           { return ( ( ((instr) >> 20) & 0xE1) == 0xC0 ) && ( ( ((instr) >> 20) & 0xFB) != 0xC0 ); } // 0b110xxxx0 and not 11000x00
-static inline int is_LDC2_imm(uint32_t instr)       { return ( ( ((instr) >> 20) & 0xE1) == 0xC1 ) && ( ( ((instr) >> 20) & 0xFB) != 0xC1 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } // 0b110xxxx1 and not 11000x01 and not 0b1111
-static inline int is_LDC2_lit(uint32_t instr)       { return ( ( ((instr) >> 20) & 0xE1) == 0xC1 ) && ( ( ((instr) >> 20) & 0xFB) != 0xC1 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } // 0b110xxxx1 and not 11000x01 and not 0b1111
+static inline int is_LDC2_imm(uint32_t instr)       { return ( ( ((instr) >> 20) & 0xE1) == 0xC1 ) && ( ( ((instr) >> 20) & 0xFB) != 0xC1 ); } // 0b110xxxx1 and not 11000x01
+//static inline int is_LDC2_imm(uint32_t instr)       { return ( ( ((instr) >> 20) & 0xE1) == 0xC1 ) && ( ( ((instr) >> 20) & 0xFB) != 0xC1 ) && ( ( ((instr) >> 16) & 0xF) != 0xF ); } // 0b110xxxx1 and not 11000x01 and not 0b1111
+//static inline int is_LDC2_lit(uint32_t instr)       { return ( ( ((instr) >> 20) & 0xE1) == 0xC1 ) && ( ( ((instr) >> 20) & 0xFB) != 0xC1 ) && ( ( ((instr) >> 16) & 0xF) == 0xF ); } // 0b110xxxx1 and not 11000x01 and 0b1111
 static inline int is_MCRR2(uint32_t instr)          { return ( ( ((instr) >> 20) & 0xFF) == 0xC4 ); } // 0b11000100
 static inline int is_MRRC2(uint32_t instr)          { return ( ( ((instr) >> 20) & 0xFF) == 0xC5 ); } // 0b11000101
 static inline int is_CDP2(uint32_t instr)           { return ( ( ((instr) >> 20) & 0xF0) == 0xE0 ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b1110xxxx and 0b0

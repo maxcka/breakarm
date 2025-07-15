@@ -9,8 +9,6 @@
 #include "bit_matching.h"
 
 
-static const char *default_str = "UNKNOWN";
-
 // ====================
 // === INSTRUCTIONS ===
 // ====================
@@ -31,9 +29,15 @@ void print_default_instr(Instr *instr_s) {
             break;
         }
 
+        case TYPE_NOT_IMP:
+        {
+            printf("%s\n", NOT_IMP_STR);
+            break;
+        }
+
         default: 
         {
-            printf("UNKNOWN\n");
+            printf("%s \n", DEFAULT_STR);
             break;
         }
     }
@@ -62,6 +66,17 @@ int UNPRED_instr(uint32_t instr) {
     return 0;
 }
 
+int NOT_IMP_instr(uint32_t instr) {
+    Instr instr_s = {0};
+    instr_s.igroup = GROUP_DEFAULT;
+    instr_s.itype = TYPE_NOT_IMP;
+
+    (void)instr; // silence warning
+
+    print_asm_instr(&instr_s);
+    return 0;
+}
+
 
 // ===============
 // === Decoder ===
@@ -76,7 +91,7 @@ void find_and_decode(uint32_t instr, IGroup igroup) {
             return;
         }
     }
-    printf("%s\n", default_str); // we don't have the corresponding A32 instruction
+    printf("%s 0x%08x\n", DEFAULT_STR, curr_instr); // we don't have the corresponding A32 instruction
 }
 
 void decode_dp_op_0(uint32_t instr) {
@@ -88,7 +103,7 @@ void decode_dp_op_0(uint32_t instr) {
             find_and_decode(instr, GROUP_DP_RSR);
         }
         else {
-            printf("%s\n", default_str);
+            printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
         }
     }
     else if (IS_MISC_OR_HALF_MULT(instr)) {  // layer 2
@@ -99,7 +114,7 @@ void decode_dp_op_0(uint32_t instr) {
             find_and_decode(instr, GROUP_HM);
         }
         else {
-            printf("%s\n", default_str);
+            printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
         }
     }
     else if (IS_MULT_MULT(instr)) {          // layer 2
@@ -115,7 +130,7 @@ void decode_dp_op_0(uint32_t instr) {
         find_and_decode(instr, GROUP_EX_LD_STR);
     }
     else {
-        printf("%s\n", default_str);
+        printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
     }
 }
 
@@ -130,7 +145,7 @@ void decode_dp_op_1(uint32_t instr) {
         find_and_decode(instr, GROUP_MISC_HINTS);
     }
     else {
-        printf("%s\n", default_str);
+        printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
     }
 }
 
@@ -153,7 +168,7 @@ void decode_ld_str_med(uint32_t instr) {
         }
     }
     else {
-        printf("%s\n", default_str);
+        printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
     }
 }
 
@@ -163,10 +178,19 @@ void decode_br_blk(uint32_t instr) {
 
 void decode_co_spr(uint32_t instr) {
     if (IS_SIMD(instr) && !is_SVC(instr) && !is_UNDEF_4(instr)) { // is SIMD but not one of the general instructions
-        printf("%s\n", default_str);
+        printf("%s\n", NOT_IMP_STR);
     }
     else {
         find_and_decode(instr, GROUP_COPROC);
+    }
+}
+
+void decode_uncond(uint32_t instr) {
+    if (IS_MH_ASIMD_MISC(instr)) {
+        find_and_decode(instr, GROUP_UNCOND_MISC);
+    }
+    else {
+        find_and_decode(instr, GROUP_UNCOND);
     }
 }
 
@@ -189,13 +213,13 @@ void decode_instr(uint32_t instr) {
             decode_co_spr(instr);
         }
         else {
-            printf("%s\n", default_str);
+            printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
         }
     }
-    //else if (IS_UNCOND(instr)) {
-    //    
-    //}
+    else if (IS_UNCOND(instr)) {
+        decode_uncond(instr);
+    }
     else {
-            printf("%s\n", default_str);
+            printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
     }
 }

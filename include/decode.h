@@ -27,17 +27,22 @@
 #define APSR_POS 2 // application level special register position
 
 #define AMODE_SIZE 2
+#define OPTION_SIZE 16
 
 #define UNPRED_STR "UNPRED"
 #define UNDEF_STR "UNDEF"
+#define NOT_IMP_STR "NOT IMPLEMENTED"
+#define DEFAULT_STR ".word"
 
-extern uint64_t curr_addr; // current address (PC)
+extern uint64_t curr_addr; // current address
+extern uint32_t curr_instr; // current instruction
 
 extern const char *core_reg[NUM_REG];
 extern const char *spec_reg[NUM_SPEC_REG];
 extern const char *shift_codes[NUM_SHIFT_TYPES];
 extern const char *cond_codes[NUM_REG];
 extern const char *amode_table[AMODE_SIZE][AMODE_SIZE];
+extern const char *option_table[OPTION_SIZE];
 extern const char *banked_reg_table[][BANKED_REG_TABLE_ROWS][BANKED_REG_TABLE_COLS];
 
 typedef enum {
@@ -202,8 +207,21 @@ typedef enum {
     TYPE_COPROC_3_OPC2, // syntax: <MNEMONIC>{2}<c> <coproc>, <opc1>, <CRd>, <CRn>, <CRm>, <opc2>
     TYPE_COPROC_4_OPC2, // syntax: <MNEMONIC>{2}<c> <coproc>, <opc1>, <Rt>, <CRn>, <CRm>{, <opc2>}
 
+    // unconditional misc
+    TYPE_UNC_MISC_0, // syntax: <MNEMONIC><effect> <iflags>{, #<mode>}
+    TYPE_UNC_MISC_1, // syntax: <MNEMONIC> <endian_specifier>
+    TYPE_UNC_MISC_2_IMM, // syntax: <MNEMONIC> [<Rn>, #+/-<imm12>]
+    TYPE_UNC_MISC_2_REG, // syntax: <MNEMONIC> [<Rn>,+/-<Rm>{, <shift>}]
+    TYPE_UNC_MISC_3, // syntax: <MNEMONIC>
+    TYPE_UNC_MISC_4, // syntax: <MNEMONIC> <option>
+    
+    // unconditional
+    TYPE_UNC_0, // syntax: <MNEMONIC>{<amode>}{<c>}{<q>} SP{!}, #<mode>
+    TYPE_UNC_1, // syntax: <MNEMONIC>{<amode>} <Rn>{!}
+
     TYPE_UNPRED,
-    TYPE_UNDEF
+    TYPE_UNDEF,
+    TYPE_NOT_IMP
 } IType;
 
 // TODO not used in code yet.
@@ -225,6 +243,7 @@ typedef enum {
     GROUP_OTHER_MEDIA, // other media instructions
     GROUP_BRANCH_BLK, // branch and block data transfer
     GROUP_COPROC, // coproc
+    GROUP_UNCOND_MISC, // misc unconditional
     GROUP_UNCOND, // unconditional
     GROUP_DEFAULT
 } IGroup;
@@ -240,6 +259,7 @@ typedef struct {
     Shift shift;
     char shift_str[BUF_20];
     union {
+        char mode_str[BUF_20];
         char imm_str[BUF_20];
         char option_str[BUF_20];
     };
@@ -277,7 +297,10 @@ typedef struct {
         uint8_t add;
         uint8_t U; // for amode table
     };
-    uint8_t wback;
+    union {
+        uint8_t wback;
+        uint8_t W;
+    };
     uint8_t lsb;
     uint8_t width;
     uint32_t label;
@@ -287,6 +310,13 @@ typedef struct {
     uint8_t CRm;
     uint8_t opc1;
     uint8_t opc2;
+
+    uint8_t A;
+    uint8_t I;
+    uint8_t F;
+    uint8_t imod;
+    uint8_t E;
+    uint8_t option;
 } Instr;
 
 
@@ -312,6 +342,13 @@ extern InstrHandler proc_dp_imm16_table[][IH_ARR_SIZE];
 extern InstrHandler proc_misc_hints_table[][IH_ARR_SIZE];
 extern InstrHandler proc_ld_str_table[][IH_ARR_SIZE];
 extern InstrHandler proc_pas_table[][IH_ARR_SIZE];
+extern InstrHandler proc_pusr_table[][IH_ARR_SIZE];
+extern InstrHandler proc_signed_mult_table[][IH_ARR_SIZE];
+extern InstrHandler proc_other_media_table[][IH_ARR_SIZE];
+extern InstrHandler proc_branch_block_table[][IH_ARR_SIZE];
+extern InstrHandler proc_coproc_table[][IH_ARR_SIZE];
+extern InstrHandler proc_uncond_misc_table[][IH_ARR_SIZE];
+extern InstrHandler proc_uncond_table[][IH_ARR_SIZE];
 // ==============================================
 // lookup table for processing instructions
 //extern int (*proc_instr_table[][2])(uint32_t);
@@ -499,7 +536,7 @@ int PUSH_instr(uint32_t instr);
 int STM_instr(uint32_t instr);
 int LDM_instr(uint32_t instr);
 int B_instr(uint32_t instr);
-int BL_instr(uint32_t instr);
+int BL_imm_instr(uint32_t instr);
 
 //> coprocessor and supervisor call
 void print_coproc_instr(Instr *instr_s);
@@ -513,15 +550,32 @@ int CDP_instr(uint32_t instr);
 int MCR_instr(uint32_t instr);
 int MRC_instr(uint32_t instr);
 
+//> unconditional
+void print_uncond_instr(Instr *instr_s);
+int process_uncond_instr(uint32_t instr, Instr *instr_s);
+int CPS_instr(uint32_t instr);
+int SETEND_instr(uint32_t instr);
+int PLI_imm_instr(uint32_t instr);
+int PLD_imm_instr(uint32_t instr);
+int CLREX_instr(uint32_t instr);
+int DSB_instr(uint32_t instr);
+int DMB_instr(uint32_t instr);
+int ISB_instr(uint32_t instr);
+int PLI_reg_instr(uint32_t instr);
+int PLD_reg_instr(uint32_t instr);
+int SRS_instr(uint32_t instr);
+int RFE_instr(uint32_t instr);
+
 //> default
 void print_default_instr(Instr *instr_s);
 int UNDEF_instr(uint32_t instr);
 int UNPRED_instr(uint32_t instr);
+int NOT_IMP_instr(uint32_t instr);
 
 // auxiliary functions
 void get_reg_list(Instr *instr_s, uint16_t reg_list_bits);
-uint32_t get_label(uint32_t imm24);
-int32_t sign_extend24(uint32_t imm24);
+uint32_t get_label(uint32_t imm, uint8_t bitwdith);
+int32_t sign_extend(uint32_t imm, uint8_t bitwidth);
 void get_char_suffix(Instr *instr_s);
 uint8_t is_not_itype(uint8_t itype, uint8_t count, ...);
 #define IS_NOT_ITYPE(itype, ...) is_not_itype(itype, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)

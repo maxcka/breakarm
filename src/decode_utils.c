@@ -31,21 +31,18 @@ void get_reg_list(Instr *instr_s, uint16_t reg_list_bits) {
     strcat(instr_s->reg_list_str, " }");
 }
 
-uint32_t get_label(uint32_t imm24) {
-    int32_t offset = sign_extend24(imm24);
+uint32_t get_label(uint32_t imm, uint8_t bitwidth) {
+    int32_t offset = sign_extend(imm, bitwidth);
     uint32_t pc = (uint32_t)curr_addr + 8; // apparently actual PC is curr_addr + 8?
     uint32_t label = pc + offset; 
     return label;
 }
 
-int32_t sign_extend24(uint32_t imm24) {
-    // if bit 23 is set, the number is negative
-    if (imm24 & (1 << 23)) {
-        return (int32_t)(imm24 | 0xFF000000);
-    }
-    else {
-        return (int32_t)imm24;
-    }
+int32_t sign_extend(uint32_t imm, uint8_t bitwidth) {
+    // if msb is set, number is negative
+    // using arithmetic shift of signed data type
+    int32_t shift = 32 - bitwidth;
+    return ((int32_t)imm << shift) >> shift;
 }
 
 void get_char_suffix(Instr *instr_s) {
