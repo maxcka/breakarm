@@ -1,5 +1,10 @@
 Disassembler for A32 ISA used in AArch32 mode
 
+
+- need to add better documentation
+- need to add tests with inline assembly
+=====================================================
+
 TODO:
 - create loader with libelf and load .text section of binary  DONE
 - disassemble with Capstone   DONE
@@ -69,8 +74,3 @@ TODO:
 
 - 7/20 testing and cleanup
 
-
-check for "// NOTE", "// TODO", and "// FIX"
-
-
-fix labels for BL. need to make sign_extend work for variable sizes
