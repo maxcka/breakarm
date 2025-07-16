@@ -5,6 +5,8 @@
 #include "bit_matching.h"
 
 
+static void print_dp_2_syntactic_sugar(Instr *instr_s);
+
 // -----------------------
 // --- Data-processing ---
 // -----------------------
@@ -86,12 +88,7 @@ void print_data_proc_instr(Instr *instr_s) {
 
         case TYPE_DP_2: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
         {
-            printf("%s%s%s %s, %s\n", 
-            instr_s->mnemonic,
-            (instr_s->S) ? "S" : "",
-            cond_codes[instr_s->c], 
-            core_reg[instr_s->Rd], 
-            core_reg[instr_s->Rm]);
+            print_dp_2_syntactic_sugar(instr_s);
             break;
         }
 
@@ -178,6 +175,26 @@ void print_data_proc_instr(Instr *instr_s) {
         }
 
     }
+}
+
+// syntactic sugar for nop
+static void print_dp_2_syntactic_sugar(Instr *instr_s) {
+    char buf[BUF_40];
+
+    sprintf(buf, "%s%s%s %s, %s", 
+            instr_s->mnemonic,
+            (instr_s->S) ? "S" : "",
+            cond_codes[instr_s->c], 
+            core_reg[instr_s->Rd], 
+            core_reg[instr_s->Rm]);
+
+    int used_sugar = 0;
+    if (strncmp(buf, "MOV R0, R0", 10) == 0) {
+        printf("NOP\t\t@ (");
+        used_sugar = 1;
+    }
+
+    printf("%s%s\n", buf, (used_sugar) ? ")" : "");
 }
 
 
