@@ -1,4 +1,13 @@
+breakarm
+
+
 Disassembler for A32 ISA used in AArch32 mode
+
+TODO:
+- add 3 examples in "examples" folder. include capstone, objdump, and breakarm disassembly output
+- add tests and test script in "tests" folder
+- documentation
+- cleanup
 
 
 - need to add better documentation
@@ -23,7 +32,7 @@ About ARM ISAs
 - A64 - only 32-bit instructions
 
 when compiling using arm32-linux-gnueabi:
-- -marm option generates ARM32 instructions
+- -marm option generates A32 instructions
 - -mthumb option generates Thumb (Thumb or Thumb-2 depending on -arch option) instructions
 
 ======================
@@ -51,26 +60,5 @@ bit_matching.h
 
 
 
-TODO:
-- DONE data proc reg
-- DONE data proc rsr 
-- DONE misc
-- DONE half mult
-- DONE mult
-- DONE sync
-- DONE extra load/store
-- DONE extra load/store unpriv
-- DONE data proc imm
-- DONE MOV, MOVT 
-- DONE MSR and hints
 
-- DONE load/store word
-- DONE media part 1
-- 7/6 media part 2
-- 7/13 branch, branch with link, and block data transfer
-- 7/13 coproc and supervisor
-
-- 7/13 unconditional
-
-- 7/20 testing and cleanup
 

@@ -92,30 +92,7 @@ uint8_t *getTextSection(const char *elf_fname, size_t *ptext_size, uint64_t *pte
     return text_buf;
 }
 
-void capstoneDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr) {
-    csh cs_handle;
-    cs_err err = cs_open(CS_ARCH_ARM, CS_MODE_ARM, &cs_handle);
-    if (err) {
-        fatal("capstone init");
-    }
-
-    cs_option(cs_handle, CS_OPT_DETAIL, CS_OPT_OFF);
-    cs_insn *insn;
-    size_t count = cs_disasm(cs_handle, text_buf, text_size, text_addr, 0, &insn);
-    if (count > 0) {
-        for (size_t i = 0; i < count; i++) {
-            printf("0x%"PRIx64":\t%s\t\t%s\n", insn[i].address, insn[i].mnemonic, insn[i].op_str);
-        }
-        cs_free(insn, count);
-    }
-    else {
-        fprintf(stderr, "Failed to disassemble given code!\n");
-    }
-
-    cs_close(&cs_handle);
-}
-
-// my custom A32 disassembler implementation
+// breakarm A32 disassembler implementation
 void customDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr) {
     uint64_t start_addr = text_addr;
     uint8_t a32_instr_size = 4;
@@ -149,10 +126,7 @@ int main(int argc, char **argv) {
     uint8_t *text_buf = getTextSection(elf_fname, &text_size, &text_addr);
 
 
-    // capstone
-    //capstoneDisas(text_buf, text_size, text_addr);
-
-    // disassembler
+    // breakarm
     customDisas(text_buf, text_size, text_addr);
 
     

@@ -1,6 +1,47 @@
 
-test_arm32:     file format elf32-littlearm
+example1:     file format elf32-littlearm
 
+
+Disassembly of section .init:
+
+000003a4 <_init>:
+ 3a4:	e92d4008 	push	{r3, lr}
+ 3a8:	eb000025 	bl	444 <call_weak_fn>
+ 3ac:	e8bd8008 	pop	{r3, pc}
+
+Disassembly of section .plt:
+
+000003b0 <.plt>:
+ 3b0:	e52de004 	push	{lr}		@ (str lr, [sp, #-4]!)
+ 3b4:	e59fe004 	ldr	lr, [pc, #4]	@ 3c0 <.plt+0x10>
+ 3b8:	e08fe00e 	add	lr, pc, lr
+ 3bc:	e5bef008 	ldr	pc, [lr, #8]!
+ 3c0:	00001c40 	.word	0x00001c40
+
+000003c4 <__libc_start_main@plt>:
+ 3c4:	e28fc600 	add	ip, pc, #0, 12
+ 3c8:	e28cca01 	add	ip, ip, #4096	@ 0x1000
+ 3cc:	e5bcfc40 	ldr	pc, [ip, #3136]!	@ 0xc40
+
+000003d0 <__cxa_finalize@plt>:
+ 3d0:	e28fc600 	add	ip, pc, #0, 12
+ 3d4:	e28cca01 	add	ip, ip, #4096	@ 0x1000
+ 3d8:	e5bcfc38 	ldr	pc, [ip, #3128]!	@ 0xc38
+
+000003dc <puts@plt>:
+ 3dc:	e28fc600 	add	ip, pc, #0, 12
+ 3e0:	e28cca01 	add	ip, ip, #4096	@ 0x1000
+ 3e4:	e5bcfc30 	ldr	pc, [ip, #3120]!	@ 0xc30
+
+000003e8 <__gmon_start__@plt>:
+ 3e8:	e28fc600 	add	ip, pc, #0, 12
+ 3ec:	e28cca01 	add	ip, ip, #4096	@ 0x1000
+ 3f0:	e5bcfc28 	ldr	pc, [ip, #3112]!	@ 0xc28
+
+000003f4 <abort@plt>:
+ 3f4:	e28fc600 	add	ip, pc, #0, 12
+ 3f8:	e28cca01 	add	ip, ip, #4096	@ 0x1000
+ 3fc:	e5bcfc20 	ldr	pc, [ip, #3104]!	@ 0xc20
 
 Disassembly of section .text:
 
@@ -117,3 +158,9 @@ Disassembly of section .text:
  584:	e1a00003 	mov	r0, r3
  588:	e8bd8800 	pop	{fp, pc}
  58c:	000000b0 	.word	0x000000b0
+
+Disassembly of section .fini:
+
+00000590 <_fini>:
+ 590:	e92d4008 	push	{r3, lr}
+ 594:	e8bd8008 	pop	{r3, pc}
