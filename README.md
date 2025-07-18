@@ -1,4 +1,4 @@
-# breakarm - A32 Instruction Disassembler
+# breakarm - ARM A32 Instruction Disassembler
 
 ## Overview
 **breakarm** is a lightweight ARM A32 (ARMv7-A) instruction disassembler written in C.  
