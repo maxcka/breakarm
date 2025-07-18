@@ -73,7 +73,7 @@ void print_branch_block_instr(Instr *instr_s) {
 
 int process_branch_block_instr(uint32_t instr, Instr *instr_s) {
     instr_s->c = (instr >> 28) & 0xF;
-    uint16_t registers = (instr >> 0) & 0xFFF;
+    uint16_t registers = (instr >> 0) & 0xFFFF;
     instr_s->wback = (instr >> 21) & 0x1;
     instr_s->Rn = (instr >> 16) & 0xF;
     instr_s->Rt = (instr >> 12) & 0xF;
@@ -89,6 +89,11 @@ int process_branch_block_instr(uint32_t instr, Instr *instr_s) {
         instr_s->label = get_label(imm24 << 2, 26);
     }
 
+    if (IS_NOT_ITYPE(instr_s->itype, TYPE_BR_BLK_3)) {
+        get_reg_list(instr_s, registers);
+    }
+
+    // check for unpred
     if (IS_ITYPE(instr_s->itype, TYPE_BR_BLK_1) && IS_TARGET_REG(SP, instr_s->Rt)) {
         instr_s->itype = TYPE_UNPRED;
     }
@@ -101,7 +106,6 @@ int process_branch_block_instr(uint32_t instr, Instr *instr_s) {
         instr_s->itype = TYPE_UNPRED;
     }
 
-    get_reg_list(instr_s, registers);
 
     print_asm_instr(instr_s);
     return 0;

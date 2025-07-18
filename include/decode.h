@@ -2,7 +2,7 @@
 #define DECODE_H
 
 #include <stdint.h>
-
+#include <unistd.h>
 
 //===================================================
 #define FALSE 0
@@ -597,6 +597,11 @@ void print_asm_instr(Instr *instr_s);
 
 
 // main functions
+//=== main.c ===
+void fatal(const char *msg);
+uint8_t *getTextSection(const char *elf_fname, size_t *ptext_size, uint64_t *ptext_addr);
+void breakarmDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr);
+//==============
 void find_and_decode(uint32_t instr, IGroup igroup);
 
 void decode_dp_op_0(uint32_t instr);

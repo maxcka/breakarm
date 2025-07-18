@@ -18,8 +18,8 @@ ADDR	INSTR		ASSEMBLY
 0x430:	0xe79a0000	LDR R0, [SL, R0]
 0x434:	0xebffffe2	BL 0x3c4
 0x438:	0xebffffed	BL 0x3f4
-0x43c:	0x00001bc4	ANDEQ R1, R0, R4, ASR #23	; [!] suspicious encoding - possibly junk or data
-0x440:	0x0000002c	ANDEQ R0, R0, IP, LSR #32	; [!] suspicious encoding - possibly junk or data
+0x43c:	0x00001bc4	ANDEQ R1, R0, R4, ASR #23	; [!] suspicious encoding - possibly junk
+0x440:	0x0000002c	ANDEQ R0, R0, IP, LSR #32	; [!] suspicious encoding - possibly junk
 0x444:	0xe59f3014	LDR R3, [PC, #20]
 0x448:	0xe59f2014	LDR R2, [PC, #20]
 0x44c:	0xe08f3003	ADD R3, PC, R3
@@ -27,8 +27,8 @@ ADDR	INSTR		ASSEMBLY
 0x454:	0xe3520000	CMP R2, #0
 0x458:	0x012fff1e	BXEQ LR
 0x45c:	0xeaffffe1	B 0x3e8
-0x460:	0x00001bac	ANDEQ R1, R0, IP, LSR #23	; [!] suspicious encoding - possibly junk or data
-0x464:	0x00000028	ANDEQ R0, R0, R8, LSR #32	; [!] suspicious encoding - possibly junk or data
+0x460:	0x00001bac	ANDEQ R1, R0, IP, LSR #23	; [!] suspicious encoding - possibly junk
+0x464:	0x00000028	ANDEQ R0, R0, R8, LSR #32	; [!] suspicious encoding - possibly junk
 0x468:	0xe59f002c	LDR R0, [PC, #44]
 0x46c:	0xe59f302c	LDR R3, [PC, #44]
 0x470:	0xe08f0000	ADD R0, PC, R0
@@ -42,10 +42,10 @@ ADDR	INSTR		ASSEMBLY
 0x490:	0xe3530000	CMP R3, #0
 0x494:	0x012fff1e	BXEQ LR
 0x498:	0xe12fff13	BX R3
-0x49c:	0x00001bc4	ANDEQ R1, R0, R4, ASR #23	; [!] suspicious encoding - possibly junk or data
-0x4a0:	0x00001bc0	ANDEQ R1, R0, R0, ASR #23	; [!] suspicious encoding - possibly junk or data
-0x4a4:	0x00001b78	ANDEQ R1, R0, R8, ROR FP	; [!] suspicious encoding - possibly junk or data
-0x4a8:	0x00000024	ANDEQ R0, R0, R4, LSR #32	; [!] suspicious encoding - possibly junk or data
+0x49c:	0x00001bc4	ANDEQ R1, R0, R4, ASR #23	; [!] suspicious encoding - possibly junk
+0x4a0:	0x00001bc0	ANDEQ R1, R0, R0, ASR #23	; [!] suspicious encoding - possibly junk
+0x4a4:	0x00001b78	ANDEQ R1, R0, R8, ROR FP	; [!] suspicious encoding - possibly junk
+0x4a8:	0x00000024	ANDEQ R0, R0, R4, LSR #32	; [!] suspicious encoding - possibly junk
 0x4ac:	0xe59f0038	LDR R0, [PC, #56]
 0x4b0:	0xe59f3038	LDR R3, [PC, #56]
 0x4b4:	0xe08f0000	ADD R0, PC, R0
@@ -62,10 +62,10 @@ ADDR	INSTR		ASSEMBLY
 0x4e0:	0xe3530000	CMP R3, #0
 0x4e4:	0x012fff1e	BXEQ LR
 0x4e8:	0xe12fff13	BX R3
-0x4ec:	0x00001b80	ANDEQ R1, R0, R0, LSL #23	; [!] suspicious encoding - possibly junk or data
-0x4f0:	0x00001b7c	ANDEQ R1, R0, IP, ROR FP	; [!] suspicious encoding - possibly junk or data
-0x4f4:	0x00001b28	ANDEQ R1, R0, R8, LSR #22	; [!] suspicious encoding - possibly junk or data
-0x4f8:	0x00000030	ANDEQ R0, R0, R0, LSR R0	; [!] suspicious encoding - possibly junk or data
+0x4ec:	0x00001b80	ANDEQ R1, R0, R0, LSL #23	; [!] suspicious encoding - possibly junk
+0x4f0:	0x00001b7c	ANDEQ R1, R0, IP, ROR FP	; [!] suspicious encoding - possibly junk
+0x4f4:	0x00001b28	ANDEQ R1, R0, R8, LSR #22	; [!] suspicious encoding - possibly junk
+0x4f8:	0x00000030	ANDEQ R0, R0, R0, LSR R0	; [!] suspicious encoding - possibly junk
 0x4fc:	0xe59f304c	LDR R3, [PC, #76]
 0x500:	0xe59f204c	LDR R2, [PC, #76]
 0x504:	0xe08f3003	ADD R3, PC, R3
@@ -74,7 +74,7 @@ ADDR	INSTR		ASSEMBLY
 0x510:	0xe3530000	CMP R3, #0
 0x514:	0x112fff1e	BXNE LR
 0x518:	0xe59f3038	LDR R3, [PC, #56]
-0x51c:	0xe92d4010	PUSH {R0, R1}
+0x51c:	0xe92d4010	PUSH {R4, LR}
 0x520:	0xe7923003	LDR R3, [R2, R3]
 0x524:	0xe3530000	CMP R3, #0
 0x528:	0x0a000002	BEQ 0x538
@@ -86,14 +86,14 @@ ADDR	INSTR		ASSEMBLY
 0x540:	0xe3a02001	MOV R2, #1
 0x544:	0xe08f3003	ADD R3, PC, R3
 0x548:	0xe5c32000	STRB R2, [R3, #0]
-0x54c:	0xe8bd8010	POP {R0, R1}
-0x550:	0x00001b30	ANDEQ R1, R0, R0, LSR FP	; [!] suspicious encoding - possibly junk or data
-0x554:	0x00001aec	ANDEQ R1, R0, IP, ROR #21	; [!] suspicious encoding - possibly junk or data
-0x558:	0x00000020	ANDEQ R0, R0, R0, LSR #32	; [!] suspicious encoding - possibly junk or data
-0x55c:	0x00001b00	ANDEQ R1, R0, R0, LSL #22	; [!] suspicious encoding - possibly junk or data
+0x54c:	0xe8bd8010	POP {R4, PC}
+0x550:	0x00001b30	ANDEQ R1, R0, R0, LSR FP	; [!] suspicious encoding - possibly junk
+0x554:	0x00001aec	ANDEQ R1, R0, IP, ROR #21	; [!] suspicious encoding - possibly junk
+0x558:	0x00000020	ANDEQ R0, R0, R0, LSR #32	; [!] suspicious encoding - possibly junk
+0x55c:	0x00001b00	ANDEQ R1, R0, R0, LSL #22	; [!] suspicious encoding - possibly junk
 0x560:	0x00001af0	.word 0x00001af0
 0x564:	0xeaffffd0	B 0x4ac
-0x568:	0xe92d4800	PUSH {R0, R1}
+0x568:	0xe92d4800	PUSH {FP, LR}
 0x56c:	0xe28db004	ADD FP, SP, #4
 0x570:	0xe59f3014	LDR R3, [PC, #20]
 0x574:	0xe08f3003	ADD R3, PC, R3
@@ -101,5 +101,5 @@ ADDR	INSTR		ASSEMBLY
 0x57c:	0xebffff96	BL 0x3dc
 0x580:	0xe3a03000	MOV R3, #0
 0x584:	0xe1a00003	MOV R0, R3
-0x588:	0xe8bd8800	POP {R0, R1}
+0x588:	0xe8bd8800	POP {FP, PC}
 0x58c:	0x000000b0	.word 0x000000b0

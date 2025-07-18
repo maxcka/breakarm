@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g -I../include
-LDFLAGS = -lelf -lcapstone
+LDFLAGS = -lelf
 SRC = main.c decode.c decode_utils.c a32_tables.c \
 		instr/instr_data_proc.c \
 		instr/instr_misc.c \
@@ -14,7 +14,7 @@ SRC = main.c decode.c decode_utils.c a32_tables.c \
 		instr/instr_coproc.c \
 		instr/instr_uncond.c
 OBJ = $(SRC:.c=.o)
-PROG = arm32_disasm
+PROG = breakarm
 
 all: $(PROG)
 

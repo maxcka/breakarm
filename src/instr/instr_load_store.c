@@ -71,7 +71,7 @@ void print_load_store_instr(Instr *instr_s) {
         case TYPE_EX_LS_DUAL_IMM: // dual imm
         case TYPE_EX_LS_DUAL_IMM_STR: 
         {
-            printf("%s%s %s, %s, [%s%s, %s%s%s\n",
+            printf("%s%s %s, %s, [%s%s%s%s%s\n",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rt],
@@ -150,7 +150,7 @@ int process_load_store_instr(uint32_t instr, Instr *instr_s) {
     uint8_t imm5 = (instr >> 7) & 0x1F;
 
     // doing itype-specific actions
-    if (instr_s->itype == TYPE_EX_LS_REG) {
+    if (IS_ITYPE(instr_s->itype, TYPE_EX_LS_REG)) {
         instr_s->Rm = (instr >> 0) & 0xF;
     }
     else if (instr_s->itype == TYPE_LS_REG)  {
@@ -163,8 +163,11 @@ int process_load_store_instr(uint32_t instr, Instr *instr_s) {
     else if (IS_ITYPE(instr_s->itype, TYPE_LS_IMM_STR, TYPE_LS_IMM)) {
         get_imm_str(instr_s, imm12, 0, 0, instr_s->add);
     }
-    else if (IS_ITYPE(instr_s->itype, TYPE_EX_LS_DUAL_REG, TYPE_EX_LS_DUAL_IMM)) {
+    else if (IS_ITYPE(instr_s->itype, TYPE_EX_LS_DUAL_REG)) {
         instr_s->Rm = (instr >> 0) & 0xF;
+        instr_s->Rt2 = instr_s->Rt + 1;
+    }
+    else if (IS_ITYPE(instr_s->itype, TYPE_EX_LS_DUAL_IMM_STR)) {
         instr_s->Rt2 = instr_s->Rt + 1;
     }
 

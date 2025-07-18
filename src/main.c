@@ -6,7 +6,6 @@
 
 #include <gelf.h>
 #include <libelf.h>
-#include <capstone/capstone.h>
 
 #include "decode.h"
 
@@ -93,7 +92,7 @@ uint8_t *getTextSection(const char *elf_fname, size_t *ptext_size, uint64_t *pte
 }
 
 // breakarm A32 disassembler implementation
-void customDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr) {
+void breakarmDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr) {
     uint64_t start_addr = text_addr;
     uint8_t a32_instr_size = 4;
     //uint64_t end_addr = text_addr + text_size;
@@ -127,7 +126,7 @@ int main(int argc, char **argv) {
 
 
     // breakarm
-    customDisas(text_buf, text_size, text_addr);
+    breakarmDisas(text_buf, text_size, text_addr);
 
     
     free(text_buf);

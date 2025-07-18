@@ -209,7 +209,7 @@ static void check_sus_instr(Instr *instr_s) {
         strcmp(instr_s->mnemonic, "AND") == 0 &&
         instr_s->c == EQ) {
         
-        printf("\t; [!] suspicious encoding - possibly junk or data");
+        printf("\t; [!] suspicious encoding - possibly junk");
     }
     printf("\n");
 }

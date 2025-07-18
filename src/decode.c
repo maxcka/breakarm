@@ -89,7 +89,7 @@ void find_and_decode(uint32_t instr, IGroup igroup) {
 }
 
 void decode_dp_op_0(uint32_t instr) {
-    if (IS_DP_REG_OR_RSR(instr)) {           // layer 2
+    if (IS_DP_REG_OR_RSR(instr) && (IS_DP_REG(instr) || IS_DP_RSR(instr))) {           // layer 2
         if (IS_DP_REG(instr)) {               // layer 3
             find_and_decode(instr, GROUP_DP_REG);
         }
@@ -100,7 +100,7 @@ void decode_dp_op_0(uint32_t instr) {
             printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
         }
     }
-    else if (IS_MISC_OR_HALF_MULT(instr)) {  // layer 2
+    else if (IS_MISC_OR_HALF_MULT(instr) && (IS_MISC(instr) || IS_HALF_MULT(instr))) {  // layer 2
         if (IS_MISC(instr)) {                 // layer 3
             find_and_decode(instr, GROUP_MISC);
         }

@@ -5,27 +5,39 @@
 
 void get_reg_list(Instr *instr_s, uint16_t reg_list_bits) {
     int start = 0;
-    int length = sizeof(reg_list_bits);
+    int length = sizeof(reg_list_bits)*8;
     int i = 0;
+    int interval_count = 0;
     strcat(instr_s->reg_list_str, "{");
+    // form intervals
     while (i < length) {
+        // bit not set at position i
+        if (((reg_list_bits >> i) & 0x1) == 0) {
+            i++;
+            continue;
+        }
+
         start = i;
+
+        // put comma unless this is the first build
+        if (interval_count != 0) {
+            strcat(instr_s->reg_list_str, ", ");
+        }
+        // while consecutive indices have bit set
         while (i < length-1 && ((reg_list_bits >> (i+1)) & 0x1) == 1) {
             i++;
         }
-
+        // if previous condition was true at least once, form interval
         if (start != i) {
             sprintf(instr_s->reg_list_str + strlen(instr_s->reg_list_str),
                 "%s-%s", core_reg[start], core_reg[i]);
-        }
-        else {
+        }   
+        else {  // else just print the reg corresponding to 'start'
             sprintf(instr_s->reg_list_str + strlen(instr_s->reg_list_str),
                 "%s", core_reg[start]);
         }
-
-        if (i < length-1) {
-            strcat(instr_s->reg_list_str, ", ");
-        }
+        
+        interval_count++;
         i++;
     }
     strcat(instr_s->reg_list_str, "}");
