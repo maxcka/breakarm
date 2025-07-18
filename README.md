@@ -22,7 +22,7 @@ This focused approach allows efficient and accurate analysis of ARM machine code
 - GCC or compatible C compiler
 - Make
 - **libelf development libraries** (for ELF binary loading and parsing)  
-  - On Debian/Ubuntu: `apt install libelf-dev`   
+  - On Debian/Ubuntu: `sudo apt install libelf-dev`   
 
 ### Build
 
@@ -44,14 +44,25 @@ make
 
 ### About ARM ISAs
 
-- Thumb - used in older architectures, 16-bit instructions
-- Thumb-2 - mix of 16-bit and 32-bit instructions
-- A32 - only 32-bit instructions
-- A64 - only 32-bit instructions
+- **Thumb**: Used in older ARM architectures; instructions are 16-bit wide.  
+- **Thumb-2**: Mix of 16-bit and 32-bit instructions, extending Thumb capabilities.  
+- **A32**: ARM’s classic 32-bit instruction set with fixed 32-bit instructions.  
+- **A64**: 64-bit ARM instruction set used in ARMv8 and later, with fixed 32-bit instructions.
 
-when compiling using arm-linux-gnueabi-gcc:
+when compiling using `arm-linux-gnueabi-gcc`:
 - `-marm` option generates A32 instructions
 - `-mthumb` option generates Thumb (Thumb or Thumb-2 depending on `-arch` option) instructions
+
+**breakarm** only supports disassembly of the A32 instruction set.
+
+## Future Work
+- Fix known bugs and improve overall stability
+- Write more comprehensive comments and documentation throughout the codebase
+- Clean up and refactor code for better readability and maintainability
+- Enhance testing coverage with more unit and integration tests
+- Provide more output examples of disassembled binaries
+
+
 
 
 
