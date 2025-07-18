@@ -1,6 +1,11 @@
 # breakarm - A32 Instruction Disassembler
 
 ## Overview
+**breakarm** is a lightweight ARM A32 (ARMv7-A) instruction disassembler written in C.  
+It parses raw ARM binary instructions and outputs human-readable assembly.
+
+Using `libelf`, **breakarm** loads the `.text` section of ELF binaries and disassembles only that executable code segment.  
+This focused approach allows efficient and accurate analysis of ARM machine code for debugging and reverse engineering.
 
 ## Features
 - Supports disassembly of ARM A32 (ARMv7-A) 32-bit instructions  
@@ -45,8 +50,8 @@ make
 - A64 - only 32-bit instructions
 
 when compiling using arm-linux-gnueabi-gcc:
-- -marm option generates A32 instructions
-- -mthumb option generates Thumb (Thumb or Thumb-2 depending on -arch option) instructions
+- `-marm` option generates A32 instructions
+- `-mthumb` option generates Thumb (Thumb or Thumb-2 depending on `-arch` option) instructions
 
 
 
