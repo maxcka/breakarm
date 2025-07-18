@@ -34,9 +34,6 @@
 #define NOT_IMP_STR "NOT IMPLEMENTED"
 #define DEFAULT_STR ".word"
 
-extern uint64_t curr_addr; // current address
-extern uint32_t curr_instr; // current instruction
-
 extern const char *core_reg[NUM_REG];
 extern const char *spec_reg[NUM_SPEC_REG];
 extern const char *shift_codes[NUM_SHIFT_TYPES];
@@ -327,6 +324,10 @@ typedef struct {
     InstrHandler (*table)[IH_ARR_SIZE];
     int num_rows;
 } InstrHandlerTable;
+
+
+extern uint64_t curr_addr; // current address
+extern uint32_t curr_instr; // current instruction
 
 
 // === elements of the proc_instr_group_table ===

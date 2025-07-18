@@ -83,13 +83,11 @@ void print_pusr_instr(Instr *instr_s) {
                 core_reg[instr_s->Rm]);
             break;
         }
-
-
-
-
+    
         default: 
         {
-            printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
+            instr_s->mnemonic = DEFAULT_STR;
+            printf("%s 0x%08x\n", instr_s->mnemonic, curr_instr);
             break;
         }
     }

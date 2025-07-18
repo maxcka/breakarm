@@ -80,13 +80,15 @@ void print_half_mult_instr(Instr *instr_s) {
 
         case TYPE_UNPRED:
         {
-            printf("%s\n", UNPRED_STR);
+            instr_s->mnemonic = UNPRED_STR;
+            printf("%s\n", instr_s->mnemonic);
             break;
         }
-
+    
         default: 
         {
-            printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
+            instr_s->mnemonic = DEFAULT_STR;
+            printf("%s 0x%08x\n", instr_s->mnemonic, curr_instr);
             break;
         }
     }
