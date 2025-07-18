@@ -2,8 +2,5 @@
 *.o
 
 # ignore binaries
-breakarm
-examples/test_arm32
-examples/test_arm64
-examples/test_thumb2
-examples/test_x86_64
+src/breakarm
+examples/example1/example1
