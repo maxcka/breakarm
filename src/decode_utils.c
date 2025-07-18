@@ -1,3 +1,9 @@
+/*
+ * breakarm – A32 Instruction Disassembler
+ * Copyright (c) 2025 Maximilian Kallas
+ * Licensed under the MIT License. See LICENSE file in the project root for details.
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -36,7 +42,7 @@ void get_reg_list(Instr *instr_s, uint16_t reg_list_bits) {
             sprintf(instr_s->reg_list_str + strlen(instr_s->reg_list_str),
                 "%s", core_reg[start]);
         }
-        
+
         interval_count++;
         i++;
     }

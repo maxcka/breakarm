@@ -1,3 +1,9 @@
+/*
+ * breakarm – A32 Instruction Disassembler
+ * Copyright (c) 2025 Maximilian Kallas
+ * Licensed under the MIT License. See LICENSE file in the project root for details.
+ */
+
 #ifndef BIT_MATCHING_H
 #define BIT_MATCHING_H
 

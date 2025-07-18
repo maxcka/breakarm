@@ -1,7 +1,10 @@
-// Notes:
-// - noticing a pattern between AND and ADD processing.
-//   will maybe make helper functions/structs depending on how repetitive
+/*
+ * breakarm – A32 Instruction Disassembler
+ * Copyright (c) 2025 Maximilian Kallas
+ * Licensed under the MIT License. See LICENSE file in the project root for details.
+ */
 
+ 
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>

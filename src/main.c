@@ -1,3 +1,19 @@
+/*
+ * breakarm – A32 Instruction Disassembler
+ * Copyright (c) 2025 Maximilian Kallas
+ * Licensed under the MIT License. See LICENSE file in the project root for details.
+ */
+
+/*
+ * Author: Maximilian Kallas
+ * File: main.c
+ * Description:
+ */
+ 
+ 
+ 
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -10,6 +26,9 @@
 #include "decode.h"
 
 // flow: main.c -> decode.c -> a32_tables.c -> instr_*.c 
+
+__attribute__((used, section(".rodata")))
+static const char author_string[] = "Author: Maximilian Kallas";
 
 uint64_t curr_addr;
 uint32_t curr_instr;
