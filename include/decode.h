@@ -35,8 +35,8 @@
 #define AMODE_SIZE 2
 #define OPTION_SIZE 16
 
-#define UNPRED_STR "UNPRED"
-#define UNDEF_STR "UNDEF"
+#define UNPRED_STR "UNPREDICTABLE"
+#define UNDEF_STR "UNDEFINED"
 #define NOT_IMP_STR "NOT IMPLEMENTED"
 #define DEFAULT_STR ".word"
 

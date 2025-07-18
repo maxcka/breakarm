@@ -2,7 +2,7 @@
 *.o
 
 # ignore binaries
-arm32_disasm
+breakarm
 examples/test_arm32
 examples/test_arm64
 examples/test_thumb2

@@ -96,6 +96,9 @@ uint8_t *getTextSection(const char *elf_fname, size_t *ptext_size, uint64_t *pte
     }
     memcpy(text_buf, data->d_buf, data->d_size);
 
+    printf("===================================\n");
+    printf("=== breakarm - A32 Disassembler ===\n");
+    printf("===================================\n\n");
     printf(".text section found:\n");
     printf("    Address: 0x%lx\n", *ptext_addr);
     printf("    Size:    0x%lx\n", *ptext_size);
