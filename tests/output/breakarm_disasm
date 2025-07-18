@@ -1,0 +1,13 @@
+.text section found:
+    Address: 0x0
+    Size:    0x20
+
+ADDR	INSTR		ASSEMBLY
+0x0:	0xe0002001	AND R2, R0, R1
+0x4:	0xe0202001	EOR R2, R0, R1
+0x8:	0xe0402001	SUB R2, R0, R1
+0xc:	0xe0602001	RSB R2, R0, R1
+0x10:	0xe0802001	ADD R2, R0, R1
+0x14:	0xe0a02001	ADC R2, R0, R1
+0x18:	0xe1c020f0	STRD R2, R3, [R0]
+0x1c:	0xe1a00000	NOP		@ (MOV R0, R0)

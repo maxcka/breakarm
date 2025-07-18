@@ -9,10 +9,6 @@
  * File: main.c
  * Description:
  */
- 
- 
- 
-
 
 #include <stdio.h>
 #include <stdlib.h>
