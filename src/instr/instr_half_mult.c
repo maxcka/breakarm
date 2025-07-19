@@ -29,7 +29,7 @@ void print_half_mult_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm],
                 core_reg[instr_s->Ra]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -43,7 +43,7 @@ void print_half_mult_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm],
                 core_reg[instr_s->Ra]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -56,7 +56,7 @@ void print_half_mult_instr(Instr *instr_s) {
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -71,7 +71,7 @@ void print_half_mult_instr(Instr *instr_s) {
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -85,7 +85,7 @@ void print_half_mult_instr(Instr *instr_s) {
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 

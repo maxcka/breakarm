@@ -208,7 +208,7 @@ InstrHandler proc_sync_table[][IH_ARR_SIZE] = {
     { is_STREXB , STREXB_instr },
     { is_LDREXB , LDREXB_instr },
     { is_STREXH , STREXH_instr },
-    { is_LDREXH , LDREXB_instr }
+    { is_LDREXH , LDREXH_instr }
 };
 
 InstrHandler proc_ex_ld_str_table[][IH_ARR_SIZE] = {

@@ -32,7 +32,7 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rm], 
             instr_s->shift_str);
             check_sus_instr(instr_s);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
         
@@ -48,7 +48,7 @@ void print_data_proc_instr(Instr *instr_s) {
             shift_codes[instr_s->shift.shift_t],
             core_reg[instr_s->Rs]);
             check_sus_instr(instr_s);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -61,7 +61,7 @@ void print_data_proc_instr(Instr *instr_s) {
                 core_reg[instr_s->Rd], 
                 core_reg[instr_s->Rn],
                 instr_s->imm_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
         
@@ -73,7 +73,7 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rn], 
             core_reg[instr_s->Rm], 
             instr_s->shift_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -86,7 +86,7 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rm], 
             shift_codes[instr_s->shift.shift_t],
             core_reg[instr_s->Rs]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -97,14 +97,14 @@ void print_data_proc_instr(Instr *instr_s) {
                 cond_codes[instr_s->c], 
                 core_reg[instr_s->Rn],
                 instr_s->imm_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
         case TYPE_DP_2: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
         {
             print_dp_2_syntactic_sugar(instr_s);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -116,7 +116,7 @@ void print_data_proc_instr(Instr *instr_s) {
                 cond_codes[instr_s->c], 
                 core_reg[instr_s->Rd],
                 instr_s->imm_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -127,7 +127,7 @@ void print_data_proc_instr(Instr *instr_s) {
                 cond_codes[instr_s->c], 
                 core_reg[instr_s->Rd],
                 instr_s->imm_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -140,7 +140,7 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rd], 
             core_reg[instr_s->Rm],
             instr_s->shift.shift_n);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -153,7 +153,7 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rd],
             core_reg[instr_s->Rn],
             core_reg[instr_s->Rm]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -166,7 +166,7 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rd], 
             core_reg[instr_s->Rm],
             instr_s->shift_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -180,7 +180,7 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rm],
             shift_codes[instr_s->shift.shift_t],
             core_reg[instr_s->Rs]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 

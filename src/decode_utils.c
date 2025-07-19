@@ -9,7 +9,8 @@
 #include <stdarg.h>
 #include "decode.h"
 
-void print_unpred(Instr *instr_s) {
+// print unpred and newline or just newline
+void print_unpred_or_newline(Instr *instr_s) {
     if (instr_s->is_unpred) {
         printf("\t; %s\n", UNPRED_STR);
     }

@@ -25,55 +25,55 @@ void print_sync_instr(Instr *instr_s) {
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rt2],
                 core_reg[instr_s->Rn]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
         case TYPE_SYNC_1:
         {
-            printf("%s%s %s, %s, %s",
+            printf("%s%s %s, %s, [%s]",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rn]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
         case TYPE_SYNC_2:
         {
-            printf("%s%s %s, %s",
+            printf("%s%s %s, [%s]",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rn]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
         case TYPE_SYNC_3:
         {
-            printf("%s%s %s, %s, %s, %s",
+            printf("%s%s %s, %s, %s, [%s]",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rt2],
                 core_reg[instr_s->Rn]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
         case TYPE_SYNC_4:
         {
-            printf("%s%s %s, %s, %s",
+            printf("%s%s %s, %s, [%s]",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rt2],
                 core_reg[instr_s->Rn]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -102,27 +102,35 @@ int process_sync_instr(uint32_t instr, Instr *instr_s) {
     instr_s->Rd = UNINIT;
     instr_s->Rt = UNINIT;
     instr_s->Rt2 = UNINIT;
-    
 
     if (instr_s->itype == TYPE_SYNC_0) {
         instr_s->Rt = (instr >> 12) & 0xF;
         instr_s->Rt2 = (instr >> 0) & 0xF;
     }
-    else if (instr_s->itype == TYPE_SYNC_1 || instr_s->itype == TYPE_SYNC_3) {
+    else if (instr_s->itype == TYPE_SYNC_1) {
         instr_s->Rd = (instr >> 12) & 0xF;
         instr_s->Rt = (instr >> 0) & 0xF;
     }
-    else if (instr_s->itype == TYPE_SYNC_2 || instr_s->itype == TYPE_SYNC_4) {
+    else if (instr_s->itype == TYPE_SYNC_2) {
         instr_s->Rt = (instr >> 12) & 0xF;
     }
+    else if (instr_s->itype == TYPE_SYNC_3) {
+        instr_s->Rd = (instr >> 12) & 0xF;
+        instr_s->Rt = (instr >> 0) & 0xF;
+        instr_s->Rt2 = instr_s->Rt + 1;
+    }
+    else if (instr_s->itype == TYPE_SYNC_4) {
+        instr_s->Rt = (instr >> 12) & 0xF;
+        instr_s->Rt2 = instr_s->Rt + 1;
+    }
 
-    if (instr_s->Rn == PC || instr_s->Rt == PC || instr_s->Rt2 == PC ||
-        instr_s->Rn == instr_s->Rt || instr_s->Rn == instr_s->Rt2) {
+    if (IS_TARGET_REG(PC, instr_s->Rn, instr_s->Rt, instr_s->Rt2) ||
+        (instr_s->Rn != UNINIT && instr_s->Rn == instr_s->Rt) || 
+        (instr_s->Rn != UNINIT && instr_s->Rn == instr_s->Rt2)) {
         instr_s->is_unpred = TRUE;
     }
 
     print_asm_instr(instr_s);
-
     return 0;
 }
 
@@ -135,7 +143,7 @@ int SWP_instr(uint32_t instr) {
     instr_s.igroup = GROUP_SYNC;
     instr_s.itype = TYPE_SYNC_0;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_sync_instr(instr, &instr_s);
 }
 
 // syntax: STREX<c> <Rd>, <Rt>, [<Rn>]
@@ -146,7 +154,7 @@ int STREX_instr(uint32_t instr) {
     instr_s.igroup = GROUP_SYNC;
     instr_s.itype = TYPE_SYNC_1;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_sync_instr(instr, &instr_s);
 }
 
 // syntax: LDREX<c> <Rt>, [<Rn>]
@@ -157,7 +165,7 @@ int LDREX_instr(uint32_t instr) {
     instr_s.igroup = GROUP_SYNC;
     instr_s.itype = TYPE_SYNC_2;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_sync_instr(instr, &instr_s);
 }
 
 // syntax: STREXD<c> <Rd>, <Rt>, <Rt2>, [<Rn>]
@@ -168,7 +176,7 @@ int STREXD_instr(uint32_t instr) {
     instr_s.igroup = GROUP_SYNC;
     instr_s.itype = TYPE_SYNC_3;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_sync_instr(instr, &instr_s);
 }
 
 // syntax: LDREXD<c> <Rt>, <Rt2>, [<Rn>]
@@ -179,7 +187,7 @@ int LDREXD_instr(uint32_t instr) {
     instr_s.igroup = GROUP_SYNC;
     instr_s.itype = TYPE_SYNC_4;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_sync_instr(instr, &instr_s);
 }
 
 // syntax: STREXB<c> <Rd>, <Rt>, [<Rn>]
@@ -190,7 +198,7 @@ int STREXB_instr(uint32_t instr) {
     instr_s.igroup = GROUP_SYNC;
     instr_s.itype = TYPE_SYNC_1;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_sync_instr(instr, &instr_s);
 }
 
 // syntax: LDREXB<c> <Rt>, [<Rn>]
@@ -201,7 +209,7 @@ int LDREXB_instr(uint32_t instr) {
     instr_s.igroup = GROUP_SYNC;
     instr_s.itype = TYPE_SYNC_2;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_sync_instr(instr, &instr_s);
 }
 
 // syntax: STREXH<c> <Rd>, <Rt>, [<Rn>]
@@ -212,7 +220,7 @@ int STREXH_instr(uint32_t instr) {
     instr_s.igroup = GROUP_SYNC;
     instr_s.itype = TYPE_SYNC_1;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_sync_instr(instr, &instr_s);
 }
 
 // syntax: LDREXH<c> <Rt>, [<Rn>]
@@ -223,7 +231,7 @@ int LDREXH_instr(uint32_t instr) {
     instr_s.igroup = GROUP_SYNC;
     instr_s.itype = TYPE_SYNC_2;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_sync_instr(instr, &instr_s);
 }
 
 

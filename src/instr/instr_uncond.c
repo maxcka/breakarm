@@ -33,7 +33,7 @@ void print_uncond_instr(Instr *instr_s) {
 
                 (instr_s->M) ? "," : "",
                 (instr_s->M) ? instr_s->imm_str : "");
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -43,7 +43,7 @@ void print_uncond_instr(Instr *instr_s) {
                 instr_s->mnemonic,
                 (instr_s->E) ? "BE" : "LE");
 
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -55,7 +55,7 @@ void print_uncond_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 instr_s->imm_str);
 
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -68,7 +68,7 @@ void print_uncond_instr(Instr *instr_s) {
                 (instr_s->add == 1) ? "" : "-",
                 core_reg[instr_s->Rm],
                 instr_s->shift_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -76,7 +76,7 @@ void print_uncond_instr(Instr *instr_s) {
         {
             printf("%s\n", instr_s->mnemonic);
 
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -86,7 +86,7 @@ void print_uncond_instr(Instr *instr_s) {
                 instr_s->mnemonic, 
                 option_table[instr_s->option]);
 
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -98,7 +98,7 @@ void print_uncond_instr(Instr *instr_s) {
                 (instr_s->W) ? "!" : "",
                 instr_s->mode_str);
 
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -110,7 +110,7 @@ void print_uncond_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 (instr_s->W) ? "!" : "");
 
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 

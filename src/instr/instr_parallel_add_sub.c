@@ -25,7 +25,7 @@ void print_parallel_add_sub_instr(Instr *instr_s) {
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -38,7 +38,7 @@ void print_parallel_add_sub_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm],
                 core_reg[instr_s->Ra]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -52,7 +52,7 @@ void print_parallel_add_sub_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 instr_s->lsb,
                 instr_s->width);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -64,7 +64,7 @@ void print_parallel_add_sub_instr(Instr *instr_s) {
                 core_reg[instr_s->Rd],
                 instr_s->lsb,
                 instr_s->width);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -74,7 +74,7 @@ void print_parallel_add_sub_instr(Instr *instr_s) {
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 instr_s->imm_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 

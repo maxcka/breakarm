@@ -24,7 +24,7 @@ void print_coproc_instr(Instr *instr_s) {
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 instr_s->imm_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -45,7 +45,7 @@ void print_coproc_instr(Instr *instr_s) {
                 instr_s->imm_str,
                 (instr_s->index == TRUE) ? "]" : "", // offset or pre-indexed
                 (instr_s->index == TRUE && instr_s->wback == TRUE) ? "!" : "");
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -61,8 +61,8 @@ void print_coproc_instr(Instr *instr_s) {
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rt2],
                 instr_s->CRm);
-            print_unpred(instr_s);
-			print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
+			print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -79,7 +79,7 @@ void print_coproc_instr(Instr *instr_s) {
                 instr_s->CRn,
                 instr_s->CRm,
                 instr_s->opc2);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -96,7 +96,7 @@ void print_coproc_instr(Instr *instr_s) {
                 instr_s->CRn,
                 instr_s->CRm,
                 instr_s->opc2);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 

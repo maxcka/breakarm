@@ -581,7 +581,7 @@ int UNPRED_instr(uint32_t instr);
 int NOT_IMP_instr(uint32_t instr);
 
 // auxiliary functions
-void print_unpred(Instr *instr_s);
+void print_unpred_or_newline(Instr *instr_s);
 void get_reg_list(Instr *instr_s, uint16_t reg_list_bits);
 uint32_t get_label(uint32_t imm, uint8_t bitwdith);
 int32_t sign_extend(uint32_t imm, uint8_t bitwidth);

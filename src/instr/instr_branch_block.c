@@ -27,7 +27,7 @@ void print_branch_block_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 (instr_s->wback) ? "!" : "",
                 instr_s->reg_list_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -37,7 +37,7 @@ void print_branch_block_instr(Instr *instr_s) {
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 instr_s->reg_list_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -51,7 +51,7 @@ void print_branch_block_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 (instr_s->wback) ? "!" : "",
                 instr_s->reg_list_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -61,7 +61,7 @@ void print_branch_block_instr(Instr *instr_s) {
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 instr_s->label);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 

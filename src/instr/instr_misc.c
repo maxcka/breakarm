@@ -20,7 +20,7 @@ void print_misc_instr(Instr *instr_s) {
             cond_codes[instr_s->c],
             core_reg[instr_s->Rd],
             instr_s->banked_reg_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -31,7 +31,7 @@ void print_misc_instr(Instr *instr_s) {
             cond_codes[instr_s->c],
             instr_s->banked_reg_str,
             core_reg[instr_s->Rn]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -42,7 +42,7 @@ void print_misc_instr(Instr *instr_s) {
             cond_codes[instr_s->c],
             core_reg[instr_s->Rd],
             spec_reg[instr_s->R]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -54,7 +54,7 @@ void print_misc_instr(Instr *instr_s) {
             cond_codes[instr_s->c],
             instr_s->spec_reg_str,
             core_reg[instr_s->Rn]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -65,7 +65,7 @@ void print_misc_instr(Instr *instr_s) {
             instr_s->mnemonic,
             cond_codes[instr_s->c],
             core_reg[instr_s->Rm]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -76,7 +76,7 @@ void print_misc_instr(Instr *instr_s) {
             cond_codes[instr_s->c],
             core_reg[instr_s->Rd],
             core_reg[instr_s->Rm]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -88,7 +88,7 @@ void print_misc_instr(Instr *instr_s) {
             core_reg[instr_s->Rd],
             core_reg[instr_s->Rm],
             core_reg[instr_s->Rn]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -97,7 +97,7 @@ void print_misc_instr(Instr *instr_s) {
             printf("%s%s",
             instr_s->mnemonic,
             cond_codes[instr_s->c]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -106,7 +106,7 @@ void print_misc_instr(Instr *instr_s) {
             printf("%s %s",
             instr_s->mnemonic,
             instr_s->imm_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -116,7 +116,7 @@ void print_misc_instr(Instr *instr_s) {
             instr_s->mnemonic,
             cond_codes[instr_s->c],
             instr_s->imm_str);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -125,7 +125,7 @@ void print_misc_instr(Instr *instr_s) {
             printf("%s%s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c]);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 

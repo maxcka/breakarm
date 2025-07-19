@@ -32,7 +32,7 @@ void print_load_store_instr(Instr *instr_s) {
                 instr_s->shift_str,
                 (instr_s->index == TRUE) ? "]" : "", // offset or pre-indexed
                 (instr_s->index == TRUE && instr_s->wback == TRUE) ? "!" : "");
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
         case TYPE_EX_LS_REG: // is an UNPRED edge case possible where index == False and wback == False??
@@ -47,7 +47,7 @@ void print_load_store_instr(Instr *instr_s) {
                 core_reg[instr_s->Rm],
                 (instr_s->index == TRUE) ? "]" : "", // offset or pre-indexed
                 (instr_s->index == TRUE && instr_s->wback == TRUE) ? "!" : "");
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -57,7 +57,7 @@ void print_load_store_instr(Instr *instr_s) {
         case TYPE_EX_LS_IMM: // normal imm
         {
             print_ls_imm_syntactic_sugar(instr_s);
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -74,7 +74,7 @@ void print_load_store_instr(Instr *instr_s) {
                 core_reg[instr_s->Rm],
                 (instr_s->index == TRUE) ? "]" : "", // offset or pre-indexed
                 (instr_s->index == TRUE && instr_s->wback == TRUE) ? "!" : "");
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
@@ -91,7 +91,7 @@ void print_load_store_instr(Instr *instr_s) {
                 instr_s->imm_str,
                 (instr_s->index == TRUE) ? "]" : "", // offset or pre-indexed
                 (instr_s->index == 1 && instr_s->wback == 1) ? "!" : "");
-            print_unpred(instr_s);
+            print_unpred_or_newline(instr_s);
 			break;
         }
 
