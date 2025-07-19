@@ -124,7 +124,7 @@ void decode_dp_op_0(uint32_t instr) {
         find_and_decode(instr, GROUP_EX_LD_STR);
     }
     else if (IS_EX_LD_STR_UNP(instr)) {      // layer 2
-        find_and_decode(instr, GROUP_EX_LD_STR);
+        find_and_decode(instr, GROUP_EX_LD_STR_UNP);
     }
     else {
         printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);

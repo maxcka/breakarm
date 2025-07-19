@@ -26,6 +26,31 @@ void test_data_proc_reg() {
     __builtin_unreachable(); // remove nop at end
 }
 
+__attribute__((naked))
+void test_data_proc_rsr() {
+    asm volatile (
+        // Logical operations
+        "AND r4, r0, r1, LSL r2\n"
+        "EOR r4, r0, r1, LSR r2\n"
+        "TST r0, r1, ASR r2\n"
+        "TEQ r0, r1, ROR r2\n"
+        "BIC r4, r0, r1, LSL r2\n"
+        "MVN r4, r1, ROR r2\n"
+
+        // Arithmetic
+        "ADD r4, r0, r1, LSL r2\n"
+        "SUB r4, r0, r1, LSR r2\n"
+        "RSB r4, r0, r1, ASR r2\n"
+        "ADC r4, r0, r1, ROR r2\n"
+        "SBC r4, r0, r1, LSL r2\n"
+        "RSC r4, r0, r1, LSR r2\n"
+        "CMP r0, r1, ASR r2\n"
+        "CMN r0, r1, ROR r2\n"
+        "ORR r4, r0, r1, LSL r2\n"
+    );
+    __builtin_unreachable(); // remove nop at end
+}
+
 
 __attribute__((naked))
 void test_misc() {
@@ -134,3 +159,79 @@ void test_sync() {
     __builtin_unreachable();
 }
 
+
+__attribute__((naked))
+void test_ex_ld_str() {
+    asm volatile (
+        // Halfword store/load with register offset
+        "STRH r0, [r1, r2]\n"      // Store halfword (reg offset)
+        "LDRH r3, [r1, r2]\n"      // Load halfword (reg offset)
+
+        // Halfword store/load with immediate offset
+        "STRH r0, [r1, #4]\n"      // Store halfword (imm offset)
+        "LDRH r3, [r1, #4]\n"      // Load halfword (imm offset)
+
+        // Dual word load/store with register offset
+        "LDRD r2, r3, [r4, r5]\n"  // Load doubleword (reg offset)
+        "STRD r6, r7, [r4, r5]\n"  // Store doubleword (reg offset)
+
+        // Dual word load/store with immediate offset
+        "LDRD r2, r3, [r4, #8]\n"  // Load doubleword (imm offset)
+        "STRD r6, r7, [r4, #8]\n"  // Store doubleword (imm offset)
+
+        // Load signed byte with register offset
+        "LDRSB r0, [r1, r2]\n"     // Load signed byte (reg offset)
+
+        // Load signed byte with immediate offset
+        "LDRSB r0, [r1, #1]\n"     // Load signed byte (imm offset)
+
+        // Load signed halfword with register offset
+        "LDRSH r0, [r1, r2]\n"     // Load signed halfword (reg offset)
+
+        // Load signed halfword with immediate offset
+        "LDRSH r0, [r1, #2]\n"     // Load signed halfword (imm offset)
+
+        // Load/store halfword with translation (Thumb/privileged)
+        "LDRHT r0, [r1], #4\n"     // Load halfword with translation
+        "STRHT r2, [r3], #4\n"     // Store halfword with translation
+
+        // Load signed byte with translation
+        "LDRSBT r4, [r5], #1\n"    // Load signed byte with translation
+
+        // Load signed halfword with translation
+        "LDRSHT r6, [r7], #2\n"    // Load signed halfword with translation
+    );
+    __builtin_unreachable();
+}
+
+__attribute__((naked))
+void test_data_proc_imm_and_imm16() {
+    asm volatile (
+        // Logical Instructions
+        "AND r0, r1, #255\n"      // is_AND
+        "EOR r0, r1, #15\n"       // is_EOR
+        "ORR r0, r1, #240\n"      // is_ORR
+        "BIC r0, r1, #15\n"       // is_BIC
+        "MVN r0, #255\n"          // is_MVN
+        "MOV r2, #1\n"          // is_MOV_imm
+
+        // Arithmetic Instructions
+        "ADD r0, r1, #100\n"      // is_ADD
+        "SUB r0, r1, #100\n"      // is_SUB
+        "RSB r0, r1, #100\n"      // is_RSB
+        "ADC r0, r1, #100\n"      // is_ADC
+        "SBC r0, r1, #100\n"      // is_SBC
+        "RSC r0, r1, #100\n"      // is_RSC
+
+        // Test / Compare
+        "TST r1, #1\n"            // is_TST
+        "TEQ r1, #1\n"            // is_TEQ
+        "CMP r1, #100\n"          // is_CMP
+        "CMN r1, #100\n"          // is_CMN
+
+        // Move Wide (not classic data proc, but immediate)
+        "MOVW r0, #4660\n"        // is_MOVW (0x1234 = 4660)
+        "MOVT r0, #22136\n"       // is_MOVT (0x5678 = 22136)
+    );
+    __builtin_unreachable();
+}

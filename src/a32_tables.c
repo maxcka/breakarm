@@ -224,7 +224,10 @@ InstrHandler proc_ex_ld_str_table[][IH_ARR_SIZE] = {
     { is_STRD_reg   , STRD_reg_instr },
     { is_LDRSH_reg  , LDRSH_reg_instr },
     { is_STRD_imm   , STRD_imm_instr },
-    { is_LDRSH_imm  , LDRSH_imm_instr },
+    { is_LDRSH_imm  , LDRSH_imm_instr }
+};
+
+InstrHandler proc_ex_ld_str_unp_table[][IH_ARR_SIZE] = {
     // extra load/store unprivileged
     { is_STRHT  , STRHT_instr },
     { is_LDRHT  , LDRHT_instr },
@@ -444,6 +447,7 @@ InstrHandlerTable proc_instr_group_table[] = {
     { proc_mult_table, sizeof(proc_mult_table) / sizeof(proc_mult_table[0]) },
     { proc_sync_table, sizeof(proc_sync_table) / sizeof(proc_sync_table[0]) },
     { proc_ex_ld_str_table, sizeof(proc_ex_ld_str_table) / sizeof(proc_ex_ld_str_table[0]) },
+    { proc_ex_ld_str_unp_table, sizeof(proc_ex_ld_str_unp_table) / sizeof(proc_ex_ld_str_unp_table[0]) },
     { proc_dp_imm_table, sizeof(proc_dp_imm_table) / sizeof(proc_dp_imm_table[0]) },
     { proc_dp_imm16_table, sizeof(proc_dp_imm16_table) / sizeof(proc_dp_imm16_table[0]) },
     { proc_misc_hints_table, sizeof(proc_misc_hints_table) / sizeof(proc_misc_hints_table[0]) },
@@ -468,6 +472,7 @@ void (*print_instr_table[])(Instr *) = {
     print_mult_instr,           // GROUP_MULT
     print_sync_instr,           // GROUP_SYNC
     print_load_store_instr,        // GROUP_EX_LD_STR
+    print_load_store_instr,        // GROUP_EX_LD_STR_UNP
     print_data_proc_instr, // GROUP_DP_IMM
     print_data_proc_instr, // GROUP_DP_IMM16
     print_misc_instr, // GROUP_MISC_HINTS

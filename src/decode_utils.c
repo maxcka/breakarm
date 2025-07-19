@@ -122,7 +122,7 @@ uint8_t is_any_reg_target_reg(Register target, uint8_t count, ...) {
     return FALSE;
 }
 
-void get_imm_str(Instr *instr_s, uint32_t imm_high, uint8_t imm_low, uint8_t shift, uint8_t positive) {
+void get_imm_str(Instr *instr_s, uint32_t imm_high, uint16_t imm_low, uint8_t shift, uint8_t positive) {
     uint32_t mask = (1 << shift) - 1;
     uint32_t imm = (imm_high << shift) | (imm_low & mask);
     snprintf(instr_s->imm_str, sizeof(instr_s->imm_str), "#%s%d", (positive) ? "" : "-", imm);

@@ -236,6 +236,7 @@ typedef enum {
     GROUP_MULT,    // mult
     GROUP_SYNC,   // synchronization
     GROUP_EX_LD_STR, // extra load/store
+    GROUP_EX_LD_STR_UNP, // extra load/store unprivileged
     GROUP_DP_IMM, // data proc imm
     GROUP_DP_IMM16, // movw and movt
     GROUP_MISC_HINTS, // msr and hints
@@ -593,7 +594,7 @@ uint8_t is_itype(uint8_t itype, uint8_t count, ...);
 #define IS_IGROUP(igroup, ...) is_itype(igroup, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)
 uint8_t is_any_reg_target_reg(Register target, uint8_t count, ...);
 #define IS_TARGET_REG(target, ...) is_any_reg_target_reg(target, sizeof((int[]){__VA_ARGS__})/sizeof(int), __VA_ARGS__)
-void get_imm_str(Instr *instr_s, uint32_t imm_high, uint8_t imm_low, uint8_t shift, uint8_t positive);
+void get_imm_str(Instr *instr_s, uint32_t imm_high, uint16_t imm_low, uint8_t shift, uint8_t positive);
 void get_option_str(Instr *instr_s, uint8_t option);
 void get_sys_sr_str(Instr *instr_s, uint8_t mask);
 void get_app_sr_str(Instr *instr_s, uint8_t mask);

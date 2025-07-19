@@ -242,7 +242,7 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
     uint8_t type = (instr >> 5) & 0x3;
     uint8_t imm4 = (instr >> 16) & 0xF; // used for movw and movt
     uint8_t imm5 = (instr >> 7) & 0x1F;
-    uint8_t imm12 = (instr >> 0) & 0xFFF; // used for immediate instr
+    uint16_t imm12 = (instr >> 0) & 0xFFF; // used for immediate instr
     instr_s->c =  (instr >> 28) & 0xF; // c is condition
     instr_s->Rd = (instr >> 12) & 0xF; // 0b1111
     instr_s->Rn = (instr >> 16) & 0xF;

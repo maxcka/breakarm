@@ -81,13 +81,14 @@ void print_load_store_instr(Instr *instr_s) {
         case TYPE_EX_LS_DUAL_IMM: // dual imm
         case TYPE_EX_LS_DUAL_IMM_STR: 
         {
-            printf("%s%s %s, %s, [%s%s%s%s%s",
+            printf("%s%s %s, %s, [%s%s, %s%s%s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rt2],
                 core_reg[instr_s->Rn],
                 (instr_s->index == FALSE) ? "]" : "", // post-indexed
+
                 instr_s->imm_str,
                 (instr_s->index == TRUE) ? "]" : "", // offset or pre-indexed
                 (instr_s->index == 1 && instr_s->wback == 1) ? "!" : "");
@@ -171,7 +172,7 @@ int process_load_store_instr(uint32_t instr, Instr *instr_s) {
         get_shift_str(instr_s, type, imm5);
     }
     else if (IS_ITYPE(instr_s->itype, TYPE_EX_LS_IMM_STR, TYPE_EX_LS_IMM)) {
-        get_imm_str(instr_s, (uint16_t)imm4H, imm4L, 4, instr_s->add);
+        get_imm_str(instr_s, imm4H, imm4L, 4, instr_s->add);
     }
     else if (IS_ITYPE(instr_s->itype, TYPE_LS_IMM_STR, TYPE_LS_IMM)) {
         get_imm_str(instr_s, imm12, 0, 0, instr_s->add);
@@ -180,25 +181,24 @@ int process_load_store_instr(uint32_t instr, Instr *instr_s) {
         instr_s->Rm = (instr >> 0) & 0xF;
         instr_s->Rt2 = instr_s->Rt + 1;
     }
-    else if (IS_ITYPE(instr_s->itype, TYPE_EX_LS_DUAL_IMM_STR)) {
+    else if (IS_ITYPE(instr_s->itype, TYPE_EX_LS_DUAL_IMM, TYPE_EX_LS_DUAL_IMM_STR)) {
+        get_imm_str(instr_s, imm4H, imm4L, 4, instr_s->add);
         instr_s->Rt2 = instr_s->Rt + 1;
     }
 
     // checking if unpredictable
-    if (instr_s->igroup == GROUP_EX_LD_STR && 
+    if (IS_IGROUP(instr_s->igroup, GROUP_EX_LD_STR, GROUP_EX_LD_STR_UNP) && 
         instr_s->Rt == PC) {
 
         instr_s->is_unpred = TRUE;
     }
-    if ((IS_IGROUP(instr_s->igroup, GROUP_EX_LD_STR, GROUP_LD_STR)) &&
-        (IS_TARGET_REG(PC, instr_s->Rm, instr_s->Rt2) ||
+    if ((IS_TARGET_REG(PC, instr_s->Rm, instr_s->Rt2) ||
         (instr_s->wback && (instr_s->Rn == instr_s->Rt || instr_s->Rn == instr_s->Rt2)))) {
 
         instr_s->is_unpred = TRUE;
     }
     // applies to reg and str immediate instructions
-    if (IS_IGROUP(instr_s->igroup, GROUP_EX_LD_STR, GROUP_LD_STR) &&
-        (IS_NOT_ITYPE(instr_s->itype, TYPE_EX_LS_IMM, TYPE_EX_LS_DUAL_IMM, TYPE_LS_IMM) && 
+    if ((IS_NOT_ITYPE(instr_s->itype, TYPE_EX_LS_IMM, TYPE_EX_LS_DUAL_IMM, TYPE_LS_IMM) && 
         (instr_s->wback && instr_s->Rn == PC))) {
 
          instr_s->is_unpred = TRUE;
@@ -370,7 +370,7 @@ int STRHT_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "STRHT";
 
-    instr_s.igroup = GROUP_EX_LD_STR;
+    instr_s.igroup = GROUP_EX_LD_STR_UNP;
     // check bit 22
     if (((instr >> 22) & 0x1) == 0) {
         instr_s.itype = TYPE_EX_LS_REG;
@@ -387,7 +387,7 @@ int LDRHT_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "LDRHT";
 
-    instr_s.igroup = GROUP_EX_LD_STR;
+    instr_s.igroup = GROUP_EX_LD_STR_UNP;
     // check bit 22
     if (((instr >> 22) & 0x1) == 0) {
         instr_s.itype = TYPE_EX_LS_REG;
@@ -403,7 +403,7 @@ int LDRSBT_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "LDRSBT";
 
-    instr_s.igroup = GROUP_EX_LD_STR;
+    instr_s.igroup = GROUP_EX_LD_STR_UNP;
     // check bit 22
     if (((instr >> 22) & 0x1) == 0) {
         instr_s.itype = TYPE_EX_LS_REG;
@@ -419,7 +419,7 @@ int LDRSHT_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.mnemonic = "LDRSHT";
 
-    instr_s.igroup = GROUP_EX_LD_STR;
+    instr_s.igroup = GROUP_EX_LD_STR_UNP;
     // check bit 22
     if (((instr >> 22) & 0x1) == 0) {
         instr_s.itype = TYPE_EX_LS_REG;
