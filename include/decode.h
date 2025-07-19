@@ -59,12 +59,12 @@ typedef enum {
     R7,
     R8,
     R9,
-    SL,
-    R11,
-    IP,
-    SP,
-    LR,
-    PC
+    SL, // R10
+    FP, // R11
+    IP, // R12
+    SP, // R13
+    LR, // R14
+    PC  // R15
 } Register;
 
 // type enum
@@ -256,6 +256,7 @@ typedef enum {
 typedef struct {
     IGroup igroup; // instruction group
     IType itype; // instruction type
+    uint8_t is_unpred; // is unpredictable
 
     const char *mnemonic;
     uint8_t special;

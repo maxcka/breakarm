@@ -164,10 +164,10 @@ void get_app_sr_str(Instr *instr_s, uint8_t mask) {
     char suffix[BUF_10] = "";
 
     if (mask_0 == 1) {
-        strcat(suffix, "nzcvq");
+        strcat(suffix, "g");
     }
     if (mask_1 == 1) {
-        strcat(suffix, "g");
+        strcat(suffix, "nzcvq");
     }
 
     snprintf(instr_s->spec_reg_str, sizeof(instr_s->spec_reg_str), "%s_%s", spec_reg[APSR_POS], suffix);

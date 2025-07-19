@@ -157,7 +157,7 @@ InstrHandler proc_dp_rsr_table[][IH_ARR_SIZE] = {
 InstrHandler proc_misc_table[][IH_ARR_SIZE] = {
     // miscellaneous
     { is_MRS_BANKED , MRS_BANKED_instr },
-    { is_MSR_BANKED , MRS_BANKED_instr },
+    { is_MSR_BANKED , MSR_BANKED_instr },
     { is_MRS        , MRS_instr }, 
     { is_MSR_reg_app, MSR_reg_app_instr }, 
     { is_MSR_reg_sys, MSR_reg_sys_instr }, 

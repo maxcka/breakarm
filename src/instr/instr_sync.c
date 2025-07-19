@@ -18,7 +18,7 @@ void print_sync_instr(Instr *instr_s) {
     switch (instr_s->itype) {
         case TYPE_SYNC_0:
         {
-            printf("%s%s%s %s, %s, %s\n",
+            printf("%s%s%s %s, %s, [%s]\n",
                 instr_s->mnemonic,
                 (instr_s->B) ? "B" : "",
                 cond_codes[instr_s->c],
