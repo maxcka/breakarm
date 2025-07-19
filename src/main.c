@@ -30,6 +30,7 @@ uint64_t curr_addr;
 uint32_t curr_instr;
 
 void fatal(const char *msg) {
+    fprintf(stderr, "FATAL ERROR: ");
     perror(msg);
     exit(1);
 }

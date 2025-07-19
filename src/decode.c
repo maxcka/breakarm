@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See LICENSE file in the project root for details.
  */
 
- 
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -24,7 +24,7 @@ void print_default_instr(Instr *instr_s) {
         case TYPE_UNPRED:
         case TYPE_NOT_IMP:
         {
-            printf("%s\n", instr_s->mnemonic);
+            printf("%s 0x%08x\t; %s\n", DEFAULT_STR, curr_instr, instr_s->mnemonic);
             break;
         }
 
@@ -79,7 +79,7 @@ int NOT_IMP_instr(uint32_t instr) {
 // === Decoder ===
 // ===============
 void find_and_decode(uint32_t instr, IGroup igroup) {
-    InstrHandlerTable IH_table = proc_instr_group_table[igroup];
+    InstrHandlerTable IH_table = proc_instr_group_table[igroup]; // find the correct dispatch table based on the igroup
     int num_rows = IH_table.num_rows;
     InstrHandler (*proc_instr_table)[2] = IH_table.table;
     for (int i = 0; i < num_rows; i++) {

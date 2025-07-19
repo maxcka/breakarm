@@ -46,10 +46,8 @@ void test_misc() {
         "ERET\n"               // Return from exception — must be in privileged mode
         // Software Breakpoint
         "BKPT #16\n"         // Immediate value is arbitrary (8-bit)
-
         // Hypervisor Call (ARMv7)
         "HVC #10334\n"             // Immediate value 0–65535 (encoded as 16-bit in instruction)
-
         // Secure Monitor Call (TrustZone)
         "SMC #0\n"             // Immediate 0–65535
     );

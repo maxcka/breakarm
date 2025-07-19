@@ -174,7 +174,7 @@ void print_data_proc_instr(Instr *instr_s) {
         case TYPE_UNPRED:
         {
             instr_s->mnemonic = UNPRED_STR;
-            printf("%s\n", instr_s->mnemonic);
+            printf("%s 0x%08x\t; %s\n", DEFAULT_STR, curr_instr, instr_s->mnemonic);
             break;
         }
     

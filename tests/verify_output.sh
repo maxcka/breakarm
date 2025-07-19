@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# run make in the tests dir to generate the test_obj_file
+
 test_src_file=test_disasm.c
 test_obj_file=test_disasm.o
 ref_output_file="output/reference_asm.txt"
