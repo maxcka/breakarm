@@ -646,8 +646,8 @@ int BIC_instr(uint32_t instr) {
         instr_s.igroup = GROUP_DP_REG;
         instr_s.itype = TYPE_DP_0;
     }
-    else if (IS_DP_OP_0(instr) && IS_DP_RSR(instr)) {   
-        instr_s.igroup = GROUP_DP_RSR; 
+    else if (IS_DP_OP_0(instr) && IS_DP_RSR(instr)) {
+        instr_s.igroup = GROUP_DP_RSR;
         instr_s.itype = TYPE_DP_0_RSR;
     }
     else if (IS_DP_OP_1(instr) && IS_DP_IMM(instr)) {

@@ -49,12 +49,12 @@ static inline int is_CMN(uint32_t instr)        { return ( ( ((instr) >> 20) & 0
 static inline int is_ORR(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x1E) == 0x18); } // 0b1100x
 //--- move (reg), shift (imm), and rotate (imm) instructions ---
 #define IS_MV_OR_SHFT(instr)    ( ( ((instr) >> 20) & 0x1E) == 0x1A) // 0b1101x
-static inline int is_MOV_reg(uint32_t instr)    { return ( ( ( ((instr) >> 5) & 0x3) == 0x0) && ( ( ((instr) >> 7) & 0x1F) == 0x0) ); } // 0b00 & 0b00000
-static inline int is_LSL_imm(uint32_t instr)    { return ( ( ( ((instr) >> 5) & 0x3) == 0x0) && ( ( ((instr) >> 7) & 0x1F) != 0x0) ); } // 0b00 & not 0b00000
-static inline int is_LSR_imm(uint32_t instr)    { return ( ( ((instr) >> 5) & 0x3) == 0x1); } // 0b01
-static inline int is_ASR_imm(uint32_t instr)    { return ( ( ((instr) >> 5) & 0x3) == 0x2); } // 0b10
-static inline int is_RRX(uint32_t instr)        { return ( ( ( ((instr) >> 5) & 0x3) == 0x3) && ( ( ((instr) >> 7) & 0x1F) == 0x0) ); } // 0b11 & 0b00000
-static inline int is_ROR_imm(uint32_t instr)    { return ( ( ( ((instr) >> 5) & 0x3) == 0x3) && ( ( ((instr) >> 7) & 0x1F) != 0x0) ); } // 0b11 & not 0b00000
+static inline int is_MOV_reg(uint32_t instr)    { return IS_MV_OR_SHFT(instr) && ( ( ( ((instr) >> 5) & 0x3) == 0x0) && ( ( ((instr) >> 7) & 0x1F) == 0x0) ); } // 0b00 & 0b00000
+static inline int is_LSL_imm(uint32_t instr)    { return IS_MV_OR_SHFT(instr) && ( ( ( ((instr) >> 5) & 0x3) == 0x0) && ( ( ((instr) >> 7) & 0x1F) != 0x0) ); } // 0b00 & not 0b00000
+static inline int is_LSR_imm(uint32_t instr)    { return IS_MV_OR_SHFT(instr) && ( ( ((instr) >> 5) & 0x3) == 0x1); } // 0b01
+static inline int is_ASR_imm(uint32_t instr)    { return IS_MV_OR_SHFT(instr) && ( ( ((instr) >> 5) & 0x3) == 0x2); } // 0b10
+static inline int is_RRX(uint32_t instr)        { return IS_MV_OR_SHFT(instr) && ( ( ( ((instr) >> 5) & 0x3) == 0x3) && ( ( ((instr) >> 7) & 0x1F) == 0x0) ); } // 0b11 & 0b00000
+static inline int is_ROR_imm(uint32_t instr)    { return IS_MV_OR_SHFT(instr) && ( ( ( ((instr) >> 5) & 0x3) == 0x3) && ( ( ((instr) >> 7) & 0x1F) != 0x0) ); } // 0b11 & not 0b00000
 //---------------------------------------------------------------
 static inline int is_BIC(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x1E) == 0x1C); } // 0b1110x
 static inline int is_MVN(uint32_t instr)        { return ( ( ((instr) >> 20) & 0x1E) == 0x1E); } // 0b1111x
@@ -64,10 +64,10 @@ static inline int is_MVN(uint32_t instr)        { return ( ( ((instr) >> 20) & 0
 //=== instr is data-processing (register-shifted register) ===
 //>> layer 4
 // also uses some data-proc (register) inline functions
-static inline int is_LSL_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x0); } // 0b00
-static inline int is_LSR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x1); } // 0b01
-static inline int is_ASR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x2); } // 0b10
-static inline int is_ROR_reg(uint32_t instr)      { return ( ( ((instr) >> 5) & 0x3) == 0x3); } // 0b11
+static inline int is_LSL_reg(uint32_t instr)      { return IS_MV_OR_SHFT(instr) && ( ( ((instr) >> 5) & 0x3) == 0x0); } // 0b00
+static inline int is_LSR_reg(uint32_t instr)      { return IS_MV_OR_SHFT(instr) && ( ( ((instr) >> 5) & 0x3) == 0x1); } // 0b01
+static inline int is_ASR_reg(uint32_t instr)      { return IS_MV_OR_SHFT(instr) && ( ( ((instr) >> 5) & 0x3) == 0x2); } // 0b10
+static inline int is_ROR_reg(uint32_t instr)      { return IS_MV_OR_SHFT(instr) && ( ( ((instr) >> 5) & 0x3) == 0x3); } // 0b11
 
 //================================
 
