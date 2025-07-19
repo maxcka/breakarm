@@ -22,7 +22,7 @@ void print_uncond_instr(Instr *instr_s) {
 
         case TYPE_UNC_MISC_0:
         {
-            printf("%s%s%s %s%s%s%s %s\n",
+            printf("%s%s%s %s%s%s%s %s",
                 instr_s->mnemonic,
                 (instr_s->imod == 2) ? "IE" : "",
                 (instr_s->imod == 3) ? "ID" : "",
@@ -33,77 +33,85 @@ void print_uncond_instr(Instr *instr_s) {
 
                 (instr_s->M) ? "," : "",
                 (instr_s->M) ? instr_s->imm_str : "");
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNC_MISC_1:
         {
-            printf("%s %s\n",
+            printf("%s %s",
                 instr_s->mnemonic,
                 (instr_s->E) ? "BE" : "LE");
 
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNC_MISC_2_IMM:
         {
-            printf("%s%s [%s, %s]\n",
+            printf("%s%s [%s, %s]",
                 instr_s->mnemonic,
                 (instr_s->W) ? "W" : "",
                 core_reg[instr_s->Rn],
                 instr_s->imm_str);
 
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNC_MISC_2_REG: // syntax: <MNEMONIC> [<Rn>,+/-<Rm>{, <shift>}]
         {
-            printf("%s%s [%s, %s%s%s]\n",
+            printf("%s%s [%s, %s%s%s]",
                 instr_s->mnemonic,
                 (instr_s->W) ? "W" : "",
                 core_reg[instr_s->Rn],
                 (instr_s->add == 1) ? "" : "-",
                 core_reg[instr_s->Rm],
                 instr_s->shift_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNC_MISC_3:
         {
             printf("%s\n", instr_s->mnemonic);
 
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNC_MISC_4:
         {
-            printf("%s %s\n", 
+            printf("%s %s",
                 instr_s->mnemonic, 
                 option_table[instr_s->option]);
 
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNC_0: // syntax: <MNEMONIC>{<amode>} SP{!}, #<mode>
         {
-            printf("%s%s SP%s, %s\n", 
+            printf("%s%s SP%s, %s",
                 instr_s->mnemonic, 
                 amode_table[instr_s->P][instr_s->U],
                 (instr_s->W) ? "!" : "",
                 instr_s->mode_str);
 
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNC_1: // syntax: <MNEMONIC>{<amode>} <Rn>{!}
         {
-            printf("%s%s %s%s\n", 
+            printf("%s%s %s%s",
                 instr_s->mnemonic, 
                 amode_table[instr_s->P][instr_s->U],
                 core_reg[instr_s->Rn],
                 (instr_s->W) ? "!" : "");
 
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNPRED:
@@ -172,18 +180,18 @@ int process_uncond_instr(uint32_t instr, Instr *instr_s) {
          (instr_s->imod == 1)
         )) {
 
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     if (IS_ITYPE(instr_s->itype, TYPE_UNC_MISC_2_REG) &&
         instr_s->Rm == PC) {
         
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     if (IS_ITYPE(instr_s->itype, TYPE_UNC_0) && mode == 0x1A) { // 0x1A is hyp mode
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     if (IS_ITYPE(instr_s->itype, TYPE_UNC_1) && instr_s->Rn == PC) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
 
     print_asm_instr(instr_s);

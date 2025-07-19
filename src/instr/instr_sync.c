@@ -18,58 +18,63 @@ void print_sync_instr(Instr *instr_s) {
     switch (instr_s->itype) {
         case TYPE_SYNC_0:
         {
-            printf("%s%s%s %s, %s, [%s]\n",
+            printf("%s%s%s %s, %s, [%s]",
                 instr_s->mnemonic,
                 (instr_s->B) ? "B" : "",
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rt2],
                 core_reg[instr_s->Rn]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_SYNC_1:
         {
-            printf("%s%s %s, %s, %s\n",
+            printf("%s%s %s, %s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rn]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_SYNC_2:
         {
-            printf("%s%s %s, %s\n",
+            printf("%s%s %s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rn]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_SYNC_3:
         {
-            printf("%s%s %s, %s, %s, %s\n",
+            printf("%s%s %s, %s, %s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rt2],
                 core_reg[instr_s->Rn]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_SYNC_4:
         {
-            printf("%s%s %s, %s, %s\n",
+            printf("%s%s %s, %s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rt2],
                 core_reg[instr_s->Rn]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNPRED:
@@ -113,7 +118,7 @@ int process_sync_instr(uint32_t instr, Instr *instr_s) {
 
     if (instr_s->Rn == PC || instr_s->Rt == PC || instr_s->Rt2 == PC ||
         instr_s->Rn == instr_s->Rt || instr_s->Rn == instr_s->Rt2) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
 
     print_asm_instr(instr_s);

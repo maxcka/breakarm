@@ -20,7 +20,7 @@ void print_half_mult_instr(Instr *instr_s) {
     switch (instr_s->itype) {
         case TYPE_HM_0:
         {
-            printf("%s%c%c%s %s, %s, %s, %s\n",
+            printf("%s%c%c%s %s, %s, %s, %s",
                 instr_s->mnemonic,
                 instr_s->x,
                 instr_s->y,
@@ -29,12 +29,13 @@ void print_half_mult_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm],
                 core_reg[instr_s->Ra]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_HM_1:
         {
-            printf("%s%c%s %s, %s, %s, %s\n",
+            printf("%s%c%s %s, %s, %s, %s",
                 instr_s->mnemonic,
                 instr_s->y,
                 cond_codes[instr_s->c],
@@ -42,24 +43,26 @@ void print_half_mult_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm],
                 core_reg[instr_s->Ra]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_HM_2:
         {
-            printf("%s%c%s %s, %s, %s\n",
+            printf("%s%c%s %s, %s, %s",
                 instr_s->mnemonic,
                 instr_s->y,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_HM_3:
         {
-            printf("%s%c%c%s %s, %s, %s, %s\n",
+            printf("%s%c%c%s %s, %s, %s, %s",
                 instr_s->mnemonic,
                 instr_s->x,
                 instr_s->y,
@@ -68,12 +71,13 @@ void print_half_mult_instr(Instr *instr_s) {
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_HM_4:
         {
-            printf("%s%c%c%s %s, %s, %s\n",
+            printf("%s%c%c%s %s, %s, %s",
                 instr_s->mnemonic,
                 instr_s->x,
                 instr_s->y,
@@ -81,7 +85,8 @@ void print_half_mult_instr(Instr *instr_s) {
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNPRED:
@@ -117,7 +122,7 @@ int process_half_mult_instr(uint32_t instr, Instr *instr_s) {
 
     if (instr_s->Rd == PC || instr_s->Rn == PC || instr_s->Rm == PC || 
         instr_s->Ra == PC || instr_s->RdLo == PC) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
 
     print_asm_instr(instr_s);

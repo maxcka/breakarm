@@ -19,58 +19,63 @@ void print_parallel_add_sub_instr(Instr *instr_s) {
     switch (instr_s->itype) {
         case TYPE_PAS_0: // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
         {
-            printf("%s%s %s, %s, %s\n",
+            printf("%s%s %s, %s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_PAS_1: // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>, <Ra>
         {
-            printf("%s%s %s, %s, %s, %s\n",
+            printf("%s%s %s, %s, %s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm],
                 core_reg[instr_s->Ra]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_PAS_FIELD_0: // syntax: <MNEMONIC><c> <Rd>, <Rn>, #<lsb>, #<width>
         case TYPE_PAS_FIELD_0_1: // syntax: <MNEMONIC><c> <Rd>, <Rn>, #<lsb>, #<width>
         {
-            printf("%s%s %s, %s, #%d, #%d\n",
+            printf("%s%s %s, %s, #%d, #%d",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 instr_s->lsb,
                 instr_s->width);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_PAS_FIELD_1: // syntax: <MNEMONIC><c> <Rd>, #<lsb>, #<width>
         {
-            printf("%s%s %s, #%d, #%d\n",
+            printf("%s%s %s, #%d, #%d",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 instr_s->lsb,
                 instr_s->width);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_PAS_UDF: // syntax: <MNEMONIC><c> #<imm16>
         {
-            printf("%s%s %s\n",
+            printf("%s%s %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 instr_s->imm_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNPRED:
@@ -128,13 +133,13 @@ int process_parallel_add_sub_instr(uint32_t instr, Instr *instr_s) {
     
     // unpred checking
     if (IS_ITYPE(instr_s->itype, TYPE_PAS_FIELD_0_1, TYPE_PAS_FIELD_1) && IS_TARGET_REG(PC, instr_s->Rd)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     if (IS_ITYPE(instr_s->itype, TYPE_PAS_FIELD_0) && IS_TARGET_REG(PC, instr_s->Rd, instr_s->Rn)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     else if (IS_NOT_ITYPE(instr_s->itype, TYPE_PAS_UDF) && IS_TARGET_REG(PC, instr_s->Rd, instr_s->Rn, instr_s->Rm)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
 
     print_asm_instr(instr_s);

@@ -20,16 +20,17 @@ void print_coproc_instr(Instr *instr_s) {
 
         case TYPE_COPROC_0:
         {
-            printf("%s%s %s\n",
+            printf("%s%s %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 instr_s->imm_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_COPROC_1:
         {
-            printf("%s%s%s%s p%d, c%d, [%s%s, %s%s%s\n",
+            printf("%s%s%s%s p%d, c%d, [%s%s, %s%s%s",
                 instr_s->mnemonic,
                 (instr_s->c == UNCOND) ? "2" : "",
                 (instr_s->L) ? "L" : "",
@@ -44,12 +45,13 @@ void print_coproc_instr(Instr *instr_s) {
                 instr_s->imm_str,
                 (instr_s->index == TRUE) ? "]" : "", // offset or pre-indexed
                 (instr_s->index == TRUE && instr_s->wback == TRUE) ? "!" : "");
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_COPROC_2: // syntax: <MNEMONIC>{2}{<c>} <coproc>, {#}<opc1>, <Rt>, <Rt2>, <CRm>
         {
-            printf("%s%s%s p%d, #%d, %s, %s, c%d\n",
+            printf("%s%s%s p%d, #%d, %s, %s, c%d",
                 instr_s->mnemonic,
                 (instr_s->c == UNCOND) ? "2" : "",
                 cond_codes[instr_s->c],
@@ -59,12 +61,14 @@ void print_coproc_instr(Instr *instr_s) {
                 core_reg[instr_s->Rt],
                 core_reg[instr_s->Rt2],
                 instr_s->CRm);
-            break;
+            print_unpred(instr_s);
+			print_unpred(instr_s);
+			break;
         }
 
         case TYPE_COPROC_3_OPC2: // syntax: <MNEMONIC>{2}<c> <coproc>, <opc1>, <CRd>, <CRn>, <CRm>, <opc2>
         {
-            printf("%s%s%s p%d, #%d, c%d, c%d, c%d, #%d\n",
+            printf("%s%s%s p%d, #%d, c%d, c%d, c%d, #%d",
                 instr_s->mnemonic,
                 (instr_s->c == UNCOND) ? "2" : "",
                 cond_codes[instr_s->c],
@@ -75,12 +79,13 @@ void print_coproc_instr(Instr *instr_s) {
                 instr_s->CRn,
                 instr_s->CRm,
                 instr_s->opc2);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_COPROC_4_OPC2: // syntax: <MNEMONIC>{2}<c> <coproc>, <opc1>, <Rt>, <CRn>, <CRm>{, <opc2>}
         {
-            printf("%s%s%s p%d, #%d, %s, c%d, c%d, #%d\n",
+            printf("%s%s%s p%d, #%d, %s, c%d, c%d, #%d",
                 instr_s->mnemonic,
                 (instr_s->c == UNCOND) ? "2" : "",
                 cond_codes[instr_s->c],
@@ -91,14 +96,15 @@ void print_coproc_instr(Instr *instr_s) {
                 instr_s->CRn,
                 instr_s->CRm,
                 instr_s->opc2);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNPRED:
         {
             instr_s->mnemonic = UNPRED_STR;
             printf("%s 0x%08x\t; %s\n", DEFAULT_STR, curr_instr, instr_s->mnemonic);
-            break;
+			break;
         }
 
         case TYPE_UNDEF:
@@ -163,7 +169,7 @@ int process_coproc_instr(uint32_t instr, Instr *instr_s) {
     if (IS_ITYPE(instr_s->itype, TYPE_COPROC_1) &&
         instr_s->Rn == PC && instr_s->wback) {
 
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     if (IS_ITYPE(instr_s->itype, TYPE_COPROC_1, TYPE_COPROC_2, TYPE_COPROC_4_OPC2) &&
         ((!instr_s->index && !instr_s->add && !instr_s->L && !instr_s->wback) ||
@@ -174,12 +180,12 @@ int process_coproc_instr(uint32_t instr, Instr *instr_s) {
     if (IS_ITYPE(instr_s->itype, TYPE_COPROC_2) &&
         (IS_TARGET_REG(PC, instr_s->Rt, instr_s->Rt2) || (instr_s->Rt == instr_s->Rt2))) {
         
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     if (IS_ITYPE(instr_s->itype, TYPE_COPROC_4_OPC2) && 
         IS_TARGET_REG(PC, instr_s->Rt)) {
 
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     
 

@@ -22,7 +22,7 @@ void print_pusr_instr(Instr *instr_s) {
 
         case TYPE_PUSR_0: // syntax: <MNEMONIC><x><y><c> <Rd>, <Rn>, <Rm> {, <shift>}
         {
-            printf("%s%c%c%s %s, %s, %s%s\n",
+            printf("%s%c%c%s %s, %s, %s%s",
                 instr_s->mnemonic,
                 instr_s->x,
                 instr_s->y,
@@ -31,58 +31,63 @@ void print_pusr_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm],
                 instr_s->shift_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_PUSR_1: // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>{, <rotation>}
         {
-            printf("%s%s %s, %s, %s%s\n",
+            printf("%s%s %s, %s, %s%s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm],
                 instr_s->shift_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_PUSR_2: // syntax: <MNEMONIC><c> <Rd>, <Rm>{, <rotation>}
         {
-            printf("%s%s %s, %s%s\n",
+            printf("%s%s %s, %s%s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rm],
                 instr_s->shift_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_PUSR_3: // syntax: <MNEMONIC><c> <Rd>, #<imm>, <Rn>{, <shift>}
         {
-            printf("%s%s %s, %s, %s%s\n",
+            printf("%s%s %s, %s, %s%s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 instr_s->imm_str,
                 core_reg[instr_s->Rn],
                 instr_s->shift_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_PUSR_4: // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
         {
-            printf("%s%s %s, %s, %s\n",
+            printf("%s%s %s, %s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_PUSR_5: // syntax: <MNEMONIC><c> <Rd>, <Rm>
         {
-            printf("%s%s %s, %s\n",
+            printf("%s%s %s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
@@ -129,14 +134,14 @@ int process_pusr_instr(uint32_t instr, Instr *instr_s) {
     // handle unpredictable
     if (IS_NOT_ITYPE(instr_s->itype, TYPE_PUSR_2, TYPE_PUSR_5) &&
         IS_TARGET_REG(PC, instr_s->Rn)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     if (IS_NOT_ITYPE(instr_s->itype, TYPE_PUSR_3) &&
         IS_TARGET_REG(PC, instr_s->Rm)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     if (IS_TARGET_REG(PC, instr_s->Rd)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
 
 

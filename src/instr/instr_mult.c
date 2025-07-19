@@ -22,21 +22,22 @@ void print_mult_instr(Instr *instr_s) {
         case TYPE_MULT_0_R:
         case TYPE_MULT_0:
         {
-            printf("%s%s%s %s, %s, %s\n",
+            printf("%s%s%s %s, %s, %s",
                 instr_s->mnemonic,
                 instr_s->str_suffix,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
         
         case TYPE_MULT_1_X:
         case TYPE_MULT_1_R:
         case TYPE_MULT_1:
         {
-            printf("%s%s%s %s, %s, %s, %s\n",
+            printf("%s%s%s %s, %s, %s, %s",
                 instr_s->mnemonic,
                 instr_s->str_suffix,
                 cond_codes[instr_s->c],
@@ -44,37 +45,40 @@ void print_mult_instr(Instr *instr_s) {
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm],
                 core_reg[instr_s->Ra]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MULT_2:
         {
-            printf("%s%s %s, %s, %s, %s\n",
+            printf("%s%s %s, %s, %s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->RdLo],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MULT_3:
         {
-            printf("%s%s %s, %s, %s, %s\n",
+            printf("%s%s %s, %s, %s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm],
                 core_reg[instr_s->Ra]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MULT_4_X:
         case TYPE_MULT_4:
         {
-            printf("%s%s%s %s, %s, %s, %s\n",
+            printf("%s%s%s %s, %s, %s, %s",
                 instr_s->mnemonic,
                 instr_s->str_suffix,
                 cond_codes[instr_s->c],
@@ -82,7 +86,8 @@ void print_mult_instr(Instr *instr_s) {
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rn],
                 core_reg[instr_s->Rm]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNPRED:
@@ -124,7 +129,7 @@ int process_mult_instr(uint32_t instr, Instr *instr_s) {
     get_char_suffix(instr_s);
 
     if (IS_TARGET_REG(PC, instr_s->Rd, instr_s->Rn, instr_s->Rm, instr_s->Ra, instr_s->RdLo)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
 
     print_asm_instr(instr_s);

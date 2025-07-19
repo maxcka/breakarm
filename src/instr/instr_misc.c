@@ -15,107 +15,118 @@ void print_misc_instr(Instr *instr_s) {
     switch (instr_s->itype) {
         case TYPE_MISC_BANKED_0: // syntax: <MNEMONIC><c> <Rd>, <banked_reg>
         {
-            printf("%s%s %s, %s\n",
+            printf("%s%s %s, %s",
             instr_s->mnemonic,
             cond_codes[instr_s->c],
             core_reg[instr_s->Rd],
             instr_s->banked_reg_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MISC_BANKED_1: // syntax: <MNEMONIC><c> <banked_reg>, <Rn>
         {
-            printf("%s%s %s, %s\n",
+            printf("%s%s %s, %s",
             instr_s->mnemonic,
             cond_codes[instr_s->c],
             instr_s->banked_reg_str,
             core_reg[instr_s->Rn]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MISC_1: // syntax: <MNEMONIC><c> <Rd>, <spec_reg>
         {
-            printf("%s%s %s, %s\n",
+            printf("%s%s %s, %s",
             instr_s->mnemonic,
             cond_codes[instr_s->c],
             core_reg[instr_s->Rd],
             spec_reg[instr_s->R]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MISC_2_APP: // syntax: <MNEMONIC><c> <spec_reg>, <Rn>
         case TYPE_MISC_2_SYS:
         {
-            printf("%s%s %s, %s\n",
+            printf("%s%s %s, %s",
             instr_s->mnemonic,
             cond_codes[instr_s->c],
             instr_s->spec_reg_str,
             core_reg[instr_s->Rn]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MISC_3:
         case TYPE_MISC_3_1:
         {
-            printf("%s%s %s\n",
+            printf("%s%s %s",
             instr_s->mnemonic,
             cond_codes[instr_s->c],
             core_reg[instr_s->Rm]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MISC_4:
         {
-            printf("%s%s %s, %s\n",
+            printf("%s%s %s, %s",
             instr_s->mnemonic,
             cond_codes[instr_s->c],
             core_reg[instr_s->Rd],
             core_reg[instr_s->Rm]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MISC_5:
         {
-            printf("%s%s %s, %s, %s\n",
+            printf("%s%s %s, %s, %s",
             instr_s->mnemonic,
             cond_codes[instr_s->c],
             core_reg[instr_s->Rd],
             core_reg[instr_s->Rm],
             core_reg[instr_s->Rn]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MISC_6:
         {
-            printf("%s%s\n",
+            printf("%s%s",
             instr_s->mnemonic,
             cond_codes[instr_s->c]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MISC_7: // syntax: <MNEMONIC> #<imm16>
         {
-            printf("%s %s\n",
+            printf("%s %s",
             instr_s->mnemonic,
             instr_s->imm_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MISC_8: // syntax: <MNEMONIC><c> #<imm4>
         {
-            printf("%s%s %s\n",
+            printf("%s%s %s",
             instr_s->mnemonic,
             cond_codes[instr_s->c],
             instr_s->imm_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_MISC_HINT: // syntax: <MNEMONIC><c>
         {
-            printf("%s%s\n",
+            printf("%s%s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNPRED:
@@ -172,16 +183,16 @@ int process_misc_instr(uint32_t instr, Instr *instr_s) {
         get_sys_sr_str(instr_s, mask);
     }
     else if (instr_s->itype == TYPE_MISC_3_1 && instr_s->Rm == PC) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     else if (instr_s->itype == TYPE_MISC_4 && (instr_s->Rd == PC || instr_s->Rm == PC)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     else if (instr_s->itype == TYPE_MISC_5 && (instr_s->Rd == PC || instr_s->Rn == PC || instr_s->Rm == PC)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     else if (instr_s->itype == TYPE_MISC_7 && instr_s->c != AL) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
 
 

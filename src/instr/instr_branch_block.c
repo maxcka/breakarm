@@ -21,44 +21,48 @@ void print_branch_block_instr(Instr *instr_s) {
         case TYPE_BR_BLK_0:
         case TYPE_BR_BLK_0_LDM:
         {
-            printf("%s%s %s%s, %s\n",
+            printf("%s%s %s%s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rn],
                 (instr_s->wback) ? "!" : "",
                 instr_s->reg_list_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_BR_BLK_1:
         {
-            printf("%s%s %s\n",
+            printf("%s%s %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 instr_s->reg_list_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_BR_BLK_2:
         case TYPE_BR_BLK_2_LDM:
         {
-            printf("%s%s%s %s%s, %s^\n",
+            printf("%s%s%s %s%s, %s^",
                 instr_s->mnemonic,
                 amode_table[instr_s->P][instr_s->U],
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rn],
                 (instr_s->wback) ? "!" : "",
                 instr_s->reg_list_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_BR_BLK_3:
         {
-            printf("%s%s 0x%x\n",
+            printf("%s%s 0x%x",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c],
                 instr_s->label);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNPRED:
@@ -101,15 +105,15 @@ int process_branch_block_instr(uint32_t instr, Instr *instr_s) {
 
     // check for unpred
     if (IS_ITYPE(instr_s->itype, TYPE_BR_BLK_1) && IS_TARGET_REG(SP, instr_s->Rt)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     if (IS_NOT_ITYPE(instr_s->itype, TYPE_BR_BLK_1, TYPE_BR_BLK_3) &&
         (registers == 0 || instr_s->Rn == PC)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
     if (IS_ITYPE(instr_s->itype, TYPE_BR_BLK_0_LDM, TYPE_BR_BLK_2_LDM) &&
         (instr_s->wback == 1 && (registers >> instr_s->Rn) == 1)) {
-        instr_s->itype = TYPE_UNPRED;
+        instr_s->is_unpred = TRUE;
     }
 
 

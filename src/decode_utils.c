@@ -9,6 +9,15 @@
 #include <stdarg.h>
 #include "decode.h"
 
+void print_unpred(Instr *instr_s) {
+    if (instr_s->is_unpred) {
+        printf("\t; %s\n", UNPRED_STR);
+    }
+    else {
+        printf("\n");
+    }
+}
+
 void get_reg_list(Instr *instr_s, uint16_t reg_list_bits) {
     int start = 0;
     int length = sizeof(reg_list_bits)*8;
@@ -125,8 +134,7 @@ void get_option_str(Instr *instr_s, uint8_t option) {
 // sys special register string
 void get_sys_sr_str(Instr *instr_s, uint8_t mask) {
     if (mask == 0 || instr_s->Rn == PC) {
-        instr_s->itype = TYPE_UNPRED;
-        return;
+        instr_s->is_unpred = TRUE;
     }
     uint8_t mask_0 = (mask >> 0) & 0x1;
     uint8_t mask_1 = (mask >> 1) & 0x1;
@@ -155,8 +163,7 @@ void get_sys_sr_str(Instr *instr_s, uint8_t mask) {
 // app special register string
 void get_app_sr_str(Instr *instr_s, uint8_t mask) {
     if (mask == 0 || instr_s->Rn == PC) {
-        instr_s->itype = TYPE_UNPRED;
-        return;
+        instr_s->is_unpred = TRUE;
     }
     uint8_t mask_0 = (mask >> 0) & 0x1;
     uint8_t mask_1 = (mask >> 1) & 0x1;

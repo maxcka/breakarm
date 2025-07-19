@@ -32,7 +32,8 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rm], 
             instr_s->shift_str);
             check_sus_instr(instr_s);
-            break;
+            print_unpred(instr_s);
+			break;
         }
         
         case TYPE_DP_0_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>, <type> <Rs>
@@ -47,120 +48,131 @@ void print_data_proc_instr(Instr *instr_s) {
             shift_codes[instr_s->shift.shift_t],
             core_reg[instr_s->Rs]);
             check_sus_instr(instr_s);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_DP_0_IMM: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, #<const>
         {
-            printf("%s%s%s %s, %s, %s\n",
+            printf("%s%s%s %s, %s, %s",
                 instr_s->mnemonic, 
                 (instr_s->S) ? "S" : "",
                 cond_codes[instr_s->c], 
                 core_reg[instr_s->Rd], 
                 core_reg[instr_s->Rn],
                 instr_s->imm_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
         
         case TYPE_DP_1: // syntax: <MNEMONIC><c> <Rn>, <Rm>{, <shift>}
         {
-            printf("%s%s %s, %s%s\n", 
+            printf("%s%s %s, %s%s",
             instr_s->mnemonic, 
             cond_codes[instr_s->c], 
             core_reg[instr_s->Rn], 
             core_reg[instr_s->Rm], 
             instr_s->shift_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_DP_1_RSR: // syntax: <MNEMONIC><c> <Rn>, <Rm>, <type> <Rs>
         {
-            printf("%s%s %s, %s, %s %s\n", 
+            printf("%s%s %s, %s, %s %s",
             instr_s->mnemonic, 
             cond_codes[instr_s->c], 
             core_reg[instr_s->Rn], 
             core_reg[instr_s->Rm], 
             shift_codes[instr_s->shift.shift_t],
             core_reg[instr_s->Rs]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_DP_1_IMM: // syntax: <MNEMONIC><c> <Rn>, #<const>
         {
-            printf("%s%s %s, %s\n",
+            printf("%s%s %s, %s",
                 instr_s->mnemonic, 
                 cond_codes[instr_s->c], 
                 core_reg[instr_s->Rn],
                 instr_s->imm_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_DP_2: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>
         {
             print_dp_2_syntactic_sugar(instr_s);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_DP_2_IMM: // syntax: <MNEMONIC>{S}<c> <Rd>, #<const>
         {
-            printf("%s%s%s %s, %s\n",
+            printf("%s%s%s %s, %s",
                 instr_s->mnemonic,
                 (instr_s->S) ? "S" : "",
                 cond_codes[instr_s->c], 
                 core_reg[instr_s->Rd],
                 instr_s->imm_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_DP_2_IMM16: // syntax: <MNEMONIC><c> <Rd>, #<imm16>
         {
-            printf("%s%s %s, %s\n",
+            printf("%s%s %s, %s",
                 instr_s->mnemonic,
                 cond_codes[instr_s->c], 
                 core_reg[instr_s->Rd],
                 instr_s->imm_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_DP_3: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, #<imm5>
         {
-            printf("%s%s%s %s, %s, #%d\n", 
+            printf("%s%s%s %s, %s, #%d",
             instr_s->mnemonic,
             (instr_s->S) ? "S" : "",
             cond_codes[instr_s->c], 
             core_reg[instr_s->Rd], 
             core_reg[instr_s->Rm],
             instr_s->shift.shift_n);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_DP_3_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rn>, <Rm>
         {
-            printf("%s%s%s %s, %s, %s\n", 
+            printf("%s%s%s %s, %s, %s",
             instr_s->mnemonic,
             (instr_s->S) ? "S" : "",
             cond_codes[instr_s->c], 
             core_reg[instr_s->Rd],
             core_reg[instr_s->Rn],
             core_reg[instr_s->Rm]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_DP_4: // syntax: <MNEMONIC>S{<c>} <Rd>, <Rm>{, <shift>}
         {
-            printf("%s%s%s %s, %s%s\n", 
+            printf("%s%s%s %s, %s%s",
             instr_s->mnemonic,
             (instr_s->S) ? "S" : "",
             cond_codes[instr_s->c], 
             core_reg[instr_s->Rd], 
             core_reg[instr_s->Rm],
             instr_s->shift_str);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_DP_4_RSR: // syntax: <MNEMONIC>{S}<c> <Rd>, <Rm>, <type> <Rs>
         {
-            printf("%s%s%s %s, %s, %s %s\n", 
+            printf("%s%s%s %s, %s, %s %s",
             instr_s->mnemonic,
             (instr_s->S) ? "S" : "",
             cond_codes[instr_s->c], 
@@ -168,7 +180,8 @@ void print_data_proc_instr(Instr *instr_s) {
             core_reg[instr_s->Rm],
             shift_codes[instr_s->shift.shift_t],
             core_reg[instr_s->Rs]);
-            break;
+            print_unpred(instr_s);
+			break;
         }
 
         case TYPE_UNPRED:
@@ -206,7 +219,7 @@ static void print_dp_2_syntactic_sugar(Instr *instr_s) {
         used_sugar = 1;
     }
 
-    printf("%s%s\n", buf, (used_sugar) ? ")" : "");
+    printf("%s%s", buf, (used_sugar) ? ")" : "");
 }
 
 static void check_sus_instr(Instr *instr_s) {
@@ -217,7 +230,6 @@ static void check_sus_instr(Instr *instr_s) {
         
         printf("\t; [!] suspicious encoding - possibly junk");
     }
-    printf("\n");
 }
 
 // =======================================
@@ -252,7 +264,7 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
     }
     else if (instr_s->igroup == GROUP_DP_IMM16) {
         if (instr_s->Rd == PC) {
-            instr_s->itype = TYPE_UNPRED;
+            instr_s->is_unpred = TRUE;
         }
         get_imm_str(instr_s, imm4, imm12, 12, TRUE);
     }
