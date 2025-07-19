@@ -141,7 +141,7 @@ int process_misc_instr(uint32_t instr, Instr *instr_s) {
     instr_s->R = (instr >> 22) & 0x1;
     uint8_t mask;
     uint8_t imm4 = (instr >> 0) & 0xF;
-    uint8_t imm12 = (instr >> 8) & 0xFFF;
+    uint16_t imm12 = (instr >> 8) & 0xFFF;
 
     if (instr_s->itype == TYPE_MISC_7 || instr_s->itype == TYPE_MISC_8) {
         get_imm_str(instr_s, imm12, imm4, 4, TRUE);
