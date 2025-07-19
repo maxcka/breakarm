@@ -4,3 +4,4 @@
 # ignore binaries
 src/breakarm
 examples/example1/example1
+tests/output/*

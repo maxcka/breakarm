@@ -1,6 +1,6 @@
 CC_ARM32 = arm-linux-gnueabi-gcc
 CFLAGS = -Wall -Wextra -g3
-SRC = disasm_test.c
+SRC = test_disasm.c
 OBJ = $(SRC:.c=.o)
 
 all: $(OBJ)
