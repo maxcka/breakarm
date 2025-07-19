@@ -1,4 +1,4 @@
-__attribute__((naked))
+__attribute__((naked)) // remove function prologue/epilogue
 void test_data_proc() {
     asm volatile (
         "AND r2, r0, r1\n"
@@ -23,4 +23,16 @@ void test_data_proc() {
         "BIC r0, r1, r2\n"
         "MVN r0, r1\n"
     );
+    __builtin_unreachable(); // remove nop at end
 }
+
+
+__attribute__((naked))
+void test_more_data_proc() {
+    asm volatile (
+        "AND r2, r0, r1\n"
+        "EOR r2, r0, r1\n"
+    );
+    __builtin_unreachable();
+}
+
