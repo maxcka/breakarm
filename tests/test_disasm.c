@@ -320,3 +320,44 @@ void test_pas() {
     );
     __builtin_unreachable();
 }
+
+__attribute__((naked))
+void test_pusr() {
+    asm volatile (
+        // Pack Halfword (PKH)
+        "PKHBT r0, r1, r2, LSL #16\n"      // PKHBT
+        // Signed Extend and Add Byte/Halfword variants
+        "SXTAB16 r0, r1, r2, ROR #8\n"     // Signed Extend and Add Byte 16
+        "UXTAB16 r0, r1, r2, ROR #8\n"     // Unsigned Extend and Add Byte 16
+        "SXTAB r0, r1, r2, ROR #8\n"       // Signed Extend and Add Byte
+        "UXTAB r0, r1, r2, ROR #8\n"       // Unsigned Extend and Add Byte
+        // Signed Extend Byte 16 / Unsigned Extend Byte 16
+        "SXTB16 r0, r1, ROR #8\n"           // Signed Extend Byte 16
+        "UXTB16 r0, r1, ROR #8\n"           // Unsigned Extend Byte 16
+        // Signed Extend Byte / Unsigned Extend Byte
+        "SXTB r0, r1\n"                     // Signed Extend Byte
+        "UXTB r0, r1\n"                     // Unsigned Extend Byte
+        // Saturate Signed
+        "SSAT r0, #8, r1\n"                 // Saturate signed to 8 bits
+        "SSAT16 r0, #8, r1\n"               // Saturate signed 16 bits halves
+        // Saturate Unsigned
+        "USAT r0, #8, r1\n"                 // Saturate unsigned to 8 bits
+        "USAT16 r0, #8, r1\n"               // Saturate unsigned 16 bits halves
+        // Select Bytes
+        "SEL r0, r1, r2\n"                  // Select Bytes
+        // Byte Reversals
+        "REV r0, r1\n"                     // Reverse byte order in word
+        "REV16 r0, r1\n"                   // Reverse bytes in each halfword
+        // Signed Extend and Add Halfword
+        "SXTAH r0, r1, r2\n"               // Signed Extend and Add Halfword
+        "UXTAH r0, r1, r2\n"               // Unsigned Extend and Add Halfword
+        // Signed Extend Halfword / Unsigned Extend Halfword
+        "SXTH r0, r1\n"                    // Signed Extend Halfword
+        "UXTH r0, r1\n"                    // Unsigned Extend Halfword
+        // Reverse Bits
+        "RBIT r0, r1\n"                    // Reverse bits in word
+        // Reverse Signed Halfword Bytes
+        "REVSH r0, r1\n"                   // Reverse bytes in signed halfword and sign-extend
+    );
+    __builtin_unreachable();
+}

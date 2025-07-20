@@ -192,7 +192,8 @@ typedef enum {
     TYPE_PUSR_0, // syntax: <MNEMONIC><x><y><c> <Rd>, <Rn>, <Rm> {, <shift>}
     TYPE_PUSR_1, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>{, <rotation>}
     TYPE_PUSR_2, // syntax: <MNEMONIC><c> <Rd>, <Rm>{, <rotation>}
-    TYPE_PUSR_3, // syntax: <MNEMONIC><c> <Rd>, #<imm>, <Rn>{, <shift>}
+    TYPE_PUSR_SAT, // syntax: <MNEMONIC><c> <Rd>, #<imm>, <Rn>{, <shift>}
+    TYPE_PUSR_SAT16, // syntax: <MNEMONIC><c> <Rd>, #<imm>, <Rn>
     TYPE_PUSR_4, // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
     TYPE_PUSR_5, // syntax: <MNEMONIC><c> <Rd>, <Rm>
 

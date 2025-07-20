@@ -12,6 +12,8 @@
 
 
 static void get_pusr_shift(Instr *instr_s, uint8_t imm5, uint8_t sh);
+static void add_XT_instr_affix(uint32_t instr, char *buf, char *base_name);
+static IType add_SAT_instr_affix(uint32_t instr, char *buf, char *base_name);
 
 // ----------------------------------------------------
 // --- packing, unpacking, saturation, and reversal ---
@@ -60,7 +62,7 @@ void print_pusr_instr(Instr *instr_s) {
 			break;
         }
 
-        case TYPE_PUSR_3: // syntax: <MNEMONIC><c> <Rd>, #<imm>, <Rn>{, <shift>}
+        case TYPE_PUSR_SAT: // syntax: <MNEMONIC><c> <Rd>, #<imm>, <Rn>{, <shift>}
         {
             printf("%s%s %s, %s, %s%s",
                 instr_s->mnemonic,
@@ -71,6 +73,18 @@ void print_pusr_instr(Instr *instr_s) {
                 instr_s->shift_str);
             print_unpred_or_newline(instr_s);
 			break;
+        }
+
+        case TYPE_PUSR_SAT16: // syntax: <MNEMONIC><c> <Rd>, #<imm>, <Rn>
+        {
+            printf("%s%s %s, %s, %s",
+                instr_s->mnemonic,
+                cond_codes[instr_s->c],
+                core_reg[instr_s->Rd],
+                instr_s->imm_str,
+                core_reg[instr_s->Rn]);
+            print_unpred_or_newline(instr_s);
+            break;
         }
 
         case TYPE_PUSR_4: // syntax: <MNEMONIC><c> <Rd>, <Rn>, <Rm>
@@ -92,6 +106,7 @@ void print_pusr_instr(Instr *instr_s) {
                 cond_codes[instr_s->c],
                 core_reg[instr_s->Rd],
                 core_reg[instr_s->Rm]);
+            print_unpred_or_newline(instr_s);
             break;
         }
     
@@ -105,7 +120,7 @@ void print_pusr_instr(Instr *instr_s) {
 }
 
 int process_pusr_instr(uint32_t instr, Instr *instr_s) {
-
+    instr_s->c = (instr >> 28) & 0xF;
     instr_s->Rd = (instr >> 12) & 0xF;
     instr_s->Rn = (instr >> 16) & 0xF;
     uint8_t sat_imm = (instr >> 16) & 0x1F;
@@ -124,10 +139,17 @@ int process_pusr_instr(uint32_t instr, Instr *instr_s) {
         get_pusr_shift(instr_s, imm5, tb);
     }
     else if (IS_ITYPE(instr_s->itype, TYPE_PUSR_1, TYPE_PUSR_2)) {
-        get_shift_str(instr_s, ROR, rotate*8);
+        if (rotate != 0) {
+            get_shift_str(instr_s, ROR, rotate*8);
+        }
+        else {
+            instr_s->shift_str[0] = '\0';
+        }
     }
-    else if (instr_s->itype == TYPE_PUSR_3) {
-        get_imm_str(instr_s, sat_imm+1, 0, 0, TRUE);
+    else if (IS_ITYPE(instr_s->itype, TYPE_PUSR_SAT, TYPE_PUSR_SAT16)) {
+        instr_s->Rn = (instr >> 0) & 0xF;
+        uint8_t extra_sat = (instr_s->mnemonic[0] == 'S') ? 1 : 0; // SSAT, and SSAT16 add +1 to imm
+        get_imm_str(instr_s, sat_imm+extra_sat, 0, 0, TRUE);
         get_pusr_shift(instr_s, imm5, sh);
     }
 
@@ -136,7 +158,7 @@ int process_pusr_instr(uint32_t instr, Instr *instr_s) {
         IS_TARGET_REG(PC, instr_s->Rn)) {
         instr_s->is_unpred = TRUE;
     }
-    if (IS_NOT_ITYPE(instr_s->itype, TYPE_PUSR_3) &&
+    if (IS_NOT_ITYPE(instr_s->itype, TYPE_PUSR_SAT, TYPE_PUSR_SAT16) &&
         IS_TARGET_REG(PC, instr_s->Rm)) {
         instr_s->is_unpred = TRUE;
     }
@@ -173,9 +195,10 @@ static void add_XT_instr_affix(uint32_t instr, char *buf, char *base_name) {
     }
 }
 
-static void add_SAT_instr_affix(uint32_t instr, char *buf, char *base_name) {
+static IType add_SAT_instr_affix(uint32_t instr, char *buf, char *base_name) {
     uint8_t op1 = (instr >> 20) & 0x7;
     uint8_t op2 = (instr >> 5) & 0x7;
+    IType itype = TYPE_PUSR_SAT;
     if ((op1 & 0x4) == 0) { // bit 2 is 0 (means signed)
         strcat(buf, "S");
     }
@@ -185,7 +208,9 @@ static void add_SAT_instr_affix(uint32_t instr, char *buf, char *base_name) {
     strcat(buf, base_name);
     if ((op2 & 0x1) == 1) { // bit 0 is 1 (means 16-bit)
         strcat(buf, "16");
+        itype = TYPE_PUSR_SAT16;
     }
+    return itype;
 }
 // ========================
 
@@ -251,11 +276,12 @@ int XTB_instr(uint32_t instr) {
 int SAT_instr(uint32_t instr) {
     Instr instr_s = {0};
     instr_s.igroup = GROUP_PUSR;
-    instr_s.itype = TYPE_PUSR_3;
+    instr_s.itype = TYPE_PUSR_SAT;
     
     char mnemonic_buf[BUF_20] = "";
 
-    add_SAT_instr_affix(instr, mnemonic_buf, "SAT");
+    // itype changes depending on affixes
+    instr_s.itype = add_SAT_instr_affix(instr, mnemonic_buf, "SAT");
 
     instr_s.mnemonic = mnemonic_buf;
 
@@ -288,7 +314,6 @@ int REV_instr(uint32_t instr) {
     else {
         instr_s.mnemonic = "REV16";
     }
-
 
     return process_pusr_instr(instr, &instr_s); 
 }
