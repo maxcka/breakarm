@@ -251,3 +251,41 @@ void test_misc_hints() {
     );
     __builtin_unreachable();
 }
+
+__attribute__((naked))
+void test_ld_str() {
+    asm volatile (
+        // STR (store register) immediate and register
+        "STR r0, [r1, #4]\n"       // is_STR_imm
+        "STR r0, [r1, r2]\n"       // is_STR_reg
+
+        // STRT (store register unprivileged) variants
+        "STRT r0, [r1], #4\n"      // STRT with post-indexed immediate
+        "STRT r0, [r1], r2\n"      // STRT_2 with post-indexed register offset
+
+        // LDR (load register) immediate and register
+        "LDR r0, [r1, #4]\n"       // is_LDR_imm
+        "LDR r0, [r1, r2]\n"       // is_LDR_reg
+
+        // LDRT (load register unprivileged) variants
+        "LDRT r0, [r1], #4\n"      // LDRT with post-indexed immediate
+        "LDRT r0, [r1], r2\n"      // LDRT_2 with post-indexed register offset
+
+        // STRB (store byte) immediate and register
+        "STRB r0, [r1, #4]\n"      // is_STRB_imm
+        "STRB r0, [r1, r2]\n"      // is_STRB_reg
+
+        // STRBT (store byte unprivileged) variants
+        "STRBT r0, [r1], #4\n"     // STRBT post-indexed immediate
+        "STRBT r0, [r1], r2\n"     // STRBT_2 post-indexed register
+
+        // LDRB (load byte) immediate and register
+        "LDRB r0, [r1, #4]\n"      // is_LDRB_imm
+        "LDRB r0, [r1, r2]\n"      // is_LDRB_reg
+
+        // LDRBT (load byte unprivileged) variants
+        "LDRBT r0, [r1], #4\n"     // LDRBT post-indexed immediate
+        "LDRBT r0, [r1], r2\n"     // LDRBT_2 post-indexed register
+    );
+    __builtin_unreachable();
+}

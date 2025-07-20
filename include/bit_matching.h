@@ -260,7 +260,7 @@ static inline int is_LDRT(uint32_t instr)                    { return ( ( ((inst
 static inline int is_LDRT_2(uint32_t instr)                  { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ((instr) >> 20) & 0x17) == 0x3 ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b0 and 0b0x010 and 0b0
 
 static inline int is_STRB_imm(uint32_t instr)                { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x4 ) && ( ( ((instr) >> 20) & 0x17) != 0x6 ) ); } // 0b0 and (0bxx1x0 and not 0b0x110)
-static inline int is_STRB_reg(uint32_t instr)                { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x0 ) && ( ( ((instr) >> 20) & 0x17) != 0x2 ) ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b1 and (0bxx1x0 and not 0b0x110) and 0b0
+static inline int is_STRB_reg(uint32_t instr)                { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ( ((instr) >> 20) & 0x5) == 0x4 ) && ( ( ((instr) >> 20) & 0x17) != 0x6 ) ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b1 and (0bxx1x0 and not 0b0x110) and 0b0
 static inline int is_STRBT(uint32_t instr)                   { return ( ( ((instr) >> 25) & 0x1) == 0x0 ) && ( ( ((instr) >> 20) & 0x17) == 0x6 ); } // 0b0 and 0b0x110
 static inline int is_STRBT_2(uint32_t instr)                 { return ( ( ((instr) >> 25) & 0x1) == 0x1 ) && ( ( ((instr) >> 20) & 0x17) == 0x6 ) && ( ( ((instr) >> 4) & 0x1) == 0x0 ); } // 0b0 and 0b0x110 and 0b0
 
