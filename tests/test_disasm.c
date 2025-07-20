@@ -361,3 +361,33 @@ void test_pusr() {
     );
     __builtin_unreachable();
 }
+
+
+__attribute__((naked))
+void test_signed_mult() {
+    asm volatile (
+        // Multiply-Accumulate Dual
+        "SMLAD r0, r1, r2, r3\n"     // r0 = r3 + (r1.Lo16 * r2.Lo16) + (r1.Hi16 * r2.Hi16)
+        // Multiply-Subtract Dual
+        "SMLSD r0, r1, r2, r3\n"     // r0 = r3 - (r1.Lo16 * r2.Lo16) + (r1.Hi16 * r2.Hi16)
+        // Unsigned Multiply-Accumulate Dual
+        "SMUAD r0, r1, r2\n"         // r0 = (r1.Lo16 * r2.Lo16) + (r1.Hi16 * r2.Hi16)
+        // Unsigned Multiply-Subtract Dual
+        "SMUSD r0, r1, r2\n"         // r0 = (r1.Lo16 * r2.Lo16) - (r1.Hi16 * r2.Hi16)
+        // Signed Integer Divide
+        "SDIV r0, r1, r2\n"         // r0 = r1 / r2 (signed)
+        // Unsigned Integer Divide
+        "UDIV r0, r1, r2\n"         // r0 = r1 / r2 (unsigned)
+        // Signed Multiply Accumulate Long Dual
+        "SMLALD r0, r1, r2, r3\n"     // {r1:r0} = {r1:r0} + (r2.Lo16 * r3.Lo16) + (r2.Hi16 * r3.Hi16)
+        // Signed Multiply Subtract Long Dual
+        "SMLSLD r0, r1, r2, r3\n"     // {r1:r0} = {r1:r0} - (r2.Lo16 * r3.Lo16) + (r2.Hi16 * r3.Hi16)
+        // Signed Most Significant Word Multiply-Accumulate
+        "SMMLA r0, r1, r2, r3\n"     // r0 = ((r1 * r2) >> 32) + r3
+        // Signed Most Significant Word Multiply-Subtract
+        "SMMLS r0, r1, r2, r3\n"     // r0 = r3 - ((r1 * r2) >> 32)
+        // Signed Most Significant Word Multiply (no accumulate)
+        "SMMUL r0, r1, r2\n"         // r0 = (r1 * r2) >> 32
+    );
+    __builtin_unreachable();
+}

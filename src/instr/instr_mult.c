@@ -285,7 +285,7 @@ int XDIV_instr(uint32_t instr) {
     instr_s.igroup = GROUP_SIGNED_MULT;
     instr_s.itype = TYPE_MULT_0;
 
-    if (instr >> 21 == 0) { // bit 1 of op1 is 0 (means signed)
+    if (((instr >> 21) & 0x1) == 0) { // bit 1 of op1 is 0 (means signed)
         instr_s.mnemonic = "SDIV";
     }
     else {
