@@ -122,6 +122,22 @@ uint8_t is_any_reg_target_reg(Register target, uint8_t count, ...) {
     return FALSE;
 }
 
+// rotate a 32-bit value to the right by n bits
+uint32_t ror(uint32_t value, uint8_t n) {
+    n = n % 32;
+    return (value >> n) | (value << (32 - n));
+}
+
+// uses upper 4 bits of imm12 to rotate the lower imm8 as described in
+// A5.2.4 Modified immediate constants in ARM instructions
+void get_rotated_imm_str(Instr *instr_s, uint16_t imm12) {
+    uint8_t rotate = (imm12 >> 8) & 0xF; // get upper 4 bits
+    uint8_t imm8 = imm12 & 0xFF;
+    uint32_t rotated_imm = ror(imm8, rotate*2); // need to rotate value by rotate*2 bits
+    snprintf(instr_s->imm_str, sizeof(instr_s->imm_str), "#%u", rotated_imm);
+}
+
+// takes a high and low value and shifts
 void get_imm_str(Instr *instr_s, uint32_t imm_high, uint16_t imm_low, uint8_t shift, uint8_t positive) {
     uint32_t mask = (1 << shift) - 1;
     uint32_t imm = (imm_high << shift) | (imm_low & mask);

@@ -84,7 +84,7 @@ void test_misc() {
         // Hypervisor Call (ARMv7)
         "HVC #10334\n"             // Immediate value 0–65535 (encoded as 16-bit in instruction)
         // Secure Monitor Call (TrustZone)
-        "SMC #0\n"             // Immediate 0–65535
+        "SMC #14\n"             // Immediate 0–15
     );
     __builtin_unreachable();
 }
@@ -232,6 +232,22 @@ void test_data_proc_imm_and_imm16() {
         // Move Wide (not classic data proc, but immediate)
         "MOVW r0, #4660\n"        // is_MOVW (0x1234 = 4660)
         "MOVT r0, #22136\n"       // is_MOVT (0x5678 = 22136)
+    );
+    __builtin_unreachable();
+}
+
+
+__attribute__((naked))
+void test_misc_hints() {
+    asm volatile (
+        "NOP\n"
+        "YIELD\n"
+        "WFE\n"
+        "WFI\n"
+        "SEV\n"
+        "DBG #0\n"
+        "MSR APSR_nzcvq, #4026531840\n"  // Example: set N,Z,C,V flags
+        "MSR SPSR_cxsf, #31\n"         // Example: change mode bits (privileged)
     );
     __builtin_unreachable();
 }

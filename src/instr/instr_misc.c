@@ -58,6 +58,18 @@ void print_misc_instr(Instr *instr_s) {
 			break;
         }
 
+        case TYPE_MISC_2_IMM_APP: // syntax: <MNEMONIC><c> <spec_reg>, #<imm12>
+        case TYPE_MISC_2_IMM_SYS:
+        {
+            printf("%s%s %s, %s",
+            instr_s->mnemonic,
+            cond_codes[instr_s->c],
+            instr_s->spec_reg_str,
+            instr_s->imm_str);
+            print_unpred_or_newline(instr_s);
+			break;
+        }
+
         case TYPE_MISC_3:
         case TYPE_MISC_3_1:
         {
@@ -91,7 +103,8 @@ void print_misc_instr(Instr *instr_s) {
             print_unpred_or_newline(instr_s);
 			break;
         }
-
+        
+        case TYPE_MISC_HINT_0: // syntax: <MNEMONIC><c>
         case TYPE_MISC_6:
         {
             printf("%s%s",
@@ -110,21 +123,13 @@ void print_misc_instr(Instr *instr_s) {
 			break;
         }
 
+        case TYPE_MISC_HINT_1:
         case TYPE_MISC_8: // syntax: <MNEMONIC><c> #<imm4>
         {
             printf("%s%s %s",
             instr_s->mnemonic,
             cond_codes[instr_s->c],
             instr_s->imm_str);
-            print_unpred_or_newline(instr_s);
-			break;
-        }
-
-        case TYPE_MISC_HINT: // syntax: <MNEMONIC><c>
-        {
-            printf("%s%s",
-                instr_s->mnemonic,
-                cond_codes[instr_s->c]);
             print_unpred_or_newline(instr_s);
 			break;
         }
@@ -154,11 +159,15 @@ int process_misc_instr(uint32_t instr, Instr *instr_s) {
     uint8_t imm4 = (instr >> 0) & 0xF;
     uint16_t imm12 = (instr >> 8) & 0xFFF;
 
-    if (instr_s->itype == TYPE_MISC_7 || instr_s->itype == TYPE_MISC_8) {
+    if (instr_s->itype == TYPE_MISC_7) {
         get_imm_str(instr_s, imm12, imm4, 4, TRUE);
     }
+    if (IS_ITYPE(instr_s->itype, TYPE_MISC_8, TYPE_MISC_HINT_1)) {
+        get_imm_str(instr_s, imm4, 0, 0, TRUE);
+    }
     if (instr_s->itype == TYPE_MISC_2_IMM_APP || instr_s->itype == TYPE_MISC_2_IMM_SYS) {
-        get_imm_str(instr_s, imm12, 0, 0, TRUE);
+        imm12 = (instr >> 0) & 0xFFF;
+        get_rotated_imm_str(instr_s, imm12);
     }
 
     instr_s->c =  (instr >> 28) & 0xF; // c is condition
@@ -182,7 +191,8 @@ int process_misc_instr(uint32_t instr, Instr *instr_s) {
         mask = (instr >> 16) & 0xF;
         get_sys_sr_str(instr_s, mask);
     }
-    else if (instr_s->itype == TYPE_MISC_3_1 && instr_s->Rm == PC) {
+    
+    if (instr_s->itype == TYPE_MISC_3_1 && instr_s->Rm == PC) {
         instr_s->is_unpred = TRUE;
     }
     else if (instr_s->itype == TYPE_MISC_4 && (instr_s->Rd == PC || instr_s->Rm == PC)) {
@@ -423,7 +433,7 @@ int NOP_instr(uint32_t instr) {
     instr_s.mnemonic = "NOP";
 
     instr_s.igroup = GROUP_MISC_HINTS;
-    instr_s.itype = TYPE_MISC_HINT;
+    instr_s.itype = TYPE_MISC_HINT_0;
 
     return process_misc_instr(instr, &instr_s);
 }
@@ -434,7 +444,7 @@ int YIELD_instr(uint32_t instr) {
     instr_s.mnemonic = "YIELD";
 
     instr_s.igroup = GROUP_MISC_HINTS;
-    instr_s.itype = TYPE_MISC_HINT;
+    instr_s.itype = TYPE_MISC_HINT_0;
 
     return process_misc_instr(instr, &instr_s);
 }
@@ -445,7 +455,7 @@ int WFE_instr(uint32_t instr) {
     instr_s.mnemonic = "WFE";
 
     instr_s.igroup = GROUP_MISC_HINTS;
-    instr_s.itype = TYPE_MISC_HINT;
+    instr_s.itype = TYPE_MISC_HINT_0;
 
     return process_misc_instr(instr, &instr_s);
 }
@@ -456,7 +466,7 @@ int WFI_instr(uint32_t instr) {
     instr_s.mnemonic = "WFI";
 
     instr_s.igroup = GROUP_MISC_HINTS;
-    instr_s.itype = TYPE_MISC_HINT;
+    instr_s.itype = TYPE_MISC_HINT_0;
 
     return process_misc_instr(instr, &instr_s);
 }
@@ -467,7 +477,7 @@ int SEV_instr(uint32_t instr) {
     instr_s.mnemonic = "SEV";
 
     instr_s.igroup = GROUP_MISC_HINTS;
-    instr_s.itype = TYPE_MISC_HINT;
+    instr_s.itype = TYPE_MISC_HINT_0;
 
     return process_misc_instr(instr, &instr_s);
 }
@@ -478,13 +488,11 @@ int DBG_instr(uint32_t instr) {
     instr_s.mnemonic = "DBG";
 
     instr_s.igroup = GROUP_MISC_HINTS;
-    instr_s.itype = TYPE_MISC_HINT;
+    instr_s.itype = TYPE_MISC_HINT_1;
 
     return process_misc_instr(instr, &instr_s);
 }
 
-
-//>> UNCONDITIONAL Instructions
 
 
 

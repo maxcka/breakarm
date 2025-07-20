@@ -220,7 +220,7 @@ static inline int is_MOVT(uint32_t instr)           { return ( ( ((instr) >> 20)
 
 //>> layer 2
 // instruction is MSR (immediate) and hints
-#define IS_MSR_HINTS(instr)        ( ( ((instr) >> 20) & 0x1B) == 0x12 ) // not 10x10
+#define IS_MSR_HINTS(instr)        ( ( ((instr) >> 20) & 0x1B) == 0x12 ) // 0b10x10
 //=== instr is MSR (immediate) and hints ===
 //>> layer 3
 static inline int is_NOP(uint32_t instr)            { return ( ( ((instr) >> 22) & 0x1) == 0x0 ) && ( ( ((instr) >> 16) & 0xF) == 0x0) && ( ( ((instr) >> 0) & 0xFF) == 0x0); } // 0b0 and 0b0000 and 0b00000000

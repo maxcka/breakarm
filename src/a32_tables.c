@@ -265,12 +265,12 @@ InstrHandler proc_dp_imm16_table[][IH_ARR_SIZE] = {
 
 InstrHandler proc_misc_hints_table[][IH_ARR_SIZE] = {
     // msr and hints
-    { is_NOP, NOP_instr},
-    { is_YIELD, YIELD_instr},
-    { is_WFE, WFE_instr},
-    { is_WFI, WFI_instr},
-    { is_SEV, SEV_instr},
-    { is_DBG, DBG_instr},
+    { is_NOP,           NOP_instr},
+    { is_YIELD,         YIELD_instr},
+    { is_WFE,           WFE_instr},
+    { is_WFI,           WFI_instr},
+    { is_SEV,           SEV_instr},
+    { is_DBG,           DBG_instr},
     { is_MSR_imm_app, MSR_imm_app_instr},
     { is_MSR_imm_sys, MSR_imm_sys_instr}
 };

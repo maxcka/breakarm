@@ -260,7 +260,7 @@ int process_data_proc_instr(uint32_t instr, Instr *instr_s) {
     }
 
     if (instr_s->igroup == GROUP_DP_IMM) {
-        get_imm_str(instr_s, imm12, 0, 0, TRUE);
+        get_rotated_imm_str(instr_s, imm12);
     }
     else if (instr_s->igroup == GROUP_DP_IMM16) {
         if (instr_s->Rd == PC) {
