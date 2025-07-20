@@ -4,6 +4,15 @@
  * Licensed under the MIT License. See LICENSE file in the project root for details.
  */
 
+/*
+ * Author: Maximilian Kallas
+ * File: decode.c
+ * Description: Decodes instructions by grouping them in categories based on the
+ *              ARM architecture reference manual. Uses macros in bit_matching.h
+ *              to find the appropriate group before calling its dispatch table
+ *              which is defined in a32_tables.c
+ */
+
 
 #include <stdio.h>
 #include <stdint.h>
@@ -12,73 +21,13 @@
 #include "bit_matching.h"
 
 
-// ====================
-// === INSTRUCTIONS ===
-// ====================
-
-// only used for undefined instruction
-// undefined is used in several instruction groups so better to put it in a central place
-void print_default_instr(Instr *instr_s) {
-    switch (instr_s->itype) {
-        case TYPE_UNDEF:
-        case TYPE_UNPRED:
-        case TYPE_NOT_IMP:
-        {
-            printf("%s 0x%08x\t; %s\n", DEFAULT_STR, curr_instr, instr_s->mnemonic);
-            break;
-        }
-
-        default: 
-        {
-            instr_s->mnemonic = DEFAULT_STR;
-            printf("%s 0x%08x\n", instr_s->mnemonic, curr_instr);
-            break;
-        }
-    }
-}
-
-
-int UNDEF_instr(uint32_t instr) {
-    Instr instr_s = {0};
-    instr_s.igroup = GROUP_DEFAULT;
-    instr_s.itype = TYPE_UNDEF;
-    instr_s.mnemonic = UNDEF_STR;
-
-    (void)instr; // silence warning
-
-    print_asm_instr(&instr_s);
-    return 0;
-}
-
-int UNPRED_instr(uint32_t instr) {
-    Instr instr_s = {0};
-    instr_s.igroup = GROUP_DEFAULT;
-    instr_s.itype = TYPE_UNPRED;
-    instr_s.mnemonic = UNPRED_STR;
-
-    (void)instr; // silence warning
-
-    print_asm_instr(&instr_s);
-    return 0;
-}
-
-int NOT_IMP_instr(uint32_t instr) {
-    Instr instr_s = {0};
-    instr_s.igroup = GROUP_DEFAULT;
-    instr_s.itype = TYPE_NOT_IMP;
-    instr_s.mnemonic = NOT_IMP_STR;
-
-    (void)instr; // silence warning
-
-    print_asm_instr(&instr_s);
-    return 0;
-}
-
-
 // ===============
 // === Decoder ===
 // ===============
-void find_and_decode(uint32_t instr, IGroup igroup) {
+
+// responsible for finding the correct instruction in the group's dispatch table
+// and calling its *_instr() function which begins operand processing
+void find_and_process(uint32_t instr, IGroup igroup) {
     InstrHandlerTable IH_table = proc_instr_group_table[igroup]; // find the correct dispatch table based on the igroup
     int num_rows = IH_table.num_rows;
     InstrHandler (*proc_instr_table)[2] = IH_table.table;
@@ -94,10 +43,10 @@ void find_and_decode(uint32_t instr, IGroup igroup) {
 void decode_dp_op_0(uint32_t instr) {
     if (IS_DP_REG_OR_RSR(instr) && (IS_DP_REG(instr) || IS_DP_RSR(instr))) {           // layer 2
         if (IS_DP_REG(instr)) {               // layer 3
-            find_and_decode(instr, GROUP_DP_REG);
+            find_and_process(instr, GROUP_DP_REG);
         }
         else if (IS_DP_RSR(instr)) {          // layer 3
-            find_and_decode(instr, GROUP_DP_RSR);
+            find_and_process(instr, GROUP_DP_RSR);
         }
         else {
             printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
@@ -105,26 +54,26 @@ void decode_dp_op_0(uint32_t instr) {
     }
     else if (IS_MISC_OR_HALF_MULT(instr) && (IS_MISC(instr) || IS_HALF_MULT(instr))) {  // layer 2
         if (IS_MISC(instr)) {                 // layer 3
-            find_and_decode(instr, GROUP_MISC);
+            find_and_process(instr, GROUP_MISC);
         }
         else if (IS_HALF_MULT(instr)) {     // layer 3
-            find_and_decode(instr, GROUP_HM);
+            find_and_process(instr, GROUP_HM);
         }
         else {
             printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
         }
     }
     else if (IS_MULT_MULT(instr)) {          // layer 2
-        find_and_decode(instr, GROUP_MULT);
+        find_and_process(instr, GROUP_MULT);
     }
     else if (IS_SYNC(instr)) {               // layer 2
-        find_and_decode(instr, GROUP_SYNC);
+        find_and_process(instr, GROUP_SYNC);
     }
     else if (IS_EX_LD_STR(instr)) {          // layer 2
-        find_and_decode(instr, GROUP_EX_LD_STR);
+        find_and_process(instr, GROUP_EX_LD_STR);
     }
     else if (IS_EX_LD_STR_UNP(instr)) {      // layer 2
-        find_and_decode(instr, GROUP_EX_LD_STR_UNP);
+        find_and_process(instr, GROUP_EX_LD_STR_UNP);
     }
     else {
         printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
@@ -133,13 +82,13 @@ void decode_dp_op_0(uint32_t instr) {
 
 void decode_dp_op_1(uint32_t instr) {
     if (IS_DP_IMM(instr)) {                  // layer 2
-        find_and_decode(instr, GROUP_DP_IMM);
+        find_and_process(instr, GROUP_DP_IMM);
     }
     else if (IS_16_IMM_LD(instr)) {          // layer 2
-        find_and_decode(instr, GROUP_DP_IMM16);
+        find_and_process(instr, GROUP_DP_IMM16);
     }
     else if (IS_MSR_HINTS(instr)) {          // layer 2
-        find_and_decode(instr, GROUP_MISC_HINTS);
+        find_and_process(instr, GROUP_MISC_HINTS);
     }
     else {
         printf("%s 0x%08x\n", DEFAULT_STR, curr_instr);
@@ -148,20 +97,20 @@ void decode_dp_op_1(uint32_t instr) {
 
 void decode_ld_str_med(uint32_t instr) {
     if (IS_LD_STR(instr)) {
-        find_and_decode(instr, GROUP_LD_STR);
+        find_and_process(instr, GROUP_LD_STR);
     }
     else if (IS_MED(instr)) {
         if (IS_PAS_S(instr) || IS_PAS_U(instr)) {
-            find_and_decode(instr, GROUP_PAS);
+            find_and_process(instr, GROUP_PAS);
         }
         else if (IS_PUSR(instr)) {
-            find_and_decode(instr, GROUP_PUSR);
+            find_and_process(instr, GROUP_PUSR);
         }
         else if (IS_SMSUD(instr)) {
-            find_and_decode(instr, GROUP_SIGNED_MULT);
+            find_and_process(instr, GROUP_SIGNED_MULT);
         }
         else {
-            find_and_decode(instr, GROUP_OTHER_MEDIA);
+            find_and_process(instr, GROUP_OTHER_MEDIA);
         }
     }
     else {
@@ -170,7 +119,7 @@ void decode_ld_str_med(uint32_t instr) {
 }
 
 void decode_br_blk(uint32_t instr) {
-    find_and_decode(instr, GROUP_BRANCH_BLK);
+    find_and_process(instr, GROUP_BRANCH_BLK);
 }
 
 void decode_co_spr(uint32_t instr) {
@@ -178,19 +127,20 @@ void decode_co_spr(uint32_t instr) {
         printf("%s\n", NOT_IMP_STR);
     }
     else {
-        find_and_decode(instr, GROUP_COPROC);
+        find_and_process(instr, GROUP_COPROC);
     }
 }
 
 void decode_uncond(uint32_t instr) {
     if (IS_MH_ASIMD_MISC(instr)) {
-        find_and_decode(instr, GROUP_UNCOND_MISC);
+        find_and_process(instr, GROUP_UNCOND_MISC);
     }
     else {
-        find_and_decode(instr, GROUP_UNCOND);
+        find_and_process(instr, GROUP_UNCOND);
     }
 }
 
+// top-level function that finds the instruction's group by peeling back layers
 void decode_instr(uint32_t instr) {
     
     if (IS_COND(instr)) {                          // layer 0

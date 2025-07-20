@@ -615,14 +615,19 @@ void fatal(const char *msg);
 uint8_t *getTextSection(const char *elf_fname, size_t *ptext_size, uint64_t *ptext_addr);
 void breakarmDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr);
 //==============
-void find_and_decode(uint32_t instr, IGroup igroup);
 
+// finds the instruction in the group's dispatch table and processes it
+void find_and_process(uint32_t instr, IGroup igroup);
+
+// === helper decoding functions to find which group the instruction belongs to ===
 void decode_dp_op_0(uint32_t instr);
 void decode_dp_op_1(uint32_t instr);
 void decode_ld_str_med(uint32_t instr);
 void decode_br_blk(uint32_t instr);
 void decode_co_spr(uint32_t instr);
-
+void decode_uncond(uint32_t instr);
+// =================================================================================
+// top-level decode function which calls a helper decoding function
 void decode_instr(uint32_t instr);
 
 

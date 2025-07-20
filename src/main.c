@@ -7,7 +7,9 @@
 /*
  * Author: Maximilian Kallas
  * File: main.c
- * Description:
+ * Description: Starting point for breakarm. "main" function uses libelf to find the
+ *              .text section of the binary and then decodes each 32-bit instruction
+ *              in a loop.
  */
 
 #include <stdio.h>
@@ -141,10 +143,10 @@ int main(int argc, char **argv) {
     uint64_t text_addr;
 
     // note text_buf was malloced
+    // find .text section of binary
     uint8_t *text_buf = getTextSection(elf_fname, &text_size, &text_addr);
 
-
-    // breakarm
+    // disassemble all 32-bit-wide instructions in .text section
     breakarmDisas(text_buf, text_size, text_addr);
 
     

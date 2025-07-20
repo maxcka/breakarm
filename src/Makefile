@@ -2,6 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -g -I../include
 LDFLAGS = -lelf
 SRC = main.c decode.c decode_utils.c a32_tables.c \
+		instr/instr_default.c \
 		instr/instr_data_proc.c \
 		instr/instr_misc.c \
 		instr/instr_half_mult.c \
