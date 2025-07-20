@@ -95,7 +95,7 @@ ADDR	INSTR		ASSEMBLY
 0x554:	0x00001aec	ANDEQ R1, R0, IP, ROR #21	; [!] suspicious encoding - possibly junk
 0x558:	0x00000020	ANDEQ R0, R0, R0, LSR #32	; [!] suspicious encoding - possibly junk
 0x55c:	0x00001b00	ANDEQ R1, R0, R0, LSL #22	; [!] suspicious encoding - possibly junk
-0x560:	0x00001af0	.word 0x00001af0	; UNPREDICTABLE
+0x560:	0x00001af0	STRDEQ R1, R2, [R0], -R0	; UNPREDICTABLE
 0x564:	0xeaffffd0	B 0x4ac
 0x568:	0xe92d4800	PUSH {FP, LR}
 0x56c:	0xe28db004	ADD FP, SP, #4
@@ -106,4 +106,4 @@ ADDR	INSTR		ASSEMBLY
 0x580:	0xe3a03000	MOV R3, #0
 0x584:	0xe1a00003	MOV R0, R3
 0x588:	0xe8bd8800	POP {FP, PC}
-0x58c:	0x000000b0	.word 0x000000b0	; UNPREDICTABLE
+0x58c:	0x000000b0	STRHEQ R0, [R0], -R0	; UNPREDICTABLE
