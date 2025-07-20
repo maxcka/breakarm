@@ -289,3 +289,34 @@ void test_ld_str() {
     );
     __builtin_unreachable();
 }
+
+
+__attribute__((naked))
+void test_pas() {
+    asm volatile (
+        // ADD16 variants
+        // ADD16 not allowed on arm-cortex-a15
+        "QADD16 r0, r1, r2\n"      // Saturating add halfwords
+        "SADD16 r0, r1, r2\n"      // Signed saturating add halfwords
+
+        // SUB16 variants
+        // SUB16 not allowed on arm-cortex-a15
+        "QSUB16 r0, r1, r2\n"      // Saturating subtract halfwords
+        "SSUB16 r0, r1, r2\n"      // Signed saturating subtract halfwords
+
+        // ADD8 variants
+        // ADD8 not allowed on arm-cortex-a15
+        "QADD8 r0, r1, r2\n"       // Saturating add bytes
+        "SADD8 r0, r1, r2\n"       // Signed saturating add bytes
+
+        // SUB8 variants
+        // SUB8 not allowed on arm-cortex-a15
+        "QSUB8 r0, r1, r2\n"       // Saturating subtract bytes
+        "SSUB8 r0, r1, r2\n"       // Signed saturating subtract bytes
+
+        // ASX and SAX (no saturation variants)
+        // ASX not allowed on arm-cortex-a15
+        // SAX not allowed on arm-cortex-a15
+    );
+    __builtin_unreachable();
+}

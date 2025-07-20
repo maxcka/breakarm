@@ -150,9 +150,6 @@ void get_option_str(Instr *instr_s, uint8_t option) {
 
 // sys special register string
 void get_sys_sr_str(Instr *instr_s, uint8_t mask) {
-    if (mask == 0 || instr_s->Rn == PC) {
-        instr_s->is_unpred = TRUE;
-    }
     uint8_t mask_0 = (mask >> 0) & 0x1;
     uint8_t mask_1 = (mask >> 1) & 0x1;
     uint8_t mask_2 = (mask >> 2) & 0x1;
@@ -179,9 +176,6 @@ void get_sys_sr_str(Instr *instr_s, uint8_t mask) {
 
 // app special register string
 void get_app_sr_str(Instr *instr_s, uint8_t mask) {
-    if (mask == 0 || instr_s->Rn == PC) {
-        instr_s->is_unpred = TRUE;
-    }
     uint8_t mask_0 = (mask >> 0) & 0x1;
     uint8_t mask_1 = (mask >> 1) & 0x1;
 

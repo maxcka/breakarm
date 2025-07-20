@@ -184,6 +184,7 @@ int process_misc_instr(uint32_t instr, Instr *instr_s) {
         get_banked_reg_str(m, m1, instr_s->R, instr_s->banked_reg_str, sizeof(instr_s->banked_reg_str));
     }
     else if (instr_s->itype == TYPE_MISC_2_APP || instr_s->itype == TYPE_MISC_2_IMM_APP) { // APSR
+        
         mask = (instr >> 18) & 0x3;
         get_app_sr_str(instr_s, mask);
     }
@@ -202,6 +203,12 @@ int process_misc_instr(uint32_t instr, Instr *instr_s) {
         instr_s->is_unpred = TRUE;
     }
     else if (instr_s->itype == TYPE_MISC_7 && instr_s->c != AL) {
+        instr_s->is_unpred = TRUE;
+    }
+    else if (IS_ITYPE(instr_s->itype, TYPE_MISC_2_APP, TYPE_MISC_2_SYS) && (instr_s->Rn == PC || mask == 0)) {
+        instr_s->is_unpred = TRUE;
+    }
+    else if (IS_ITYPE(instr_s->itype, TYPE_MISC_2_IMM_APP, TYPE_MISC_2_IMM_SYS) && (mask == 0)) {
         instr_s->is_unpred = TRUE;
     }
 

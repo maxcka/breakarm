@@ -176,7 +176,7 @@ int ADD16_instr(uint32_t instr) {
     strcat(mnemonic_buf, "ADD16");
     instr_s.mnemonic = mnemonic_buf;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 
 // syntax: ASX<c> <Rd>, <Rn>, <Rm>
@@ -190,7 +190,7 @@ int ASX_instr(uint32_t instr) {
     strcat(mnemonic_buf, "ASX");
     instr_s.mnemonic = mnemonic_buf;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 
 
@@ -205,7 +205,7 @@ int SAX_instr(uint32_t instr) {
     strcat(mnemonic_buf, "SAX");
     instr_s.mnemonic = mnemonic_buf;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 
 // syntax: SUB16<c> <Rd>, <Rn>, <Rm>
@@ -219,7 +219,7 @@ int SUB16_instr(uint32_t instr) {
     strcat(mnemonic_buf, "SUB16");
     instr_s.mnemonic = mnemonic_buf;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 
 // syntax: ADD8<c> <Rd>, <Rn>, <Rm>
@@ -233,7 +233,7 @@ int ADD8_instr(uint32_t instr) {
     strcat(mnemonic_buf, "ADD8");
     instr_s.mnemonic = mnemonic_buf;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 
 // syntax: SUB8<c> <Rd>, <Rn>, <Rm>
@@ -247,7 +247,7 @@ int SUB8_instr(uint32_t instr) {
     strcat(mnemonic_buf, "SUB8");
     instr_s.mnemonic = mnemonic_buf;
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 
 
@@ -264,7 +264,7 @@ int USAD8_instr(uint32_t instr) {
 
     instr_s.mnemonic = "USAD8";
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 
 // syntax: USADA8<c> <Rd>, <Rn>, <Rm>, <Ra>
@@ -275,7 +275,7 @@ int USADA8_instr(uint32_t instr) {
 
     instr_s.mnemonic = "USADA8";
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 
 // syntax: SBFX<c> <Rd>, <Rn>, #<lsb>, #<width>
@@ -286,7 +286,7 @@ int SBFX_instr(uint32_t instr) {
 
     instr_s.mnemonic = "SBFX";
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 // syntax: BFC<c> <Rd>, #<lsb>, #<width>
 int BFC_instr(uint32_t instr) {
@@ -296,7 +296,7 @@ int BFC_instr(uint32_t instr) {
 
     instr_s.mnemonic = "BFC";
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 // syntax: BFI<c> <Rd>, <Rn>, #<lsb>, #<width> different
 int BFI_instr(uint32_t instr) {
@@ -306,7 +306,7 @@ int BFI_instr(uint32_t instr) {
 
     instr_s.mnemonic = "BFI";
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 // syntax: UBFX<c> <Rd>, <Rn>, #<lsb>, #<width>
 int UBFX_instr(uint32_t instr) {
@@ -316,7 +316,7 @@ int UBFX_instr(uint32_t instr) {
 
     instr_s.mnemonic = "UBFX";
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
 // syntax: UDF<c> #<imm16>
 int UDF_instr(uint32_t instr) {
@@ -326,5 +326,5 @@ int UDF_instr(uint32_t instr) {
 
     instr_s.mnemonic = "UDF";
 
-    return process_mult_instr(instr, &instr_s);
+    return process_parallel_add_sub_instr(instr, &instr_s);
 }
