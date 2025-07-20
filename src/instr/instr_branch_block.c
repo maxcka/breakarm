@@ -92,11 +92,13 @@ int process_branch_block_instr(uint32_t instr, Instr *instr_s) {
     uint32_t imm24 = (instr >> 0) & 0xFFFFFF;
     uint8_t H = (instr >> 24) & 0x1;
 
-    if (instr_s->c == UNCOND) {
-        instr_s->label = get_label((imm24 << 2) | (H << 1), 26);
-    }
-    else {
-        instr_s->label = get_label(imm24 << 2, 26);
+    if (IS_ITYPE(instr_s->itype, TYPE_BR_BLK_3)) {
+        if (instr_s->c == UNCOND) {
+            instr_s->label = get_label((imm24 << 2) | (H << 1), 26);
+        }
+        else {
+            instr_s->label = get_label(imm24 << 2, 26);
+        }
     }
 
     if (IS_NOT_ITYPE(instr_s->itype, TYPE_BR_BLK_3)) {

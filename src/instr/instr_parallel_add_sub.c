@@ -132,13 +132,16 @@ int process_parallel_add_sub_instr(uint32_t instr, Instr *instr_s) {
 
     
     // unpred checking
-    if (IS_ITYPE(instr_s->itype, TYPE_PAS_FIELD_0_1, TYPE_PAS_FIELD_1) && IS_TARGET_REG(PC, instr_s->Rd)) {
+    if (IS_ITYPE(instr_s->itype, TYPE_PAS_FIELD_0_1, TYPE_PAS_FIELD_1) && 
+        IS_TARGET_REG(PC, instr_s->Rd)) {
         instr_s->is_unpred = TRUE;
     }
-    if (IS_ITYPE(instr_s->itype, TYPE_PAS_FIELD_0) && IS_TARGET_REG(PC, instr_s->Rd, instr_s->Rn)) {
+    else if (IS_ITYPE(instr_s->itype, TYPE_PAS_FIELD_0) && 
+        IS_TARGET_REG(PC, instr_s->Rd, instr_s->Rn)) {
         instr_s->is_unpred = TRUE;
     }
-    else if (IS_NOT_ITYPE(instr_s->itype, TYPE_PAS_UDF) && IS_TARGET_REG(PC, instr_s->Rd, instr_s->Rn, instr_s->Rm)) {
+    else if (IS_NOT_ITYPE(instr_s->itype, TYPE_PAS_UDF, TYPE_PAS_FIELD_1) && 
+        IS_TARGET_REG(PC, instr_s->Rd, instr_s->Rn, instr_s->Rm)) {
         instr_s->is_unpred = TRUE;
     }
 

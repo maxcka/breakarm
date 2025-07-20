@@ -22,7 +22,7 @@ void print_uncond_instr(Instr *instr_s) {
 
         case TYPE_UNC_MISC_0:
         {
-            printf("%s%s%s %s%s%s%s %s",
+            printf("%s%s%s %s%s%s%s%s",
                 instr_s->mnemonic,
                 (instr_s->imod == 2) ? "IE" : "",
                 (instr_s->imod == 3) ? "ID" : "",
@@ -31,7 +31,7 @@ void print_uncond_instr(Instr *instr_s) {
                 (instr_s->I) ? "i" : "",
                 (instr_s->F) ? "f" : "",
 
-                (instr_s->M) ? "," : "",
+                (instr_s->M) ? ", " : "",
                 (instr_s->M) ? instr_s->imm_str : "");
             print_unpred_or_newline(instr_s);
 			break;
@@ -74,7 +74,7 @@ void print_uncond_instr(Instr *instr_s) {
 
         case TYPE_UNC_MISC_3:
         {
-            printf("%s\n", instr_s->mnemonic);
+            printf("%s", instr_s->mnemonic);
 
             print_unpred_or_newline(instr_s);
 			break;
@@ -82,8 +82,9 @@ void print_uncond_instr(Instr *instr_s) {
 
         case TYPE_UNC_MISC_4:
         {
-            printf("%s %s",
+            printf("%s%s%s",
                 instr_s->mnemonic, 
+                (option_table[instr_s->option][0] != '\0') ? " " : "",
                 option_table[instr_s->option]);
 
             print_unpred_or_newline(instr_s);
@@ -208,7 +209,7 @@ int CPS_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND_MISC;
     instr_s.itype = TYPE_UNC_MISC_0;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 
 // syntax: SETEND <endian_specifier>
@@ -219,7 +220,7 @@ int SETEND_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND_MISC;
     instr_s.itype = TYPE_UNC_MISC_1;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 
 
@@ -231,7 +232,7 @@ int PLI_imm_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND_MISC;
     instr_s.itype = TYPE_UNC_MISC_2_IMM;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 
 // syntax: PLD{W} [<Rn>, #+/-<imm12>]
@@ -242,7 +243,7 @@ int PLD_imm_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND_MISC;
     instr_s.itype = TYPE_UNC_MISC_2_IMM;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 
 // syntax: CLREX
@@ -253,7 +254,7 @@ int CLREX_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND_MISC;
     instr_s.itype = TYPE_UNC_MISC_3;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 
 
@@ -265,7 +266,7 @@ int DSB_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND_MISC;
     instr_s.itype = TYPE_UNC_MISC_4;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 // syntax: DMB <option>
 int DMB_instr(uint32_t instr) {
@@ -275,7 +276,7 @@ int DMB_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND_MISC;
     instr_s.itype = TYPE_UNC_MISC_4;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 
 // syntax: ISB <option>
@@ -286,7 +287,7 @@ int ISB_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND_MISC;
     instr_s.itype = TYPE_UNC_MISC_4;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 
 // syntax: PLI [<Rn>,+/-<Rm>{, <shift>}]
@@ -297,7 +298,7 @@ int PLI_reg_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND_MISC;
     instr_s.itype = TYPE_UNC_MISC_2_REG;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 
 // syntax: PLD{W} [<Rn>,+/-<Rm>{, <shift>}]
@@ -308,7 +309,7 @@ int PLD_reg_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND_MISC;
     instr_s.itype = TYPE_UNC_MISC_2_REG;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 
 //syntax: SRS{<amode>}{<c>}{<q>} SP{!}, #<mode>
@@ -319,7 +320,7 @@ int SRS_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND;
     instr_s.itype = TYPE_UNC_0;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 
 int RFE_instr(uint32_t instr) {
@@ -329,7 +330,7 @@ int RFE_instr(uint32_t instr) {
     instr_s.igroup = GROUP_UNCOND;
     instr_s.itype = TYPE_UNC_1;
 
-    return process_misc_instr(instr, &instr_s);
+    return process_uncond_instr(instr, &instr_s);
 }
 
 

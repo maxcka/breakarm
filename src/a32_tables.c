@@ -75,7 +75,7 @@ const char *option_table[OPTION_SIZE] = {
     "", // 0b1100
     "", // 0b1101
     "ST", // 0b1110
-    "SY" // 0b1111
+    "" //ommitting SY // 0b1111
 };
 
 
@@ -350,13 +350,13 @@ InstrHandler proc_signed_mult_table[][IH_ARR_SIZE] = {
 
 InstrHandler proc_other_media_table[][IH_ARR_SIZE] = {
     // other media instructions
-    { is_USAD8, USAD8_instr},
-    { is_USADA8, USADA8_instr},
-    { is_SBFX, SBFX_instr},
-    { is_BFC, BFC_instr},
-    { is_BFI, BFI_instr},
-    { is_UBFX, UBFX_instr},
-    { is_UDF, UDF_instr}
+    { is_USAD8,     USAD8_instr},
+    { is_USADA8,    USADA8_instr},
+    { is_SBFX,      SBFX_instr},
+    { is_BFC,       BFC_instr},
+    { is_BFI,       BFI_instr},
+    { is_UBFX,      UBFX_instr},
+    { is_UDF,       UDF_instr}
 };
 
 InstrHandler proc_branch_block_table[][IH_ARR_SIZE] = {
@@ -365,17 +365,17 @@ InstrHandler proc_branch_block_table[][IH_ARR_SIZE] = {
     { is_LDMDA, LDMDX_instr },
     { is_STMIA, STMXX_instr },
     { is_LDMIA, LDMXX_instr },
-    { is_POP, POP_instr },
+    { is_POP,   POP_instr },
     { is_STMDB, STMDX_instr },
-    { is_PUSH, PUSH_instr },
+    { is_PUSH,  PUSH_instr },
     { is_LDMDB, LDMDX_instr },
     { is_STMIB, STMXX_instr },
     { is_LDMIB, LDMXX_instr },
     { is_STM_usr, STM_instr },
     { is_LDM_usr, LDM_instr },
     { is_LDM_exc, LDM_instr },
-    { is_B, B_instr },
-    { is_BL, BL_imm_instr }
+    { is_B,     B_instr },
+    { is_BL,    BL_imm_instr }
 };
 
 
@@ -394,28 +394,28 @@ InstrHandler proc_coproc_table[][IH_ARR_SIZE] = {
 
 InstrHandler proc_uncond_misc_table[][IH_ARR_SIZE] = {
     // unconditional instructions (misc)
-    { is_CPS, CPS_instr},
-    { is_SETEND, SETEND_instr},
-    { is_SIMD_DP, NOT_IMP_instr},
-    { is_SIMD_LD_STR, NOT_IMP_instr},   
-    { is_NOP_2, NOP_instr},
-    { is_PLI_imm, PLI_imm_instr},
-    { is_UNPRED_2, UNPRED_instr},   
-    { is_PLDW_imm, PLD_imm_instr},
-    { is_UNPRED_3, UNPRED_instr},
-    { is_PLD_imm, PLD_imm_instr},
-    { is_UNPRED_4, UNPRED_instr},
-    { is_UNPRED_5, UNPRED_instr},
-    { is_CLREX, CLREX_instr},   
-    { is_DSB, DSB_instr},   
-    { is_DMB, DMB_instr},  
-    { is_ISB, ISB_instr},
-    { is_UNPRED_6, UNPRED_instr},
-    { is_NOP_3, NOP_instr}, 
-    { is_PLI_reg, PLI_reg_instr},   
-    { is_PLD_reg, PLD_reg_instr},   
-    { is_UNPRED_7, UNPRED_instr},
-    { is_UNDEF_5, UNDEF_instr}
+    { is_CPS,           CPS_instr},
+    { is_SETEND,        SETEND_instr},
+    { is_SIMD_DP,       NOT_IMP_instr},
+    { is_SIMD_LD_STR,   NOT_IMP_instr},   
+    { is_NOP_2,         NOP_instr},
+    { is_PLI_imm,       PLI_imm_instr},
+    { is_UNPRED_2,      UNPRED_instr},   
+    { is_PLDW_imm,      PLD_imm_instr},
+    { is_UNPRED_3,      UNPRED_instr},
+    { is_PLD_imm,       PLD_imm_instr},
+    { is_UNPRED_4,      UNPRED_instr},
+    { is_UNPRED_5,      UNPRED_instr},
+    { is_CLREX,         CLREX_instr},   
+    { is_DSB,           DSB_instr},   
+    { is_DMB,           DMB_instr},  
+    { is_ISB,           ISB_instr},
+    { is_UNPRED_6,      UNPRED_instr},
+    { is_NOP_3,         NOP_instr}, 
+    { is_PLI_reg,       PLI_reg_instr},   
+    { is_PLD_reg,       PLD_reg_instr},   
+    { is_UNPRED_7,      UNPRED_instr},
+    { is_UNDEF_5,       UNDEF_instr}
 };
 
 InstrHandler proc_uncond_table[][IH_ARR_SIZE] = {

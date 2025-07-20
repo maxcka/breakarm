@@ -128,7 +128,11 @@ int process_mult_instr(uint32_t instr, Instr *instr_s) {
     }
     get_char_suffix(instr_s);
 
-    if (IS_TARGET_REG(PC, instr_s->Rd, instr_s->Rn, instr_s->Rm, instr_s->Ra, instr_s->RdLo)) {
+    if (IS_NOT_ITYPE(instr_s->itype, TYPE_MULT_0, TYPE_MULT_0_X, TYPE_MULT_0_R) &&
+        IS_TARGET_REG(PC, instr_s->Rd, instr_s->Rn, instr_s->Rm, instr_s->Ra, instr_s->RdLo)) {
+        instr_s->is_unpred = TRUE;
+    }
+    else if (IS_TARGET_REG(PC, instr_s->Rd, instr_s->Rn, instr_s->Rm)) {
         instr_s->is_unpred = TRUE;
     }
 

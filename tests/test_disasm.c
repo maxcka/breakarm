@@ -391,3 +391,147 @@ void test_signed_mult() {
     );
     __builtin_unreachable();
 }
+
+__attribute__((naked))
+void test_other_media() {
+    asm volatile (
+        // USAD8: Unsigned Sum of Absolute Differences, 8-bit
+        "USAD8 r0, r1, r2\n"       // r0 = Σ|r1[i] - r2[i]| for each byte i
+        // USADA8: USAD8 with accumulate
+        "USADA8 r0, r1, r2, r3\n"  // r0 = r3 + USAD8(r1, r2)
+        // SBFX: Signed Bit-Field Extract
+        "SBFX r0, r1, #8, #4\n"    // r0 = sign_extend(r1[11:8])  // extract 4 bits from bit 8
+        // BFC: Bit Field Clear
+        "BFC r0, #4, #8\n"         // Clear 8 bits starting at bit 4 in r0 (i.e., r0[11:4] = 0)
+        // BFI: Bit Field Insert
+        "BFI r0, r1, #4, #8\n"     // Insert 8 bits of r1 into r0 at bit position 4
+        // UBFX: Unsigned Bit-Field Extract
+        "UBFX r0, r1, #8, #4\n"    // r0 = zero_extend(r1[11:8]) // extract 4 bits starting at bit 8
+        // UDF: Permanently undefined instruction (used for traps/debugging)
+        "UDF #0\n"                // Trigger undefined instruction exception
+    );
+    __builtin_unreachable();
+}
+
+
+__attribute__((naked))
+void test_branch_block() {
+    asm volatile (
+        // STMDA: Store Multiple Decrement After (Full Descending stack)
+        "STMDA r0!, {r1-r3}\n"     // Store r1-r3 to memory, starting below r0, r0 updated after
+        // LDMDA: Load Multiple Decrement After
+        "LDMDA r0!, {r1-r3}\n"     // Load r1-r3 from memory, starting below r0, r0 updated after
+        // STMIA: Store Multiple Increment After (Full Ascending stack)
+        "STM r0!, {r1-r3}\n"     // Store r1-r3 to memory, starting at r0, r0 updated after
+        // LDMIA: Load Multiple Increment After
+        "LDM r0!, {r1-r3}\n"     // Load r1-r3 from memory, starting at r0, r0 updated after
+        // POP: Pop registers from stack (LDMIA with SP)
+        "POP {r4-r6}\n"            // Load r4-r6 from stack and update SP
+        // STMDB: Store Multiple Decrement Before (Empty Descending stack)
+        "STMDB r0!, {r1-r3}\n"     // Store r1-r3 to memory, starting below r0-4, r0 updated after
+        // PUSH: Push registers to stack (STMDB with SP)
+        "PUSH {r4-r6}\n"           // Store r4-r6 to stack and update SP
+        // LDMDB: Load Multiple Decrement Before
+        "LDMDB r0!, {r1-r3}\n"     // Load r1-r3 from memory, starting below r0-4, r0 updated after
+        // STMIB: Store Multiple Increment Before
+        "STMIB r0!, {r1-r3}\n"     // Store r1-r3 to memory, starting after r0+4, r0 updated after
+        // LDMIB: Load Multiple Increment Before
+        "LDMIB r0!, {r1-r3}\n"     // Load r1-r3 from memory, starting after r0+4, r0 updated after
+        // STM_usr: Store Multiple in User mode (from privileged mode)
+        "STMIA r0!, {r1-r3}^\n"   // Store r1-r3 using user mode registers (privileged mode only)
+        // LDM_usr: Load Multiple in User mode (from privileged mode)
+        "LDMIA r0!, {r1-r3}^\n"   // Load r1-r3 using user mode registers (privileged mode only)
+        // LDM_exc: Load Multiple with PC (return from exception)
+        "LDMIA r0!, {r1-r3, pc}^\n"// Load r1-r3 and PC, and restore CPSR (used for exception return)
+        // B: Branch
+        // can't test here. need label                // Branch unconditionally to label
+        // BL: Branch with Link (call subroutine)
+        // can't test here. need label      // Branch to label and store return address in LR
+    );
+    __builtin_unreachable();
+}
+
+__attribute__((naked))
+void test_coproc() {
+    asm volatile (
+        // SVC (Supervisor Call)
+        "SVC #123\n"
+        // STC (Store to Coprocessor)
+        "STC p9, c4, [r3], #4\n"
+        // LDC (Load from Coprocessor)
+        "LDC p9, c4, [r3], #4\n"
+        // MCRR (Move two registers to coprocessor)
+        "MCRR p15, #1, r2, r3, c5\n"
+        // MRRC (Move two registers from coprocessor)
+        "MRRC p15, #1, r2, r3, c5\n"
+        // CDP (Coprocessor Data Processing)
+        "CDP p15, #1, c2, c3, c4, #5\n"
+        // MCR (Move to Coprocessor from ARM register)
+        "MCR p15, #0, r2, c7, c10, #5\n"
+        // MRC (Move from Coprocessor to ARM register)
+        "MRC p15, #0, r2, c7, c10, #5\n"
+    );
+    __builtin_unreachable();
+}
+
+
+
+__attribute__((naked))
+void test_uncond_misc() {
+    asm volatile (
+        // CPS - Change Processor State
+        "CPSID i\n"
+        "CPSIE i\n"
+        // SETEND - Set Endianness
+        "SETEND LE\n"
+        "SETEND BE\n"
+        // PLI_imm - Preload Instruction (immediate)
+        "PLI [r0, #16]\n"
+        // PLDW_imm - Preload Data Write (immediate)
+        "PLDW [r0, #16]\n"
+        // PLD_imm - Preload Data (immediate)
+        "PLD [r0, #16]\n"
+        // CLREX - Clear Exclusive
+        "CLREX\n"
+        // DSB - Data Synchronization Barrier
+        "DSB\n"
+        // DMB - Data Memory Barrier
+        "DMB\n"
+        // ISB - Instruction Synchronization Barrier
+        "ISB\n"
+        // PLI_reg - Preload Instruction (register)
+        "PLI [r0, r1]\n"
+        // PLD_reg - Preload Data (register)
+        "PLD [r0, r1]\n"
+    );
+    __builtin_unreachable();
+}
+
+__attribute__((naked))
+void test_uncond() {
+    asm volatile (
+        // SRS (Store Return State)
+        "SRSDB SP!, #17\n"       // store return state using DB mode, with writeback
+        "SRSIA SP!, #17\n"       // store return state using IA mode
+        // RFE (Return From Exception)
+        "RFEDB r0!\n"
+        "RFEIA r0!\n"
+        // BLX immediate
+        // can't be tested here. need label
+        // STC2 (Store to coprocessor - extension space)
+        "STC2 p1, c4, [r2], #4\n"
+        // LDC2_imm (Load from coprocessor - extension space)
+        "LDC2 p1, c4, [r2], #4\n"
+        // MCRR2 (Move to coprocessor registers - extension)
+        "MCRR2 p1, #0, r0, r1, c2\n"
+        // MRRC2 (Move from coprocessor registers - extension)
+        "MRRC2 p1, #0, r0, r1, c2\n"
+        // CDP2 (Coprocessor data processing - extension)
+        "CDP2 p1, #0, c0, c1, c2, #0\n"
+        // MCR2 (Move to coprocessor - extension)
+        "MCR2 p1, #0, r0, c1, c2, #0\n"
+        // MRC2 (Move from coprocessor - extension)
+        "MRC2 p1, #0, r0, c1, c2, #0\n"
+    );
+    __builtin_unreachable();
+}
