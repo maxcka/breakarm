@@ -21,12 +21,14 @@ This focused approach allows efficient and accurate analysis of ARM machine code
 
 - GCC or compatible C compiler
 - Make
-- **libelf development libraries** (for ELF binary loading and parsing)  
-  - On Debian/Ubuntu: `sudo apt install libelf-dev`   
+- libelf development libraries (for ELF binary loading and parsing)  
+  - On Debian/Ubuntu: `sudo apt install libelf-dev`
+- an ARM cross-compiler or a 32-bit ARM binary using the A32 instruction set
+  - To install a cross-compiler on Debian/Ubuntu: `sudo apt install gcc-arm-linux-gnueabi`
 
 ### Build
 
-Navigate to the `src` directory:
+To build **breakarm**, navigate to the `src` directory:
 ```bash
 cd src
 ```
@@ -59,8 +61,6 @@ when compiling using `arm-linux-gnueabi-gcc`:
 - Fix known bugs and improve overall stability
 - Write more comprehensive comments and documentation throughout the codebase
 - Clean up and refactor code for better readability and maintainability
-- Enhance testing coverage with more unit and integration tests
-- Provide more output examples of disassembled binaries
 
 
 
