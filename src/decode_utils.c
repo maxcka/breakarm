@@ -241,11 +241,6 @@ void get_shift_str(Instr *instr_s, ShiftType type, uint8_t imm) {
     }
 }
 
-
-// this function needs to be split up based on type of instruction (data-proc, etc)
-
-// print_instr_table[instr_s.group]
-
 void print_asm_instr(Instr *instr_s) {
     print_instr_table[instr_s->igroup](instr_s);
 }

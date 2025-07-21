@@ -612,14 +612,40 @@ void print_asm_instr(Instr *instr_s);
 // main functions
 //=== main.c ===
 void fatal(const char *msg);
+
+/**
+ * @brief gets the .text section from an ELF binary by using libelf
+ *
+ * @param elf_fname the file that is passed as a commandline argument to the program
+ * @param ptext_size pointer to a variable that will contain the size of the text section
+ * @param ptext_addr pointer to a variable that will contain the address of the text section start
+ * @return malloced buffer containing the text section
+ */
 uint8_t *getTextSection(const char *elf_fname, size_t *ptext_size, uint64_t *ptext_addr);
+
+/**
+ * @brief decodes each instruction in the .text section in a loop and prints to stdout
+ *
+ * @param text_buf buffer containing the text section
+ * @param text_size size of the text section
+ * @param text_addr start addr of the text section
+ * @return nothing
+ */
 void breakarmDisas(uint8_t *text_buf, size_t text_size, uint64_t text_addr);
 //==============
 
-// finds the instruction in the group's dispatch table and processes it
+//=== decode.c ===
+/**
+ * @brief finds the instruction in the group's dispatch table and processes it
+ *          by calling the instruction's "*_instr()" function
+ *
+ * @param instr 32-bit unsigned int representing an A32 instruction
+ * @param igroup the group that the instruction belongs to
+ * @return nothing
+ */
 void find_and_process(uint32_t instr, IGroup igroup);
 
-// === helper decoding functions to find which group the instruction belongs to ===
+// === helper decode functions to find which group the instruction belongs to ===
 void decode_dp_op_0(uint32_t instr);
 void decode_dp_op_1(uint32_t instr);
 void decode_ld_str_med(uint32_t instr);
@@ -627,7 +653,13 @@ void decode_br_blk(uint32_t instr);
 void decode_co_spr(uint32_t instr);
 void decode_uncond(uint32_t instr);
 // =================================================================================
-// top-level decode function which calls a helper decoding function
+/**
+ * @brief top-level decode function that calls a helper decode function 
+ *      to determine the encoded instruction.
+ *
+ * @param instr 32-bit unsigned int representing an A32 instruction
+ * @return nothing
+ */
 void decode_instr(uint32_t instr);
 
 
