@@ -40,6 +40,7 @@ void find_and_process(uint32_t instr, IGroup igroup) {
     printf("%s 0x%08x\n", DEFAULT_STR, curr_instr); // we don't have the corresponding A32 instruction
 }
 
+// all instructions here have bits 27-25 == 0b000
 void decode_dp_op_0(uint32_t instr) {
     if (IS_DP_REG_OR_RSR(instr) && (IS_DP_REG(instr) || IS_DP_RSR(instr))) {           // layer 2
         if (IS_DP_REG(instr)) {               // layer 3
@@ -80,6 +81,7 @@ void decode_dp_op_0(uint32_t instr) {
     }
 }
 
+// all instructions here have bits 27-25 == 0b001
 void decode_dp_op_1(uint32_t instr) {
     if (IS_DP_IMM(instr)) {                  // layer 2
         find_and_process(instr, GROUP_DP_IMM);
@@ -95,6 +97,7 @@ void decode_dp_op_1(uint32_t instr) {
     }
 }
 
+// all instructions here have bits 27-25 == 0b01x
 void decode_ld_str_med(uint32_t instr) {
     if (IS_LD_STR(instr)) {
         find_and_process(instr, GROUP_LD_STR);
@@ -118,10 +121,12 @@ void decode_ld_str_med(uint32_t instr) {
     }
 }
 
+// all instructions here have bits 27-25 == 0b10x
 void decode_br_blk(uint32_t instr) {
     find_and_process(instr, GROUP_BRANCH_BLK);
 }
 
+// all instructions here have bits 27-25 == 0b11x
 void decode_co_spr(uint32_t instr) {
     if (IS_SIMD(instr) && !is_SVC(instr) && !is_UNDEF_4(instr)) { // is SIMD but not one of the general instructions
         printf("%s\n", NOT_IMP_STR);
@@ -130,6 +135,7 @@ void decode_co_spr(uint32_t instr) {
         find_and_process(instr, GROUP_COPROC);
     }
 }
+
 
 void decode_uncond(uint32_t instr) {
     if (IS_MH_ASIMD_MISC(instr)) {

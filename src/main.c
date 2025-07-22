@@ -25,6 +25,24 @@
 
 // flow: main.c -> decode.c -> a32_tables.c -> instr_*.c 
 
+// EXAMPLE Function Flow:
+// - 32-bit instruction is an AND (register) instruction
+// *note: GROUP_DP_REG == 0
+//
+// main()
+//  |____ getTextSection()
+//  |____ breakarmDisas()
+//         |____ decode_instr()
+//                |____ decode_dp_op_0()
+//                       |____ find_and_process(instr, GROUP_DP_REG)
+//                              |____ proc_dp_reg_table[GROUP_DP_REG][0] // is_AND()
+//                              |____ proc_dp_reg_table[GROUP_DP_REG][1] // AND_instr()
+//                                     |____ process_data_proc_instr()
+//                                            |____ print_asm_instr()
+//                                                   |____ print_instr_table[GROUP_DP_REG] // print_data_proc_instr
+
+
+
 __attribute__((used, section(".rodata")))
 static const char author_string[] = "Author: Maximilian Kallas";
 
